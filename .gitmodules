@@ -1,0 +1,3 @@
+[submodule "apeiron"]
+	path = apeiron
+	url = https://github.com/mwkpe/apeiron
