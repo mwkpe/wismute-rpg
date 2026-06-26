@@ -1,0 +1,13 @@
+# Libraries
+external/
+
+# Build directories
+cmake-build*/
+build*/
+
+# Editors
+.idea/
+*.sublime-workspace
+
+# Assets
+assets/private/

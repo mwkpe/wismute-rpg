@@ -1,0 +1,26 @@
+# Default behavior
+* text eol=lf
+
+# Explicitly declare text files
+*.txt text
+*.md text
+*.json text
+*.c text
+*.cpp text
+*.h text
+*.hpp text
+*.py text
+*.fs text
+*.vs text
+*.gs text
+*.js text
+*.obj text
+*.mtl text
+
+# Explicitly declare binary files
+*.aseprite binary
+*.png binary
+*.svg binary
+*.blend binary
+*.ttf binary
+*.wisf binary
