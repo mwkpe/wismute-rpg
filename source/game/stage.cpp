@@ -178,6 +178,23 @@ void wis::Stage::handle_event(const apeiron::engine::Mouse_motion_event& event)
 
 void wis::Stage::handle_event([[maybe_unused]] const apeiron::engine::Mouse_wheel_event& event)
 {
+  float delta = static_cast<float>(event.y);
+
+  auto& camera = game_data_.camera;
+  camera.zoom += delta;
+
+  if (camera.zoom < camera.min_zoom) {
+    camera.zoom = camera.min_zoom;
+    delta = 0.0f;
+  }
+  else if (camera.zoom > camera.max_zoom) {
+    camera.zoom = camera.max_zoom;
+    delta = 0.0f;
+  }
+
+  camera_.move(0.0f, -delta, -delta * 0.3f);
+  float pitch = camera_.pitch() + delta * 0.5f;
+  camera_.set_pitch(pitch);
 }
 
 

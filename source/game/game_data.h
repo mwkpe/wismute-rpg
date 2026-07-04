@@ -22,9 +22,9 @@ struct Camera_data
 {
   bool drag = false;
   float fov = 45.0f;
-  float cur_zoom = 0.0f;
+  float zoom = 0.0f;
   const float min_zoom = -6.0f;
-  const float max_zoom = 12.0f;
+  const float max_zoom = 8.0f;
 };
 
 
