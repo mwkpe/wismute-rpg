@@ -61,14 +61,17 @@ void wis::Scene::create_test()
   }
 
   sprites_.clear();
-  sprites_.emplace_back(60, glm::vec3{2.4f, 0.0f, 9.2f}, glm::uvec2{3, 5});
-  sprites_.emplace_back(61, glm::vec3{2.4f, 0.0f, 9.2f}, glm::uvec2{3, 5});
-  sprites_.emplace_back(60, glm::vec3{4.0f, 0.0f, 7.6f}, glm::uvec2{2, 4});
-  sprites_.emplace_back(61, glm::vec3{4.0f, 0.0f, 7.6f}, glm::uvec2{2, 4});
-  sprites_.emplace_back(60, glm::vec3{2.4f, 0.0f, 11.0f}, glm::uvec2{1, 6});
-  sprites_.emplace_back(61, glm::vec3{2.4f, 0.0f, 11.0f}, glm::uvec2{1, 6});
-  sprites_.emplace_back(60, glm::vec3{10.4f, 0.0f, 4.0f}, glm::uvec2{6, 2});
-  sprites_.emplace_back(61, glm::vec3{10.4f, 0.0f, 4.0f}, glm::uvec2{6, 2});
+  sprites_.emplace_back(glm::vec3{2.4f, 0.0f, 9.2f}, 61, glm::uvec2{1, 5}, 60);
+  sprites_.emplace_back(glm::vec3{2.4f, 0.0f, 9.2f}, 61, glm::uvec2{1, 5}, 61);
+
+  sprites_.emplace_back(glm::vec3{4.0f, 0.0f, 7.6f}, 50, glm::uvec2{2, 4}, 60);
+  sprites_.emplace_back(glm::vec3{4.0f, 0.0f, 7.6f}, 50, glm::uvec2{2, 4}, 61);
+
+  sprites_.emplace_back(glm::vec3{2.4f, 0.0f, 10.8f}, 73, glm::uvec2{1, 6}, 60);
+  sprites_.emplace_back(glm::vec3{2.4f, 0.0f, 10.8f}, 73, glm::uvec2{1, 6}, 61);
+
+  sprites_.emplace_back(glm::vec3{10.4f, 0.0f, 4.4f}, 30, glm::uvec2{6, 2}, 60);
+  sprites_.emplace_back(glm::vec3{10.4f, 0.0f, 4.4f}, 30, glm::uvec2{6, 2}, 61);
 
   connect_neighbors();
 }
