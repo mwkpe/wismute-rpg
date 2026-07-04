@@ -1,5 +1,5 @@
 # Default behavior
-* text eol=lf
+* text=auto eol=lf
 
 # Explicitly declare text files
 *.txt text
@@ -17,6 +17,7 @@
 *.obj text
 *.mtl text
 *.gpl text
+LICENSE text
 
 # Explicitly declare binary files
 *.aseprite binary
