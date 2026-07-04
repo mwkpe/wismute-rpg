@@ -30,7 +30,7 @@ struct Camera_data
 
 struct Stage_data
 {
-  std::uint32_t selected_tile_index = 0;
+  std::uint32_t selected_scene_index = 0;
 };
 
 

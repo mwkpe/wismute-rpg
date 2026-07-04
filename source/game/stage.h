@@ -56,6 +56,7 @@ public:
 private:
   // Render
   void render_ground();
+  void render_overlay();
   void render_sprites();
   void render_debug();
   void update_ego_camera(const apeiron::engine::Input* input);

@@ -51,10 +51,10 @@ void wis::Stage::init()
 
   dispatcher_.sink<event::Enemy_hit>().connect<&Stage::on_enemy_hit>(this);
 
-  player_ = Player{glm::vec3{8.8f, 0.0f, 7.6f}, 122, 0.03f, 4.0f, tau()};
+  player_ = Player{glm::vec3{8.8f, 0.0f, 7.6f}, 53, 102, 0.03f, 4.0f, tau()};
 
-  slimes_.emplace_back(glm::vec3{7.2f, 0.0f, 7.6f}, 140, 0.06f, 4.8f, tau() * 0.65f);
-  slimes_.emplace_back(glm::vec3{10.4f, 0.0f, 7.6f}, 143, 0.05f, 3.4f, tau() * 0.65f);
+  slimes_.emplace_back(glm::vec3{7.2f, 0.0f, 7.6f}, 52, 140, 0.06f, 4.8f, tau() * 0.65f);
+  slimes_.emplace_back(glm::vec3{10.4f, 0.0f, 7.6f}, 54, 143, 0.05f, 3.4f, tau() * 0.65f);
 }
 
 
@@ -91,6 +91,7 @@ void wis::Stage::render()
   pixel_renderer_.set_time(app_data_.timing.runtime_s);
 
   render_ground();
+  render_overlay();
   render_sprites();
   render_debug();
 }
@@ -111,6 +112,10 @@ void wis::Stage::handle_event(const apeiron::engine::Mouse_button_down_event& ev
   switch (event.button) {
     case apeiron::engine::Mouse_button::Right: {
       game_data_.camera.drag = true;
+    }
+    break;
+    case apeiron::engine::Mouse_button::Left: {
+      game_data_.stage.selected_scene_index = game_data_.cursor.scene_index;
     }
     break;
     default:;
@@ -180,6 +185,18 @@ void wis::Stage::render_ground()
 }
 
 
+void wis::Stage::render_overlay()
+{
+  Renderer::gl_clear_depth_buffer();
+
+  if (game_data_.stage.selected_scene_index > 0) {
+    ground_entity_.transform().set_position(lattice_.as_position_xz(
+        game_data_.stage.selected_scene_index));
+    pixel_renderer_.render(ground_entity_, atlas_.meshes(), 381);
+  }
+}
+
+
 void wis::Stage::render_sprites()
 {
   for (const auto& sprite : scene_.sprites()) {
@@ -191,12 +208,18 @@ void wis::Stage::render_sprites()
   pixel_renderer_.enable_breathe();
 
   // Player
-  pixel_renderer_.set_breathe_amplitude(player_.breathe_amplitude);
-  pixel_renderer_.set_breathe_speed(player_.breathe_speed);
-  pixel_renderer_.set_breathe_phase(player_.breathe_phase);
+  {
+    pixel_renderer_.set_breathe_amplitude(player_.breathe_amplitude);
+    pixel_renderer_.set_breathe_speed(player_.breathe_speed);
+    pixel_renderer_.set_breathe_phase(player_.breathe_phase);
 
-  sprite_entity_.transform().set_position(player_.position);
-  pixel_renderer_.render(sprite_entity_, atlas_.meshes(), player_.mesh_index);
+    sprite_entity_.transform().set_position(player_.position);
+
+    auto mesh_index = player_.scene_index == game_data_.stage.selected_scene_index ?
+        player_.mesh_index + 20 : player_.mesh_index;
+
+    pixel_renderer_.render(sprite_entity_, atlas_.meshes(), mesh_index);
+  }
 
   // Slimes
   for (const auto& slime : slimes_) {
@@ -205,7 +228,11 @@ void wis::Stage::render_sprites()
     pixel_renderer_.set_breathe_phase(slime.breathe_phase);
 
     sprite_entity_.transform().set_position(slime.position);
-    pixel_renderer_.render(sprite_entity_, atlas_.meshes(), slime.mesh_index);
+
+    auto mesh_index = slime.scene_index == game_data_.stage.selected_scene_index ?
+        slime.mesh_index + 20 : slime.mesh_index;
+
+    pixel_renderer_.render(sprite_entity_, atlas_.meshes(), mesh_index);
   }
 
   pixel_renderer_.enable_breathe(false);
