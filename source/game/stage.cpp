@@ -200,12 +200,13 @@ void wis::Stage::render_overlay()
 void wis::Stage::render_sprites()
 {
   for (const auto& sprite : scene_.sprites()) {
-    auto mesh_index = sprite.scene_index == game_data_.stage.selected_scene_index ?
-        sprite.mesh_index + 20 : sprite.mesh_index;
-
     sprite_entity_.transform().set_position(sprite.position);
     pixel_renderer_.set_tile_position({sprite.scene_coords.x, sprite.scene_coords.y});
-    pixel_renderer_.render(sprite_entity_, atlas_.meshes(), mesh_index);
+    pixel_renderer_.render(sprite_entity_, atlas_.meshes(), sprite.mesh_index);
+
+    if (sprite.scene_index == game_data_.stage.selected_scene_index) {
+      pixel_renderer_.render(sprite_entity_, atlas_.meshes(), sprite.mesh_index + 20);
+    }
   }
 
   pixel_renderer_.enable_breathe();
@@ -217,11 +218,11 @@ void wis::Stage::render_sprites()
     pixel_renderer_.set_breathe_phase(player_.breathe_phase);
 
     sprite_entity_.transform().set_position(player_.position);
+    pixel_renderer_.render(sprite_entity_, atlas_.meshes(), player_.mesh_index);
 
-    auto mesh_index = player_.scene_index == game_data_.stage.selected_scene_index ?
-        player_.mesh_index + 20 : player_.mesh_index;
-
-    pixel_renderer_.render(sprite_entity_, atlas_.meshes(), mesh_index);
+    if (player_.scene_index == game_data_.stage.selected_scene_index) {
+      pixel_renderer_.render(sprite_entity_, atlas_.meshes(), player_.mesh_index + 20);
+    }
   }
 
   // Slimes
@@ -231,11 +232,11 @@ void wis::Stage::render_sprites()
     pixel_renderer_.set_breathe_phase(slime.breathe_phase);
 
     sprite_entity_.transform().set_position(slime.position);
+    pixel_renderer_.render(sprite_entity_, atlas_.meshes(), slime.mesh_index);
 
-    auto mesh_index = slime.scene_index == game_data_.stage.selected_scene_index ?
-        slime.mesh_index + 20 : slime.mesh_index;
-
-    pixel_renderer_.render(sprite_entity_, atlas_.meshes(), mesh_index);
+    if (slime.scene_index == game_data_.stage.selected_scene_index) {
+      pixel_renderer_.render(sprite_entity_, atlas_.meshes(), slime.mesh_index + 20);
+    }
   }
 
   pixel_renderer_.enable_breathe(false);
