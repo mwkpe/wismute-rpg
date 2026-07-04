@@ -11,9 +11,10 @@ namespace wis {
 
 struct Sprite
 {
-  std::uint32_t mesh_index = 0;
-  glm::vec3 position = glm::vec3{0};
+  glm::vec3 position;
+  std::uint32_t scene_index = 0;
   glm::uvec2 scene_coords = glm::uvec2{0};
+  std::uint32_t mesh_index = 0;
 };
 
 
