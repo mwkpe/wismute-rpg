@@ -65,7 +65,7 @@ auto load_spritesheet(std::string_view filename, std::uint32_t rows, std::uint32
               material = 1;  // Water
             }
 
-            if (index == 61) {
+            if (index == 61 || index == 81) {
               material = 2;  // Foliage
             }
 
