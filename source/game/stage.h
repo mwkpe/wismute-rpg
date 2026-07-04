@@ -3,7 +3,6 @@
 
 
 #include <optional>
-#include <vector>
 
 #include <entt/entt.hpp>
 #include <glm/glm.hpp>
@@ -20,9 +19,9 @@
 #include "engine/pixel_renderer.h"
 #include "engine/renderer.h"
 
-#include "game/enemies.h"
 #include "game/events.h"
 #include "game/game_data.h"
+#include "game/path_finder.h"
 #include "game/player.h"
 #include "game/scene.h"
 
@@ -89,11 +88,11 @@ private:
 
   // Tools
   Lattice lattice_;
+  Path_finder path_finder_;
 
   // Debug
   apeiron::prefab::Grid grid_;
   Player player_;
-  std::vector<Slime> slimes_;
 };
 
 

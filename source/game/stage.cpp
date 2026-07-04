@@ -2,6 +2,7 @@
 
 
 #include <SDL3/SDL_keycode.h>
+#include <iostream>
 
 #include "apeiron/engine/collision.h"
 #include "apeiron/engine/enums.h"
@@ -52,9 +53,6 @@ void wis::Stage::init()
   dispatcher_.sink<event::Enemy_hit>().connect<&Stage::on_enemy_hit>(this);
 
   player_ = Player{glm::vec3{8.8f, 0.0f, 7.6f}, 53, 102, 0.03f, 4.0f, tau()};
-
-  slimes_.emplace_back(glm::vec3{7.2f, 0.0f, 7.6f}, 52, 140, 0.06f, 4.8f, tau() * 0.65f);
-  slimes_.emplace_back(glm::vec3{10.4f, 0.0f, 7.6f}, 54, 143, 0.05f, 3.4f, tau() * 0.65f);
 }
 
 
@@ -116,6 +114,7 @@ void wis::Stage::handle_event(const apeiron::engine::Mouse_button_down_event& ev
     break;
     case apeiron::engine::Mouse_button::Left: {
       game_data_.stage.selected_scene_index = game_data_.cursor.scene_index;
+      path_finder_.clear();
     }
     break;
     default:;
@@ -154,6 +153,7 @@ void wis::Stage::handle_event(const apeiron::engine::Mouse_motion_event& event)
       game_data_.cursor.scene_index = 0;
       game_data_.cursor.scene_coords = glm::uvec2{0};
       game_data_.cursor.scene_position = glm::vec3{0.0f};
+      path_finder_.clear();
     }
   }
   else {
@@ -161,6 +161,17 @@ void wis::Stage::handle_event(const apeiron::engine::Mouse_motion_event& event)
     game_data_.cursor.scene_coords = glm::uvec2{0};
     game_data_.cursor.scene_position = glm::vec3{0.0f};
     game_data_.cursor.ground_position = glm::vec3{0.0f};
+    path_finder_.clear();
+  }
+
+  if (game_data_.stage.selected_scene_index && game_data_.cursor.scene_index &&
+      game_data_.stage.selected_scene_index != game_data_.cursor.scene_index &&
+      game_data_.stage.selected_scene_index == player_.scene_index) {
+    auto [a, b] = path_finder_.endpoints();
+
+    if (player_.scene_index != a || game_data_.cursor.scene_index != b) {
+      path_finder_.search(scene_.tiles(), player_.scene_index, game_data_.cursor.scene_index);
+    }
   }
 }
 
@@ -194,6 +205,37 @@ void wis::Stage::render_overlay()
         game_data_.stage.selected_scene_index));
     pixel_renderer_.render(ground_entity_, atlas_.meshes(), 381);
   }
+
+  if (path_finder_.has_path()) {
+    for (const auto index : path_finder_.path()) {
+      ground_entity_.transform().set_position(lattice_.as_position_xz(index));
+      pixel_renderer_.render(ground_entity_, atlas_.meshes(), 386);
+    }
+  }
+
+  if (app_data_.debug.show_tile_info) {
+    Renderer::gl_clear_depth_buffer();
+
+    for (const auto& tile : scene_.tiles()) {
+      ground_entity_.transform().set_position(lattice_.as_position_xz(tile.index));
+
+      if (tile.north_index) {
+        pixel_renderer_.render(ground_entity_, atlas_.meshes(), 382);
+      }
+
+      if (tile.south_index) {
+        pixel_renderer_.render(ground_entity_, atlas_.meshes(), 383);
+      }
+
+      if (tile.east_index) {
+        pixel_renderer_.render(ground_entity_, atlas_.meshes(), 384);
+      }
+
+      if (tile.west_index) {
+        pixel_renderer_.render(ground_entity_, atlas_.meshes(), 385);
+      }
+    }
+  }
 }
 
 
@@ -226,7 +268,7 @@ void wis::Stage::render_sprites()
   }
 
   // Slimes
-  for (const auto& slime : slimes_) {
+  for (const auto& slime : scene_.slimes()) {
     pixel_renderer_.set_breathe_amplitude(slime.breathe_amplitude);
     pixel_renderer_.set_breathe_speed(slime.breathe_speed);
     pixel_renderer_.set_breathe_phase(slime.breathe_phase);

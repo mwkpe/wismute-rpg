@@ -36,14 +36,16 @@ add_executable(wismute
     source/engine/renderer.cpp
     source/engine/renderer.h
     source/game/constants.h
-    source/game/enemies.h
     source/game/events.h
     source/game/game.cpp
     source/game/game.h
     source/game/game_data.h
+    source/game/path_finder.cpp
+    source/game/path_finder.h
     source/game/player.h
     source/game/scene.cpp
     source/game/scene.h
+    source/game/slime.h
     source/game/sprite.h
     source/game/stage.cpp
     source/game/stage.h

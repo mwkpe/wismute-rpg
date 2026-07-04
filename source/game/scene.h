@@ -9,6 +9,7 @@
 
 #include "game/sprite.h"
 #include "game/tile.h"
+#include "game/slime.h"
 
 
 namespace wis {
@@ -27,6 +28,8 @@ public:
   [[nodiscard]] std::span<const Tile> tiles() const { return tiles_; }
   [[nodiscard]] std::span<Sprite> sprites() { return sprites_; }
   [[nodiscard]] std::span<const Sprite> sprites() const { return sprites_; }
+  [[nodiscard]] std::span<Slime> slimes() { return slimes_; }
+  [[nodiscard]] std::span<const Slime> slimes() const { return slimes_; }
 
 private:
   void connect_neighbors();
@@ -35,6 +38,7 @@ private:
   glm::uvec2 size_ = glm::uvec2{1, 1};
   std::vector<Tile> tiles_;
   std::vector<Sprite> sprites_;
+  std::vector<Slime> slimes_;
 };
 
 

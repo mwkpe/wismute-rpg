@@ -90,6 +90,7 @@ void wis::Debug_ui::build(Settings& settings, App_data& app_data, Game_data& gam
     ImGui::Checkbox("Wireframe", &app_data.debug.wireframe);
     ImGui::Checkbox("Axes", &app_data.debug.show_axes);
     ImGui::Checkbox("Grid", &app_data.debug.show_grid);
+    ImGui::Checkbox("Tile info", &app_data.debug.show_tile_info);
     ImGui::Dummy({0.0f, 8.0f});
 
     if (ImGui::Button("Quit (ESC)")) {

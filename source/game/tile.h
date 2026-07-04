@@ -27,7 +27,7 @@ struct Tile
   std::uint32_t col = 0u;
   std::uint32_t mesh_index = 0u;
 
-  std::bitset<32> flags = 0b0000'0001;
+  std::bitset<32> flags = 0b0000'0000;
 
   // A zero-index means there is no neighbor (never use tile 0, always set it to nil)
   std::uint32_t north_index = 0u;

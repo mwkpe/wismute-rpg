@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include "app/error.h"
+#include "engine/constants.h"
 
 
 auto wis::Scene::tile(std::uint32_t index) -> Tile*
@@ -57,10 +58,15 @@ void wis::Scene::create_test()
       if (tile.mesh_index == 25) {
         tile.element = Element::Water;
       }
+
+      if (tile.mesh_index >= 20 &&  tile.mesh_index <= 23) {
+        tile.set_ground();
+      }
     }
   }
 
   sprites_.clear();
+  slimes_.clear();
 
   // Trees
   sprites_.emplace_back(glm::vec3{2.4f, 0.0f, 9.2f}, 61, glm::uvec2{1, 5}, 60);
@@ -85,6 +91,19 @@ void wis::Scene::create_test()
   sprites_.emplace_back(glm::vec3{4.0f, 0.0f, 9.0f}, 62, glm::uvec2{2, 5}, 66);
   sprites_.emplace_back(glm::vec3{3.8f, 0.0f, 9.2f}, 62, glm::uvec2{2, 5}, 67);
 
+  // Slimes
+  slimes_.emplace_back(glm::vec3{7.2f, 0.0f, 7.6f}, 52, 140, 0.06f, 4.8f, tau() * 0.65f);
+  slimes_.emplace_back(glm::vec3{10.4f, 0.0f, 7.6f}, 54, 143, 0.05f, 3.4f, tau() * 0.65f);
+
+  // Set tiles
+  for (const auto& sprite : sprites_) {
+    tiles_[sprite.scene_index].set_ground(false);
+  }
+
+  for (const auto& slime : slimes_) {
+    tiles_[slime.scene_index].set_ground(false);
+  }
+
   connect_neighbors();
 }
 
@@ -108,15 +127,15 @@ void wis::Scene::connect_neighbors()
     for (int j=1; j<size_x; j++) {
       int index = i * size_x + j;
 
-      if (!tiles_[index].is_nil() && !tiles_[index-1].is_nil()) {
-        tiles_[index].west_index = index-1;
+      if (!tiles_[index].is_nil() && !tiles_[index - 1].is_nil()) {
+        tiles_[index].west_index = index - 1;
       }
     }
     for (int j=0; j<size_x-1; j++) {
       int index = i * size_x + j;
 
-      if (!tiles_[index].is_nil() && !tiles_[index+1].is_nil()) {
-        tiles_[index].east_index = index+1;
+      if (!tiles_[index].is_nil() && !tiles_[index + 1].is_nil()) {
+        tiles_[index].east_index = index + 1;
       }
     }
   }
@@ -126,15 +145,15 @@ void wis::Scene::connect_neighbors()
     for (int j=1; j<size_y; j++) {
       int index = j * size_x + i;
 
-      if (!tiles_[index].is_nil() && !tiles_[index-size_x].is_nil()) {
-        tiles_[index].north_index = index-size_x;
+      if (!tiles_[index].is_nil() && !tiles_[index - size_x].is_nil()) {
+        tiles_[index].north_index = index - size_x;
       }
     }
     for (int j=0; j<size_y-1; j++) {
       int index = j * size_x + i;
 
-      if (!tiles_[index].is_nil() && !tiles_[index+size_x].is_nil()) {
-        tiles_[index].south_index = index+size_x;
+      if (!tiles_[index].is_nil() && !tiles_[index + size_x].is_nil()) {
+        tiles_[index].south_index = index + size_x;
       }
     }
   }

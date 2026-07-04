@@ -1,5 +1,5 @@
-#ifndef WIS_GAME_ENEMIES_H
-#define WIS_GAME_ENEMIES_H
+#ifndef WIS_GAME_SLIME_H
+#define WIS_GAME_SLIME_H
 
 
 #include <cstdint>
@@ -22,4 +22,4 @@ struct Slime
 }  // namespace wis
 
 
-#endif  // WIS_GAME_ENEMIES_H
+#endif  // WIS_GAME_SLIME_H
