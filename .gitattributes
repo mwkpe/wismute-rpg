@@ -16,6 +16,7 @@
 *.js text
 *.obj text
 *.mtl text
+*.gpl text
 
 # Explicitly declare binary files
 *.aseprite binary
