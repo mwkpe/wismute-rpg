@@ -47,7 +47,7 @@ void wis::Stage::init()
       .set_rotation_deg(45.0f, 0.0f, 0.0f)
       .set_rotation_pivot(apeiron::engine::Axis::X, 0.0f, 0.0f, tile_size() * 0.5f);
 
-  camera_.setup(-60.0f, -90.0f, {field_size.x * 0.5f, 24.0f, 20.0f});
+  camera_.setup(-65.0f, -90.0f, {field_size.x * 0.5f, 22.0f, 17.0f});
 
   dispatcher_.sink<event::Enemy_hit>().connect<&Stage::on_enemy_hit>(this);
 
@@ -200,9 +200,12 @@ void wis::Stage::render_overlay()
 void wis::Stage::render_sprites()
 {
   for (const auto& sprite : scene_.sprites()) {
+    auto mesh_index = sprite.scene_index == game_data_.stage.selected_scene_index ?
+        sprite.mesh_index + 20 : sprite.mesh_index;
+
     sprite_entity_.transform().set_position(sprite.position);
     pixel_renderer_.set_tile_position({sprite.scene_coords.x, sprite.scene_coords.y});
-    pixel_renderer_.render(sprite_entity_, atlas_.meshes(), sprite.mesh_index);
+    pixel_renderer_.render(sprite_entity_, atlas_.meshes(), mesh_index);
   }
 
   pixel_renderer_.enable_breathe();
