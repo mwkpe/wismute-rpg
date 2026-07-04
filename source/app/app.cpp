@@ -1,8 +1,8 @@
 #include "app.h"
 
 
+#include <format>
 #include <iostream>
-#include <fmt/format.h>
 #include <SDL3/SDL.h>
 
 #include "apeiron/engine/event.h"
@@ -36,7 +36,7 @@ std::uint64_t handle_timing(const auto& render, auto& timing, std::uint64_t last
 
   if (elapsed_ns > 50'000'000ull) {
     const auto elapsed_ms = elapsed_ns / 1'000'000ull;
-    std::cout << fmt::format("Frametime spike of {} ms", elapsed_ms) << std::endl;
+    std::cout << std::format("Frametime spike of {} ms", elapsed_ms) << std::endl;
   }
 
   // Lag, e.g. user dragged window (apparently only an issue on Windows)

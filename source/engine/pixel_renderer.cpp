@@ -1,7 +1,7 @@
 #include "pixel_renderer.h"
 
 
-#include <fmt/format.h>
+#include <format>
 
 
 void wis::Pixel_renderer::init(float pixel_size, std::uint32_t tile_size)
@@ -62,7 +62,7 @@ void wis::Pixel_renderer::set_palette()
   auto index = 0;
 
   for (const auto& color : Palette::colors) {
-    shader_.set_uniform(fmt::format("colors[{}]", index++).c_str(), color);
+    shader_.set_uniform(std::format("colors[{}]", index++).c_str(), color);
   }
 }
 

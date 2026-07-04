@@ -11,8 +11,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
 endif ()
 
-add_subdirectory(external/fmt)
-
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/apeiron/cmake")
 
 include(apeiron)
@@ -61,5 +59,4 @@ target_include_directories(wismute PRIVATE
 
 target_link_libraries(wismute PRIVATE
     apeiron
-    apeiron-gui-sdl3-opengl3
-    fmt::fmt)
+    apeiron-gui-sdl3-opengl3)
