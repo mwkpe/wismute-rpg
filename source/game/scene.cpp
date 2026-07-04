@@ -61,6 +61,8 @@ void wis::Scene::create_test()
   }
 
   sprites_.clear();
+
+  // Trees
   sprites_.emplace_back(glm::vec3{2.4f, 0.0f, 9.2f}, 61, glm::uvec2{1, 5}, 60);
   sprites_.emplace_back(glm::vec3{2.4f, 0.0f, 9.2f}, 61, glm::uvec2{1, 5}, 61);
 
@@ -72,6 +74,16 @@ void wis::Scene::create_test()
 
   sprites_.emplace_back(glm::vec3{10.4f, 0.0f, 4.4f}, 30, glm::uvec2{6, 2}, 60);
   sprites_.emplace_back(glm::vec3{10.4f, 0.0f, 4.4f}, 30, glm::uvec2{6, 2}, 61);
+
+  // Stones
+  sprites_.emplace_back(glm::vec3{12.0f, 0.0f, 10.6f}, 79, glm::uvec2{7, 6}, 66);
+  sprites_.emplace_back(glm::vec3{11.8f, 0.0f, 10.8f}, 79, glm::uvec2{7, 6}, 67);
+
+  sprites_.emplace_back(glm::vec3{10.4f, 0.0f, 10.6f}, 78, glm::uvec2{7, 6}, 66);
+  sprites_.emplace_back(glm::vec3{10.2f, 0.0f, 10.8f}, 78, glm::uvec2{7, 6}, 67);
+
+  sprites_.emplace_back(glm::vec3{4.0f, 0.0f, 9.0f}, 62, glm::uvec2{2, 5}, 66);
+  sprites_.emplace_back(glm::vec3{3.8f, 0.0f, 9.2f}, 62, glm::uvec2{2, 5}, 67);
 
   connect_neighbors();
 }
