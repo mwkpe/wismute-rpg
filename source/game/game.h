@@ -10,6 +10,7 @@
 #include "engine/atlas.h"
 #include "game/events.h"
 #include "game/game_data.h"
+#include "game/game_ui.h"
 #include "game/stage.h"
 
 
@@ -52,6 +53,7 @@ private:
   Game_data& game_data_;
   Atlas atlas_;
   Stage stage_;
+  Game_ui ui_;
 };
 
 

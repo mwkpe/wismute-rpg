@@ -53,14 +53,16 @@ public:
   void on_enemy_hit(const event::Enemy_hit& event);
 
 private:
+  // Update
+  void update_ego_camera(const apeiron::engine::Input* input);
+  void drag_camera(float dx, float dy);
+  void setup_view();
+
   // Render
   void render_ground();
   void render_overlay();
   void render_sprites();
   void render_debug();
-  void update_ego_camera(const apeiron::engine::Input* input);
-  void drag_camera(float dx, float dy);
-  void setup_view();
 
   // Helper
   std::optional<glm::vec3> ground_point(float screen_x, float screen_y);
@@ -80,9 +82,9 @@ private:
   Scene scene_;
 
   // Rendering
-  apeiron::engine::Camera camera_;
   Renderer renderer_;
   Pixel_renderer pixel_renderer_;
+  apeiron::engine::Camera camera_;
   apeiron::engine::Entity ground_entity_;
   apeiron::engine::Entity sprite_entity_;
 

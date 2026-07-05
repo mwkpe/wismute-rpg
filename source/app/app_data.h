@@ -40,7 +40,8 @@ struct Debug_data
   bool noclip = false;
   bool wireframe = false;
   bool show_axes = false;
-  bool show_grid = false;
+  bool show_stage_grid = false;
+  bool show_ui_grid = false;
   bool show_tile_info = false;
 };
 

@@ -9,7 +9,8 @@ wis::Game::Game(const App_data& app_data,
     :
     app_data_{app_data},
     game_data_{game_data},
-    stage_{registry_, dispatcher_, app_data, game_data, atlas_}
+    stage_{registry_, dispatcher_, app_data, game_data, atlas_},
+    ui_{registry_, dispatcher_, app_data, game_data, atlas_}
 {
 }
 
@@ -18,6 +19,8 @@ void wis::Game::init()
 {
   atlas_.init();
   stage_.init();
+  ui_.init();
+
   dispatcher_.sink<event::Achievement_unlocked>().connect<&Game::on_achievement_unlocked>(*this);
 }
 
@@ -31,6 +34,7 @@ void wis::Game::update(const apeiron::engine::Event_queue& engine_events,
 
   stage_.update_input(input);
   stage_.update();
+  ui_.update();
 
   dispatcher_.update();
 }
@@ -39,6 +43,7 @@ void wis::Game::update(const apeiron::engine::Event_queue& engine_events,
 void wis::Game::render()
 {
   stage_.render();
+  ui_.render();
 }
 
 
@@ -56,19 +61,25 @@ void wis::Game::handle_event(const apeiron::engine::Key_up_event& event)
 
 void wis::Game::handle_event(const apeiron::engine::Mouse_button_down_event& event)
 {
-  stage_.handle_event(event);
+  if (!ui_.handle_event(event)) {
+    stage_.handle_event(event);
+  }
 }
 
 
 void wis::Game::handle_event(const apeiron::engine::Mouse_button_up_event& event)
 {
-  stage_.handle_event(event);
+  if (!ui_.handle_event(event)) {
+    stage_.handle_event(event);
+  }
 }
 
 
 void wis::Game::handle_event(const apeiron::engine::Mouse_motion_event& event)
 {
-  stage_.handle_event(event);
+  if (!ui_.handle_event(event)) {
+    stage_.handle_event(event);
+  }
 }
 
 

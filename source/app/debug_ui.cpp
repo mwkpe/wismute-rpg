@@ -89,7 +89,9 @@ void wis::Debug_ui::build(Settings& settings, App_data& app_data, Game_data& gam
     ImGui::Text("Debug");
     ImGui::Checkbox("Wireframe", &app_data.debug.wireframe);
     ImGui::Checkbox("Axes", &app_data.debug.show_axes);
-    ImGui::Checkbox("Grid", &app_data.debug.show_grid);
+    ImGui::Checkbox("Grid", &app_data.debug.show_stage_grid);
+    ImGui::SameLine();
+    ImGui::Checkbox("Grid UI", &app_data.debug.show_ui_grid);
     ImGui::Checkbox("Tile info", &app_data.debug.show_tile_info);
     ImGui::Dummy({0.0f, 8.0f});
 
@@ -111,14 +113,22 @@ void wis::Debug_ui::build(Settings& settings, App_data& app_data, Game_data& gam
     ImGui::Text("Frametime: %.1f ms", 1000.0f / (io.Framerate > 0 ? io.Framerate : 1));
     ImGui::Dummy({0.0f, 8.0f});
 
-    ImGui::Text("Cursor");
-    ImGui::Text("Ground X: %.1f", game_data.cursor.ground_position.x);
-    ImGui::Text("Ground Z: %.1f", game_data.cursor.ground_position.z);
-    ImGui::Text("Scene position X: %.1f", game_data.cursor.scene_position.x);
-    ImGui::Text("Scene position Z: %.1f", game_data.cursor.scene_position.z);
-    ImGui::Text("Scene index: %u", game_data.cursor.scene_index);
-    ImGui::Text("Scene coords X: %u", game_data.cursor.scene_coords.x);
-    ImGui::Text("Scene coords Z: %u", game_data.cursor.scene_coords.y);
+    ImGui::Text("Stage cursor");
+    ImGui::Text("Ground X: %.1f", game_data.cursor.stage.ground_position.x);
+    ImGui::Text("Ground Z: %.1f", game_data.cursor.stage.ground_position.z);
+    ImGui::Text("Scene position X: %.1f", game_data.cursor.stage.scene_position.x);
+    ImGui::Text("Scene position Z: %.1f", game_data.cursor.stage.scene_position.z);
+    ImGui::Text("Scene index: %u", game_data.cursor.stage.scene_index);
+    ImGui::Text("Scene coords X: %u", game_data.cursor.stage.scene_coords.x);
+    ImGui::Text("Scene coords Z: %u", game_data.cursor.stage.scene_coords.y);
+    ImGui::Dummy({0.0f, 8.0f});
+
+    ImGui::Text("UI cursor");
+    ImGui::Text("Screen X: %.2f", game_data.cursor.ui.screen_position.x);
+    ImGui::Text("Screen Z: %.2f", game_data.cursor.ui.screen_position.z);
+    ImGui::Text("On panel: %s", game_data.cursor.ui.on_panel ? "yes" : "no");
+    ImGui::Text("Panel X: %.2f", game_data.cursor.ui.panel_position.x);
+    ImGui::Text("Panel Y: %.2f", game_data.cursor.ui.panel_position.y);
 
     ImGui::End();
   }

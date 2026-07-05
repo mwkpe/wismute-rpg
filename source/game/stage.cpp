@@ -37,7 +37,6 @@ void wis::Stage::init()
 
   scene_.create_test();
   lattice_.init(scene_.size(), tile_size());
-
   auto field_size = lattice_.field_size();
 
   grid_.init(field_size, lattice_.size(), Palette::colors[47]);
@@ -48,7 +47,7 @@ void wis::Stage::init()
       .set_rotation_deg(45.0f, 0.0f, 0.0f)
       .set_rotation_pivot(apeiron::engine::Axis::X, 0.0f, 0.0f, tile_size() * 0.5f);
 
-  camera_.setup(-65.0f, -90.0f, {field_size.x * 0.5f, 22.0f, 17.0f});
+  camera_.init(-65.0f, -90.0f, {field_size.x * 0.5f, 22.0f, 17.0f});
 
   dispatcher_.sink<event::Enemy_hit>().connect<&Stage::on_enemy_hit>(this);
 
@@ -113,7 +112,7 @@ void wis::Stage::handle_event(const apeiron::engine::Mouse_button_down_event& ev
     }
     break;
     case apeiron::engine::Mouse_button::Left: {
-      game_data_.stage.selected_scene_index = game_data_.cursor.scene_index;
+      game_data_.stage.selected_scene_index = game_data_.cursor.stage.scene_index;
       path_finder_.clear();
     }
     break;
@@ -136,41 +135,43 @@ void wis::Stage::handle_event(const apeiron::engine::Mouse_button_up_event& even
 
 void wis::Stage::handle_event(const apeiron::engine::Mouse_motion_event& event)
 {
+  auto& cursor = game_data_.cursor.stage;
+
   if (game_data_.camera.drag) {
     auto current_point = ground_point(event.x, event.y);
     auto previous_point = ground_point(event.x + event.x_rel, event.y + event.y_rel);
     drag_camera(current_point->x - previous_point->x, current_point->z - previous_point->z);
   }
   else if (auto point = ground_point(event.x, event.y); point) {
-    game_data_.cursor.ground_position = *point;
+    cursor.ground_position = *point;
 
     if (auto index = lattice_.as_index(point->x, point->z); index) {
-      game_data_.cursor.scene_index = *index;
-      game_data_.cursor.scene_coords = lattice_.as_coords(*index);
-      game_data_.cursor.scene_position = lattice_.as_position_xz(*index);
+      cursor.scene_index = *index;
+      cursor.scene_coords = lattice_.as_coords(*index);
+      cursor.scene_position = lattice_.as_position_xz(*index);
     }
     else {
-      game_data_.cursor.scene_index = 0;
-      game_data_.cursor.scene_coords = glm::uvec2{0};
-      game_data_.cursor.scene_position = glm::vec3{0.0f};
+      cursor.scene_index = 0;
+      cursor.scene_coords = glm::uvec2{0};
+      cursor.scene_position = glm::vec3{0.0f};
       path_finder_.clear();
     }
   }
   else {
-    game_data_.cursor.scene_index = 0;
-    game_data_.cursor.scene_coords = glm::uvec2{0};
-    game_data_.cursor.scene_position = glm::vec3{0.0f};
-    game_data_.cursor.ground_position = glm::vec3{0.0f};
+    cursor.scene_index = 0;
+    cursor.scene_coords = glm::uvec2{0};
+    cursor.scene_position = glm::vec3{0.0f};
+    cursor.ground_position = glm::vec3{0.0f};
     path_finder_.clear();
   }
 
-  if (game_data_.stage.selected_scene_index && game_data_.cursor.scene_index &&
-      game_data_.stage.selected_scene_index != game_data_.cursor.scene_index &&
+  if (game_data_.stage.selected_scene_index && cursor.scene_index &&
+      game_data_.stage.selected_scene_index != cursor.scene_index &&
       game_data_.stage.selected_scene_index == player_.scene_index) {
     auto [a, b] = path_finder_.endpoints();
 
-    if (player_.scene_index != a || game_data_.cursor.scene_index != b) {
-      path_finder_.search(scene_.tiles(), player_.scene_index, game_data_.cursor.scene_index);
+    if (player_.scene_index != a || cursor.scene_index != b) {
+      path_finder_.search(scene_.tiles(), player_.scene_index, cursor.scene_index);
     }
   }
 }
@@ -200,6 +201,45 @@ void wis::Stage::handle_event([[maybe_unused]] const apeiron::engine::Mouse_whee
 
 void wis::Stage::on_enemy_hit([[maybe_unused]] const event::Enemy_hit& event)
 {
+}
+
+
+void wis::Stage::update_ego_camera(const apeiron::engine::Input* input)
+{
+  if (app_data_.debug.noclip) {
+    using Direction = apeiron::engine::Camera::Direction;
+    auto distance = 10.0f * app_data_.timing.delta_s;
+
+    if (input->forward) { camera_.move(Direction::Forward, distance); }
+    if (input->backward) { camera_.move(Direction::Backward, distance); }
+    if (input->left) { camera_.move(Direction::Left, distance); }
+    if (input->right) { camera_.move(Direction::Right, distance); }
+
+    camera_.orient(input->mouse_x_rel, input->mouse_y_rel, 0.025f);
+  }
+}
+
+
+void wis::Stage::drag_camera(float dx, float dy)
+{
+  camera_.move(dx, 0.0f, dy);
+}
+
+
+void wis::Stage::setup_view()
+{
+  glm::mat4 projection = glm::perspective(glm::radians(game_data_.camera.fov),
+      app_data_.window.aspect_ratio, 1.0f, 100.0f);
+
+  pixel_renderer_.use();
+  pixel_renderer_.preset_projection(projection);
+  pixel_renderer_.preset_view(camera_.perspective_view());
+  pixel_renderer_.set_view_projection();
+
+  renderer_.use();
+  renderer_.preset_projection(projection);
+  renderer_.preset_view(camera_.perspective_view());
+  renderer_.set_view_projection();
 }
 
 
@@ -304,50 +344,10 @@ void wis::Stage::render_sprites()
 
 void wis::Stage::render_debug()
 {
-  renderer_.use();
-
-  if (app_data_.debug.show_grid) {
+  if (app_data_.debug.show_stage_grid) {
+    renderer_.use();
     renderer_.render(grid_);
   }
-}
-
-
-void wis::Stage::update_ego_camera(const apeiron::engine::Input* input)
-{
-  if (app_data_.debug.noclip) {
-    using Direction = apeiron::engine::Camera::Direction;
-    auto distance = 10.0f * app_data_.timing.delta_s;
-
-    if (input->forward) { camera_.move(Direction::Forward, distance); }
-    if (input->backward) { camera_.move(Direction::Backward, distance); }
-    if (input->left) { camera_.move(Direction::Left, distance); }
-    if (input->right) { camera_.move(Direction::Right, distance); }
-
-    camera_.orient(input->mouse_x_rel, input->mouse_y_rel, 0.025f);
-  }
-}
-
-
-void wis::Stage::drag_camera(float dx, float dy)
-{
-  camera_.move(dx, 0.0f, dy);
-}
-
-
-void wis::Stage::setup_view()
-{
-  glm::mat4 projection = glm::perspective(glm::radians(game_data_.camera.fov),
-      app_data_.window.aspect_ratio, 1.0f, 100.0f);
-
-  pixel_renderer_.use();
-  pixel_renderer_.preset_projection(projection);
-  pixel_renderer_.preset_view(camera_.perspective_view());
-  pixel_renderer_.set_view_projection();
-
-  renderer_.use();
-  renderer_.preset_projection(projection);
-  renderer_.preset_view(camera_.perspective_view());
-  renderer_.set_view_projection();
 }
 
 

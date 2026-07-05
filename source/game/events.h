@@ -15,6 +15,12 @@ struct Achievement_unlocked
 };
 
 
+struct Action_selected
+{
+  std::uint32_t id = 0;
+};
+
+
 struct Enemy_hit
 {
   entt::entity entity;
