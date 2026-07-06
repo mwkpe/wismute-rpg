@@ -84,7 +84,8 @@ private:
   Lattice lattice_;
 
   // Panels
-  ui::Panel panel_;
+  ui::Panel undo_panel_;
+  ui::Panel actions_panel_;
 
   // Constants
   float top_ = -1.0f;
@@ -94,7 +95,8 @@ private:
 
   // Debug
   apeiron::prefab::Grid grid_;
-  Quad panel_quad_;
+  Quad actions_panel_quad_;
+  Quad undo_panel_quad_;
 };
 
 

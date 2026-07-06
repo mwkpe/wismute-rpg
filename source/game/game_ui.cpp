@@ -39,14 +39,21 @@ void wis::Game_ui::init()
   setup_view();
   set_screen_limits();  // Needs view initialized
 
-  panel_.set_size(1.6f, 12.8f);
-  panel_.transform().set_position(left_ + 0.9f, 0.0f, 0.0f)
-      .set_rotation_deg(0.0f, 0.0f, -25.0f)
-      .set_rotation_pivot(apeiron::engine::Axis::Z, tile_size() * -0.5f, 0.0f, 0.0f);
-  panel_.apply();
+  actions_panel_.set_size(16.0f, 2.0f);
+  actions_panel_.transform().set_position(0.0f, 0.0f, bottom_ - 1.2f);
+  actions_panel_.apply();
 
-  panel_quad_.init(panel_.size(), apeiron::engine::Face::Up);
-  panel_quad_.transform() = panel_.transform();
+  undo_panel_.set_size(2.0f, 16.0f);
+  undo_panel_.transform().set_position(left_ + 1.2f, 0.0f, 0.0f);
+      //.set_rotation_deg(0.0f, 0.0f, -25.0f)
+      //.set_rotation_pivot(apeiron::engine::Axis::Z, tile_size() * -0.5f, 0.0f, 0.0f);
+  undo_panel_.apply();
+
+  actions_panel_quad_.init(actions_panel_.size(), apeiron::engine::Face::Up);
+  actions_panel_quad_.transform() = actions_panel_.transform();
+
+  undo_panel_quad_.init(undo_panel_.size(), apeiron::engine::Face::Up);
+  undo_panel_quad_.transform() = undo_panel_.transform();
 
   dispatcher_.sink<event::Action_selected>().connect<&Game_ui::on_action_selected>(this);
 }
@@ -93,7 +100,7 @@ bool wis::Game_ui::handle_event(const apeiron::engine::Mouse_motion_event& event
   cursor.panel_position = glm::vec2{-1.0f, -1.0f};
   cursor.on_panel = false;
 
-  if (auto point = panel_point(event.x, event.y, panel_.collision_quad()); point) {
+  if (auto point = panel_point(event.x, event.y, undo_panel_.collision_quad()); point) {
     cursor.panel_position = *point;
     cursor.on_panel = true;
   }
@@ -168,7 +175,8 @@ void wis::Game_ui::render_debug()
     renderer_.render(grid_);
   }
 
-  renderer_.render(panel_quad_, Palette::colors[22]);
+  renderer_.render(actions_panel_quad_, Palette::colors[22]);
+  renderer_.render(undo_panel_quad_, Palette::colors[22]);
 }
 
 
