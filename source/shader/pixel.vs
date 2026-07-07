@@ -114,7 +114,7 @@ void apply_material(inout vec3 pixel_position)
 
     pixel_position.x += (hash_to_float(h1) * 2.0 - 1.0) * jitter_strength + wind_x * wind_strength;
     pixel_position.z += (hash_to_float(h2) * 2.0 - 1.0) * jitter_strength + wind_z * wind_strength;
-    pixel_position.y += hash_to_float(h3) * jitter_strength * 0.1;
+    pixel_position.y += 0.01 + hash_to_float(h3) * jitter_strength * 0.2;
   }
 }
 
