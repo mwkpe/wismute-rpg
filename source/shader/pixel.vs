@@ -86,8 +86,8 @@ void apply_material(inout vec3 pixel_position)
 
   // Water
   if (a_material == 1u) {
-    float offset = wave_offset(global_col, global_row, 3.0, 0.06, 2.5, 0.2) +
-        wave_offset(global_col, global_row, 2.0, 0.04, 1.0, 0.6);
+    float offset = wave_offset(global_col, global_row, 4.0, 0.06, 2.5, 0.2) +
+        wave_offset(global_col, global_row, 3.0, 0.04, 1.0, 0.6);
 
     const uint trough_color = 14u;
     float trough_threshold = pixel_size * -0.3;
@@ -101,12 +101,6 @@ void apply_material(inout vec3 pixel_position)
 
   // Foliage
   if (a_material == 2u) {
-    float radius = (float(tile_size) - 1.0) * pixel_size * 0.5;
-    float magnitude = length(pixel_position.xz) / radius;
-    float bulge = max(0.0, 1.0 - magnitude * magnitude);
-    const float depth = 0.1;
-    pixel_position.y += bulge * radius * depth;
-
     uint seed = a_index + tile_position.x * 7919u + tile_position.y * 104729u;
     uint h1 = pcg_hash(seed);
     uint h2 = pcg_hash(h1);

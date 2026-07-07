@@ -45,7 +45,6 @@ add_executable(wismute
     source/game/path_finder.cpp
     source/game/path_finder.h
     source/game/player.h
-    source/game/quad.h
     source/game/scene.cpp
     source/game/scene.h
     source/game/slime.h
@@ -54,8 +53,12 @@ add_executable(wismute
     source/game/stage.h
     source/game/tile.h
     source/game/types.h
+    source/ui/action_panel.cpp
+    source/ui/action_panel.h
     source/ui/panel.cpp
     source/ui/panel.h
+    source/ui/quad.h
+    source/ui/widget.h
 )
 
 target_include_directories(wismute PRIVATE

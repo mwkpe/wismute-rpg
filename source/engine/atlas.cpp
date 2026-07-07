@@ -1,6 +1,6 @@
 #include "atlas.h"
 
-
+#include <iostream>
 #include <cstdint>
 #include <string_view>
 #include <tuple>
@@ -121,6 +121,15 @@ auto load_spritesheet(std::string_view filename, std::uint32_t rows, std::uint32
 
 void wis::Atlas::init()
 {
-  auto&& [vertices, entries] = load_spritesheet("assets/spritesheet.png", 20, 20);
-  meshes_.init(vertices, std::move(entries));
+  {
+    auto&& [vertices, entries] = load_spritesheet("assets/stage.png", 20, 20);
+    std::cout << entries.size() << std::endl;
+    stage_.init(vertices, std::move(entries));
+  }
+
+  {
+    auto&& [vertices, entries] = load_spritesheet("assets/ui.png", 10, 10);
+    std::cout << entries.size() << std::endl;
+    ui_.init(vertices, std::move(entries));
+  }
 }

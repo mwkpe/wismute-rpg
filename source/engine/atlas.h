@@ -12,10 +12,12 @@ class Atlas final
 {
 public:
   void init();
-  [[nodiscard]] const apeiron::opengl::Meshset& meshes() const { return meshes_; }
+  [[nodiscard]] const apeiron::opengl::Meshset& stage() const { return stage_; }
+  [[nodiscard]] const apeiron::opengl::Meshset& ui() const { return ui_; }
 
 private:
-  apeiron::opengl::Meshset meshes_;
+  apeiron::opengl::Meshset stage_;
+  apeiron::opengl::Meshset ui_;
 };
 
 

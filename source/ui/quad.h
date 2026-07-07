@@ -1,5 +1,5 @@
-#ifndef WIS_GAME_QUAD_H
-#define WIS_GAME_QUAD_H
+#ifndef WIS_UI_QUAD_H
+#define WIS_UI_QUAD_H
 
 
 #include "apeiron/engine/entity.h"
@@ -31,4 +31,4 @@ private:
 }  // namespace wis
 
 
-#endif  // WIS_GAME_QUAD_H
+#endif  // WIS_UI_QUAD_H

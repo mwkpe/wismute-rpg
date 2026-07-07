@@ -17,7 +17,8 @@ wis::Game_ui::Game_ui(entt::registry& registry,
     app_data_{app_data},
     game_data_{game_data},
     atlas_{atlas},
-    camera_{{0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 24.0f, 0.0f}}
+    camera_{{0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 30.0f, 0.0f}},
+    action_panel_{dispatcher}
 {
 }
 
@@ -27,9 +28,9 @@ void wis::Game_ui::init()
   // Viewport and GL init is done in stage class
 
   renderer_.init();
-  pixel_renderer_.init(0.1f, 16);
+  pixel_renderer_.init(constants::pixel_size(), constants::sprite_size_ui());
 
-  lattice_.init({20, 10}, tile_size());
+  lattice_.init({12, 6}, constants::tile_size_ui());
   auto field_size = lattice_.field_size();
 
   grid_.init(field_size, lattice_.size(), Palette::colors[47]);
@@ -39,21 +40,18 @@ void wis::Game_ui::init()
   setup_view();
   set_screen_limits();  // Needs view initialized
 
-  actions_panel_.set_size(16.0f, 2.0f);
-  actions_panel_.transform().set_position(0.0f, 0.0f, bottom_ - 1.2f);
-  actions_panel_.apply();
+  action_panel_.set_size(19.2f, 2.4f);
+  action_panel_.transform().set_position(0.0f, 0.0f, bottom_ - 1.2f)
+      .set_rotation_deg(-15.0f, 0.0f, 0.0f)
+      .set_rotation_pivot(apeiron::engine::Axis::X, 0.0f, 0.0f, constants::tile_size_ui() * 0.5f);
+  action_panel_.apply();
+  action_panel_.init();
 
-  undo_panel_.set_size(2.0f, 16.0f);
-  undo_panel_.transform().set_position(left_ + 1.2f, 0.0f, 0.0f);
-      //.set_rotation_deg(0.0f, 0.0f, -25.0f)
-      //.set_rotation_pivot(apeiron::engine::Axis::Z, tile_size() * -0.5f, 0.0f, 0.0f);
+  undo_panel_.set_size(2.4f, 19.2f);
+  undo_panel_.transform().set_position(left_ + 1.2f, 0.0f, 0.0f)
+      .set_rotation_deg(0.0f, 0.0f, -45.0f)
+      .set_rotation_pivot(apeiron::engine::Axis::Z, constants::tile_size_ui() * -0.5f, 0.0f, 0.0f);
   undo_panel_.apply();
-
-  actions_panel_quad_.init(actions_panel_.size(), apeiron::engine::Face::Up);
-  actions_panel_quad_.transform() = actions_panel_.transform();
-
-  undo_panel_quad_.init(undo_panel_.size(), apeiron::engine::Face::Up);
-  undo_panel_quad_.transform() = undo_panel_.transform();
 
   dispatcher_.sink<event::Action_selected>().connect<&Game_ui::on_action_selected>(this);
 }
@@ -70,6 +68,7 @@ void wis::Game_ui::render()
 
   Renderer::gl_clear_depth_buffer();
   setup_view();
+  render_panel();
   render_debug();
 }
 
@@ -100,7 +99,11 @@ bool wis::Game_ui::handle_event(const apeiron::engine::Mouse_motion_event& event
   cursor.panel_position = glm::vec2{-1.0f, -1.0f};
   cursor.on_panel = false;
 
-  if (auto point = panel_point(event.x, event.y, undo_panel_.collision_quad()); point) {
+  if (auto point = panel_point(event.x, event.y, action_panel_.collision_quad()); point) {
+    cursor.panel_position = *point;
+    cursor.on_panel = true;
+  }
+  else if (auto point = panel_point(event.x, event.y, undo_panel_.collision_quad()); point) {
     cursor.panel_position = *point;
     cursor.on_panel = true;
   }
@@ -160,10 +163,18 @@ void wis::Game_ui::set_screen_limits()
 
 void wis::Game_ui::render_panel()
 {
-  //renderer_.use();
-  //Renderer::set_gl_depth_test(false);
+  renderer_.use();
+  renderer_.render(action_panel_.quad(), Palette::colors[22]);
 
-  //Renderer::set_gl_depth_test(true);
+  pixel_renderer_.use();
+  Renderer::set_gl_depth_test(false);
+
+  for (const auto& widget : action_panel_.decoration_widgets()) {
+    entity_.transform() = action_panel_.as_world_transform(widget.position);
+    pixel_renderer_.render(entity_, atlas_.ui(), widget.mesh_index);
+  }
+
+  Renderer::set_gl_depth_test(true);
 }
 
 
@@ -175,8 +186,8 @@ void wis::Game_ui::render_debug()
     renderer_.render(grid_);
   }
 
-  renderer_.render(actions_panel_quad_, Palette::colors[22]);
-  renderer_.render(undo_panel_quad_, Palette::colors[22]);
+  //renderer_.render(action_panel_.quad(), Palette::colors[22]);
+  renderer_.render(undo_panel_.quad(), Palette::colors[22]);
 }
 
 

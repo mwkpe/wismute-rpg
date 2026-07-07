@@ -4,6 +4,8 @@
 #include <cstdint>
 #include "app/error.h"
 #include "engine/constants.h"
+#include "engine/lattice.h"
+#include "game/constants.h"
 
 
 auto wis::Scene::tile(std::uint32_t index) -> Tile*
@@ -65,35 +67,42 @@ void wis::Scene::create_test()
     }
   }
 
+  Lattice lattice{size_, constants::tile_size()};
+
   sprites_.clear();
   slimes_.clear();
 
+  const glm::vec3 o{0.0f, 0.0f, 0.4f};
+  const glm::vec3 o2{0.0f, 0.0f, 0.6f};
+
   // Trees
-  sprites_.emplace_back(glm::vec3{2.4f, 0.0f, 9.2f}, 61, glm::uvec2{1, 5}, 60);
-  sprites_.emplace_back(glm::vec3{2.4f, 0.0f, 9.2f}, 61, glm::uvec2{1, 5}, 61);
+  sprites_.emplace_back(lattice.as_position_xz(61, o), 61, glm::uvec2{1, 5}, 60);
+  sprites_.emplace_back(lattice.as_position_xz(61, o), 61, glm::uvec2{1, 5}, 61);
 
-  sprites_.emplace_back(glm::vec3{4.0f, 0.0f, 7.6f}, 50, glm::uvec2{2, 4}, 60);
-  sprites_.emplace_back(glm::vec3{4.0f, 0.0f, 7.6f}, 50, glm::uvec2{2, 4}, 61);
+  sprites_.emplace_back(lattice.as_position_xz(50, o), 50, glm::uvec2{2, 4}, 60);
+  sprites_.emplace_back(lattice.as_position_xz(50, o), 50, glm::uvec2{2, 4}, 61);
 
-  sprites_.emplace_back(glm::vec3{2.4f, 0.0f, 10.8f}, 73, glm::uvec2{1, 6}, 60);
-  sprites_.emplace_back(glm::vec3{2.4f, 0.0f, 10.8f}, 73, glm::uvec2{1, 6}, 61);
+  sprites_.emplace_back(lattice.as_position_xz(73, o), 73, glm::uvec2{1, 6}, 60);
+  sprites_.emplace_back(lattice.as_position_xz(73, o), 73, glm::uvec2{1, 6}, 61);
 
-  sprites_.emplace_back(glm::vec3{10.4f, 0.0f, 4.4f}, 30, glm::uvec2{6, 2}, 60);
-  sprites_.emplace_back(glm::vec3{10.4f, 0.0f, 4.4f}, 30, glm::uvec2{6, 2}, 61);
+  sprites_.emplace_back(lattice.as_position_xz(43, o), 43, glm::uvec2{7, 3}, 60);
+  sprites_.emplace_back(lattice.as_position_xz(43, o), 43, glm::uvec2{7, 3}, 61);
 
   // Stones
-  sprites_.emplace_back(glm::vec3{12.0f, 0.0f, 10.6f}, 79, glm::uvec2{7, 6}, 66);
-  sprites_.emplace_back(glm::vec3{11.8f, 0.0f, 10.8f}, 79, glm::uvec2{7, 6}, 67);
+  sprites_.emplace_back(lattice.as_position_xz(79, o), 79, glm::uvec2{7, 6}, 66);
+  sprites_.emplace_back(lattice.as_position_xz(79, o2), 79, glm::uvec2{7, 6}, 67);
 
-  sprites_.emplace_back(glm::vec3{10.4f, 0.0f, 10.6f}, 78, glm::uvec2{7, 6}, 66);
-  sprites_.emplace_back(glm::vec3{10.2f, 0.0f, 10.8f}, 78, glm::uvec2{7, 6}, 67);
+  sprites_.emplace_back(lattice.as_position_xz(78, o), 78, glm::uvec2{7, 6}, 66);
+  sprites_.emplace_back(lattice.as_position_xz(78, o2), 78, glm::uvec2{7, 6}, 67);
 
-  sprites_.emplace_back(glm::vec3{4.0f, 0.0f, 9.0f}, 62, glm::uvec2{2, 5}, 66);
-  sprites_.emplace_back(glm::vec3{3.8f, 0.0f, 9.2f}, 62, glm::uvec2{2, 5}, 67);
+  sprites_.emplace_back(lattice.as_position_xz(62, o), 62, glm::uvec2{2, 5}, 66);
+  sprites_.emplace_back(lattice.as_position_xz(62, o2), 62, glm::uvec2{2, 5}, 67);
 
   // Slimes
-  slimes_.emplace_back(glm::vec3{7.2f, 0.0f, 7.6f}, 52, 140, 0.06f, 4.8f, tau() * 0.65f);
-  slimes_.emplace_back(glm::vec3{10.4f, 0.0f, 7.6f}, 54, 143, 0.05f, 3.4f, tau() * 0.65f);
+  slimes_.emplace_back(lattice.as_position_xz(15, o), 15 , 140, 0.06f, 4.8f, tau() * 0.15f);
+  slimes_.emplace_back(lattice.as_position_xz(52, o), 52 , 140, 0.06f, 4.8f, tau() * 0.65f);
+  slimes_.emplace_back(lattice.as_position_xz(46, o), 46 , 141, 0.06f, 4.8f, tau() * 0.35f);
+  slimes_.emplace_back(lattice.as_position_xz(56, o), 56, 143, 0.05f, 3.4f, tau() * 0.65f);
 
   // Set tiles
   for (const auto& sprite : sprites_) {

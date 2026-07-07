@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 #include "apeiron/engine/collision.h"
 #include "apeiron/engine/transform.h"
+#include "ui/quad.h"
 
 
 namespace wis::ui {
@@ -25,19 +26,23 @@ public:
   [[nodiscard]] const glm::vec2& size() const { return size_; }
   [[nodiscard]] const apeiron::engine::collision::Quad& collision_quad() const {
       return collision_quad_; }
+  [[nodiscard]] const Quad& quad() const { return quad_; }
   [[nodiscard]] bool is_visible() const { return is_visible_; }
-  [[nodiscard]] glm::vec3 as_world_position(float x, float y, float height = 0.0f) const;
-  [[nodiscard]] glm::vec3 as_world_position(const glm::vec2& pos, float height = 0.0f) const;
+  [[nodiscard]] glm::vec3 as_world_position(float x, float y) const;
+  [[nodiscard]] glm::vec3 as_world_position(const glm::vec2& position) const;
+  [[nodiscard]] apeiron::engine::Transform as_world_transform(float x, float y) const;
+  [[nodiscard]] apeiron::engine::Transform as_world_transform(const glm::vec2& position) const;
 
 protected:
   glm::vec2 size_ = glm::vec2{1.0f};
   apeiron::engine::Transform transform_;
   apeiron::engine::collision::Quad collision_quad_ = {};
+  Quad quad_ = {};
   bool is_visible_ = true;
 };
 
 
-}  // namespace wis::gui
+}  // namespace wis::ui
 
 
 #endif  // WIS_UI_PANEL_H

@@ -33,25 +33,26 @@ void wis::Stage::init()
   Renderer::set_gl_viewport(0, 0, app_data_.window.pixel_width, app_data_.window.pixel_height);
 
   renderer_.init();
-  pixel_renderer_.init(0.1f, 16);
+  pixel_renderer_.init(constants::pixel_size(), constants::sprite_size());
 
   scene_.create_test();
-  lattice_.init(scene_.size(), tile_size());
+  lattice_.init(scene_.size(), constants::tile_size());
   auto field_size = lattice_.field_size();
 
   grid_.init(field_size, lattice_.size(), Palette::colors[47]);
   grid_.transform().set_position(field_size.x * 0.5f, 0.001f, field_size.y * 0.5f)
       .set_rotation_deg(-90.0f, 0.0f, 0.0f);
 
-  sprite_entity_.transform().set_origin(0.0f, 0.0f, -tile_size() * 0.5f)
+  sprite_entity_.transform().set_origin(0.0f, 0.0f, -constants::tile_size() * 0.5f)
       .set_rotation_deg(45.0f, 0.0f, 0.0f)
-      .set_rotation_pivot(apeiron::engine::Axis::X, 0.0f, 0.0f, tile_size() * 0.5f);
+      .set_rotation_pivot(apeiron::engine::Axis::X, 0.0f, 0.0f, constants::tile_size() * 0.5f);
 
-  camera_.init(-65.0f, -90.0f, {field_size.x * 0.5f, 22.0f, 17.0f});
+  camera_.init(-65.0f, -90.0f, {field_size.x * 0.5f, 24.0f, 21.0f});
 
   dispatcher_.sink<event::Enemy_hit>().connect<&Stage::on_enemy_hit>(this);
 
-  player_ = Player{glm::vec3{8.8f, 0.0f, 7.6f}, 53, 102, 0.03f, 4.0f, tau()};
+  player_ = Player{lattice_.as_position_xz(53, glm::vec3{0.0f, 0.0f, 0.4f}),
+      53, 102, 0.03f, 4.0f, tau()};
 }
 
 
@@ -248,7 +249,7 @@ void wis::Stage::render_ground()
   for (const auto& tile : scene_.tiles()) {
     ground_entity_.transform().set_position(lattice_.as_position_xz(tile.index));
     pixel_renderer_.set_tile_position({tile.col, tile.row});
-    pixel_renderer_.render(ground_entity_, atlas_.meshes(), tile.mesh_index);
+    pixel_renderer_.render(ground_entity_, atlas_.stage(), tile.mesh_index);
   }
 }
 
@@ -260,13 +261,13 @@ void wis::Stage::render_overlay()
   if (game_data_.stage.selected_scene_index > 0) {
     ground_entity_.transform().set_position(lattice_.as_position_xz(
         game_data_.stage.selected_scene_index));
-    pixel_renderer_.render(ground_entity_, atlas_.meshes(), 381);
+    pixel_renderer_.render(ground_entity_, atlas_.stage(), 381);
   }
 
   if (path_finder_.has_path()) {
     for (const auto index : path_finder_.path()) {
       ground_entity_.transform().set_position(lattice_.as_position_xz(index));
-      pixel_renderer_.render(ground_entity_, atlas_.meshes(), 386);
+      pixel_renderer_.render(ground_entity_, atlas_.stage(), 386);
     }
   }
 
@@ -277,19 +278,19 @@ void wis::Stage::render_overlay()
       ground_entity_.transform().set_position(lattice_.as_position_xz(tile.index));
 
       if (tile.north_index) {
-        pixel_renderer_.render(ground_entity_, atlas_.meshes(), 382);
+        pixel_renderer_.render(ground_entity_, atlas_.stage(), 382);
       }
 
       if (tile.south_index) {
-        pixel_renderer_.render(ground_entity_, atlas_.meshes(), 383);
+        pixel_renderer_.render(ground_entity_, atlas_.stage(), 383);
       }
 
       if (tile.east_index) {
-        pixel_renderer_.render(ground_entity_, atlas_.meshes(), 384);
+        pixel_renderer_.render(ground_entity_, atlas_.stage(), 384);
       }
 
       if (tile.west_index) {
-        pixel_renderer_.render(ground_entity_, atlas_.meshes(), 385);
+        pixel_renderer_.render(ground_entity_, atlas_.stage(), 385);
       }
     }
   }
@@ -301,10 +302,10 @@ void wis::Stage::render_sprites()
   for (const auto& sprite : scene_.sprites()) {
     sprite_entity_.transform().set_position(sprite.position);
     pixel_renderer_.set_tile_position({sprite.scene_coords.x, sprite.scene_coords.y});
-    pixel_renderer_.render(sprite_entity_, atlas_.meshes(), sprite.mesh_index);
+    pixel_renderer_.render(sprite_entity_, atlas_.stage(), sprite.mesh_index);
 
     if (sprite.scene_index == game_data_.stage.selected_scene_index) {
-      pixel_renderer_.render(sprite_entity_, atlas_.meshes(), sprite.mesh_index + 20);
+      pixel_renderer_.render(sprite_entity_, atlas_.stage(), sprite.mesh_index + 20);
     }
   }
 
@@ -317,10 +318,10 @@ void wis::Stage::render_sprites()
     pixel_renderer_.set_breathe_phase(player_.breathe_phase);
 
     sprite_entity_.transform().set_position(player_.position);
-    pixel_renderer_.render(sprite_entity_, atlas_.meshes(), player_.mesh_index);
+    pixel_renderer_.render(sprite_entity_, atlas_.stage(), player_.mesh_index);
 
     if (player_.scene_index == game_data_.stage.selected_scene_index) {
-      pixel_renderer_.render(sprite_entity_, atlas_.meshes(), player_.mesh_index + 20);
+      pixel_renderer_.render(sprite_entity_, atlas_.stage(), player_.mesh_index + 20);
     }
   }
 
@@ -331,10 +332,10 @@ void wis::Stage::render_sprites()
     pixel_renderer_.set_breathe_phase(slime.breathe_phase);
 
     sprite_entity_.transform().set_position(slime.position);
-    pixel_renderer_.render(sprite_entity_, atlas_.meshes(), slime.mesh_index);
+    pixel_renderer_.render(sprite_entity_, atlas_.stage(), slime.mesh_index);
 
     if (slime.scene_index == game_data_.stage.selected_scene_index) {
-      pixel_renderer_.render(sprite_entity_, atlas_.meshes(), slime.mesh_index + 20);
+      pixel_renderer_.render(sprite_entity_, atlas_.stage(), slime.mesh_index + 20);
     }
   }
 

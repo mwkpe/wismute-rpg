@@ -22,8 +22,8 @@
 
 #include "game/events.h"
 #include "game/game_data.h"
-#include "game/quad.h"
 
+#include "ui/action_panel.h"
 #include "ui/panel.h"
 
 
@@ -85,7 +85,7 @@ private:
 
   // Panels
   ui::Panel undo_panel_;
-  ui::Panel actions_panel_;
+  ui::Action_panel action_panel_;
 
   // Constants
   float top_ = -1.0f;
@@ -95,8 +95,6 @@ private:
 
   // Debug
   apeiron::prefab::Grid grid_;
-  Quad actions_panel_quad_;
-  Quad undo_panel_quad_;
 };
 
 
