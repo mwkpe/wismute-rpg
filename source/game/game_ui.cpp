@@ -40,17 +40,20 @@ void wis::Game_ui::init()
   setup_view();
   set_screen_limits();  // Needs view initialized
 
-  action_panel_.set_size(19.2f, 2.4f);
-  action_panel_.transform().set_position(0.0f, 0.0f, bottom_ - 1.2f)
+  float s = constants::tile_size_ui();
+  float p = constants::pixel_size();
+
+  action_panel_.set_size(8 * s, s);
+  action_panel_.transform().set_position(0.0f, 0.0f, bottom_ - s * 0.5f)
       .set_rotation_deg(-15.0f, 0.0f, 0.0f)
-      .set_rotation_pivot(apeiron::engine::Axis::X, 0.0f, 0.0f, constants::tile_size_ui() * 0.5f);
+      .set_rotation_pivot(apeiron::engine::Axis::X, 0.0f, 0.0f, s * 0.5f);
   action_panel_.apply();
   action_panel_.init();
 
-  undo_panel_.set_size(2.4f, 19.2f);
+  undo_panel_.set_size(s, 8 * s);
   undo_panel_.transform().set_position(left_ + 1.2f, 0.0f, 0.0f)
       .set_rotation_deg(0.0f, 0.0f, -45.0f)
-      .set_rotation_pivot(apeiron::engine::Axis::Z, constants::tile_size_ui() * -0.5f, 0.0f, 0.0f);
+      .set_rotation_pivot(apeiron::engine::Axis::Z, s * -0.5f, 0.0f, 0.0f);
   undo_panel_.apply();
 
   dispatcher_.sink<event::Action_selected>().connect<&Game_ui::on_action_selected>(this);
@@ -164,7 +167,7 @@ void wis::Game_ui::set_screen_limits()
 void wis::Game_ui::render_panel()
 {
   renderer_.use();
-  renderer_.render(action_panel_.quad(), Palette::colors[22]);
+  renderer_.render(action_panel_.quad(), Palette::colors[46]);
 
   pixel_renderer_.use();
   Renderer::set_gl_depth_test(false);
@@ -187,7 +190,7 @@ void wis::Game_ui::render_debug()
   }
 
   //renderer_.render(action_panel_.quad(), Palette::colors[22]);
-  renderer_.render(undo_panel_.quad(), Palette::colors[22]);
+  //renderer_.render(undo_panel_.quad(), Palette::colors[22]);
 }
 
 

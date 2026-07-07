@@ -11,8 +11,8 @@ namespace wis::constants {
 constexpr float pixel_size() { return 0.1f; }
 constexpr float tile_size() { return 2.0f; }
 constexpr std::uint32_t sprite_size() { return 20u; }
-constexpr float tile_size_ui() { return 2.4f; }
-constexpr std::uint32_t sprite_size_ui() { return 24u; }
+constexpr float tile_size_ui() { return 3.2f; }
+constexpr std::uint32_t sprite_size_ui() { return 32u; }
 
 
 }  // namespace wis
