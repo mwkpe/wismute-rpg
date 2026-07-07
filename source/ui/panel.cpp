@@ -39,11 +39,10 @@ apeiron::engine::Transform wis::ui::Panel::as_world_transform(float x, float y) 
   const auto sprite_offset = glm::vec2{constants::tile_size_ui(), constants::tile_size_ui()} * 0.5f;
 
   x = panel_pos.x + size_.x * -0.5f + x + sprite_offset.x;
-  y = panel_pos.y;
   float z = panel_pos.z + size_.y * -0.5f + y + sprite_offset.y;
 
   auto t = transform_;
-  t.set_position(x, y, z);
+  t.set_position(x, 0.0f, z);
 
   return t;
 }
