@@ -2,7 +2,7 @@
 
 
 #include "app/error.h"
-#include "engine/palette.h"
+#include "core/palette.h"
 #include "game/constants.h"
 
 
@@ -28,9 +28,9 @@ void wis::Game_ui::init()
   // Viewport and GL init is done in stage class
 
   renderer_.init();
-  pixel_renderer_.init(constants::pixel_size(), constants::sprite_size_ui());
+  pixel_renderer_.init(val::pixel_size(), val::sprite_size_ui());
 
-  lattice_.init({12, 6}, constants::tile_size_ui());
+  lattice_.init({12, 6}, val::tile_size_ui());
   auto field_size = lattice_.field_size();
 
   grid_.init(field_size, lattice_.size(), Palette::colors[47]);
@@ -40,8 +40,8 @@ void wis::Game_ui::init()
   setup_view();
   set_screen_limits();  // Needs view initialized
 
-  float s = constants::tile_size_ui();
-  float p = constants::pixel_size();
+  float s = val::tile_size_ui();
+  float p = val::pixel_size();
 
   action_panel_.set_size(8 * s, s);
   action_panel_.transform().set_position(0.0f, 0.0f, bottom_ - s * 0.5f)

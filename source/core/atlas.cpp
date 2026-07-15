@@ -13,7 +13,7 @@
 #include "apeiron/engine/vertex.h"
 
 #include "app/error.h"
-#include "engine/palette.h"
+#include "core/palette.h"
 
 
 namespace {

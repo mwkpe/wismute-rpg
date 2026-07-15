@@ -5,7 +5,7 @@
 #include <cstdint>
 
 
-namespace wis::constants {
+namespace wis::val {
 
 
 constexpr float pixel_size() { return 0.1f; }

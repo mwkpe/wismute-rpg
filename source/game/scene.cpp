@@ -3,8 +3,8 @@
 
 #include <cstdint>
 #include "app/error.h"
-#include "engine/constants.h"
-#include "engine/lattice.h"
+#include "core/constants.h"
+#include "core/lattice.h"
 #include "game/constants.h"
 
 
@@ -67,7 +67,7 @@ void wis::Scene::create_test()
     }
   }
 
-  Lattice lattice{size_, constants::tile_size()};
+  Lattice lattice{size_, val::tile_size()};
 
   sprites_.clear();
   slimes_.clear();
@@ -99,10 +99,10 @@ void wis::Scene::create_test()
   sprites_.emplace_back(lattice.as_position_xz(62, o2), 62, glm::uvec2{2, 5}, 67);
 
   // Slimes
-  slimes_.emplace_back(lattice.as_position_xz(15, o), 15 , 140, 0.06f, 4.8f, tau() * 0.15f);
-  slimes_.emplace_back(lattice.as_position_xz(52, o), 52 , 140, 0.06f, 4.8f, tau() * 0.65f);
-  slimes_.emplace_back(lattice.as_position_xz(46, o), 46 , 141, 0.06f, 4.8f, tau() * 0.35f);
-  slimes_.emplace_back(lattice.as_position_xz(56, o), 56, 143, 0.05f, 3.4f, tau() * 0.65f);
+  slimes_.emplace_back(lattice.as_position_xz(15, o), 15 , 140, 0.06f, 4.8f, val::tau() * 0.15f);
+  slimes_.emplace_back(lattice.as_position_xz(52, o), 52 , 140, 0.06f, 4.8f, val::tau() * 0.65f);
+  slimes_.emplace_back(lattice.as_position_xz(46, o), 46 , 141, 0.06f, 4.8f, val::tau() * 0.35f);
+  slimes_.emplace_back(lattice.as_position_xz(56, o), 56, 143, 0.05f, 3.4f, val::tau() * 0.65f);
 
   // Set tiles
   for (const auto& sprite : sprites_) {

@@ -15,10 +15,10 @@
 
 #include "app/app_data.h"
 
-#include "engine/atlas.h"
-#include "engine/lattice.h"
-#include "engine/pixel_renderer.h"
-#include "engine/renderer.h"
+#include "core/atlas.h"
+#include "core/lattice.h"
+#include "core/pixel_renderer.h"
+#include "core/renderer.h"
 
 #include "game/events.h"
 #include "game/game_data.h"

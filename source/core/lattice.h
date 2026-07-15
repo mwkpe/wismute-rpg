@@ -1,5 +1,5 @@
-#ifndef WIS_ENGINE_LATTICE_H
-#define WIS_ENGINE_LATTICE_H
+#ifndef WIS_CORE_LATTICE_H
+#define WIS_CORE_LATTICE_H
 
 
 #include <cstdint>
@@ -103,4 +103,4 @@ private:
 }  // namespace wis
 
 
-#endif  // WIS_ENGINE_LATTICE_H
+#endif  // WIS_CORE_LATTICE_H

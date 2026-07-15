@@ -26,15 +26,15 @@ add_executable(wismute
     source/app/error.h
     source/app/settings.cpp
     source/app/settings.h
-    source/engine/atlas.cpp
-    source/engine/atlas.h
-    source/engine/constants.h
-    source/engine/lattice.h
-    source/engine/palette.h
-    source/engine/pixel_renderer.cpp
-    source/engine/pixel_renderer.h
-    source/engine/renderer.cpp
-    source/engine/renderer.h
+    source/core/atlas.cpp
+    source/core/atlas.h
+    source/core/constants.h
+    source/core/lattice.h
+    source/core/palette.h
+    source/core/pixel_renderer.cpp
+    source/core/pixel_renderer.h
+    source/core/renderer.cpp
+    source/core/renderer.h
     source/game/constants.h
     source/game/events.h
     source/game/game.cpp

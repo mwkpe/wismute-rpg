@@ -1,5 +1,5 @@
-#ifndef WIS_ENGINE_PALETTE_H
-#define WIS_ENGINE_PALETTE_H
+#ifndef WIS_CORE_PALETTE_H
+#define WIS_CORE_PALETTE_H
 
 
 #include <array>
@@ -132,4 +132,4 @@ struct Palette
 }  // namespace wis
 
 
-#endif  // WIS_ENGINE_PALETTE_H
+#endif  // WIS_CORE_PALETTE_H

@@ -7,8 +7,8 @@
 #include "apeiron/engine/collision.h"
 #include "apeiron/engine/enums.h"
 
-#include "engine/constants.h"
-#include "engine/palette.h"
+#include "core/constants.h"
+#include "core/palette.h"
 #include "game/constants.h"
 
 
@@ -33,26 +33,26 @@ void wis::Stage::init()
   Renderer::set_gl_viewport(0, 0, app_data_.window.pixel_width, app_data_.window.pixel_height);
 
   renderer_.init();
-  pixel_renderer_.init(constants::pixel_size(), constants::sprite_size());
+  pixel_renderer_.init(val::pixel_size(), val::sprite_size());
 
   scene_.create_test();
-  lattice_.init(scene_.size(), constants::tile_size());
+  lattice_.init(scene_.size(), val::tile_size());
   auto field_size = lattice_.field_size();
 
   grid_.init(field_size, lattice_.size(), Palette::colors[47]);
   grid_.transform().set_position(field_size.x * 0.5f, 0.001f, field_size.y * 0.5f)
       .set_rotation_deg(-90.0f, 0.0f, 0.0f);
 
-  sprite_entity_.transform().set_origin(0.0f, 0.0f, -constants::tile_size() * 0.5f)
+  sprite_entity_.transform().set_origin(0.0f, 0.0f, -val::tile_size() * 0.5f)
       .set_rotation_deg(45.0f, 0.0f, 0.0f)
-      .set_rotation_pivot(apeiron::engine::Axis::X, 0.0f, 0.0f, constants::tile_size() * 0.5f);
+      .set_rotation_pivot(apeiron::engine::Axis::X, 0.0f, 0.0f, val::tile_size() * 0.5f);
 
   camera_.init(-65.0f, -90.0f, {field_size.x * 0.5f, 24.0f, 21.0f});
 
   dispatcher_.sink<event::Enemy_hit>().connect<&Stage::on_enemy_hit>(this);
 
   player_ = Player{lattice_.as_position_xz(53, glm::vec3{0.0f, 0.0f, 0.4f}),
-      53, 102, 0.03f, 4.0f, tau()};
+      53, 102, 0.03f, 4.0f, val::tau()};
 }
 
 

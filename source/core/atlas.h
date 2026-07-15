@@ -1,5 +1,5 @@
-#ifndef WIS_ENGINE_ATLAS_H
-#define WIS_ENGINE_ATLAS_H
+#ifndef WIS_CORE_ATLAS_H
+#define WIS_CORE_ATLAS_H
 
 
 #include "apeiron/opengl/meshset.h"
@@ -24,4 +24,4 @@ private:
 }  // namespace wis
 
 
-#endif  // WIS_ENGINE_ATLAS_H
+#endif  // WIS_CORE_ATLAS_H

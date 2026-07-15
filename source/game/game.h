@@ -7,7 +7,7 @@
 #include "apeiron/engine/event.h"
 #include "apeiron/engine/input.h"
 #include "app/app_data.h"
-#include "engine/atlas.h"
+#include "core/atlas.h"
 #include "game/events.h"
 #include "game/game_data.h"
 #include "game/game_ui.h"

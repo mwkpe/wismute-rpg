@@ -1,11 +1,11 @@
-#ifndef WIS_ENGINE_CONSTANTS_H
-#define WIS_ENGINE_CONSTANTS_H
+#ifndef WIS_CORE_CONSTANTS_H
+#define WIS_CORE_CONSTANTS_H
 
 
 #include <glm/gtc/constants.hpp>
 
 
-namespace wis {
+namespace wis::val {
 
 
 constexpr float pi() { return glm::pi<float>(); }
@@ -17,4 +17,4 @@ constexpr float quarter_pi() { return glm::quarter_pi<float>(); }
 }  // namespace wis
 
 
-#endif  // WIS_ENGINE_CONSTANTS_H
+#endif  // WIS_CORE_CONSTANTS_H

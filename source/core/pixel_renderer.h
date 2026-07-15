@@ -1,5 +1,5 @@
-#ifndef WIS_ENGINE_PIXEL_RENDERER_H
-#define WIS_ENGINE_PIXEL_RENDERER_H
+#ifndef WIS_CORE_PIXEL_RENDERER_H
+#define WIS_CORE_PIXEL_RENDERER_H
 
 
 #include <cstdint>
@@ -9,7 +9,7 @@
 #include "apeiron/opengl/meshset.h"
 #include "apeiron/opengl/shader.h"
 
-#include "engine/palette.h"
+#include "core/palette.h"
 
 
 namespace wis {
@@ -73,4 +73,4 @@ private:
 }  // namespace wis
 
 
-#endif  // WIS_ENGINE_PIXEL_RENDERER_H
+#endif  // WIS_CORE_PIXEL_RENDERER_H

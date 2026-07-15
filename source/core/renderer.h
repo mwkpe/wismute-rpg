@@ -1,5 +1,5 @@
-#ifndef WIS_ENGINE_RENDERER_H
-#define WIS_ENGINE_RENDERER_H
+#ifndef WIS_CORE_RENDERER_H
+#define WIS_CORE_RENDERER_H
 
 
 #include <cstdint>
@@ -77,4 +77,4 @@ private:
 }  // namespace wis
 
 
-#endif  // WIS_ENGINE_RENDERER_H
+#endif  // WIS_CORE_RENDERER_H
