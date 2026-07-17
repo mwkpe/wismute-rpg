@@ -63,7 +63,6 @@ add_executable(wismute
 
 target_include_directories(wismute PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/source
-    ${CMAKE_CURRENT_SOURCE_DIR}/gdl
     ${CMAKE_CURRENT_SOURCE_DIR}/external
 )
 
