@@ -12,6 +12,15 @@
 #include "game/constants.h"
 
 
+namespace {
+
+
+namespace engine = apeiron::engine;
+
+
+}  // namespace
+
+
 wis::Stage::Stage(entt::registry& registry,
     entt::dispatcher& dispatcher,
     const App_data& app_data,
@@ -45,9 +54,9 @@ void wis::Stage::init()
 
   sprite_entity_.transform().set_origin(0.0f, 0.0f, -val::tile_size() * 0.5f)
       .set_rotation_deg(45.0f, 0.0f, 0.0f)
-      .set_rotation_pivot(apeiron::engine::Axis::X, 0.0f, 0.0f, val::tile_size() * 0.5f);
+      .set_rotation_pivot(engine::Axis::X, 0.0f, 0.0f, val::tile_size() * 0.5f);
 
-  camera_.init(-65.0f, -90.0f, {field_size.x * 0.5f, 24.0f, 21.0f});
+  fps_controller_.init(-65.0f, -90.0f, {field_size.x * 0.5f, 24.0f, 21.0f});
 
   dispatcher_.sink<event::Enemy_hit>().connect<&Stage::on_enemy_hit>(this);
 
@@ -58,11 +67,11 @@ void wis::Stage::init()
 
 void wis::Stage::update()
 {
-  camera_.update();
+  fps_controller_.apply(camera_);
 }
 
 
-void wis::Stage::update_input(const apeiron::engine::Input* input)
+void wis::Stage::update_input(const engine::Input* input)
 {
   if (input) {
     update_ego_camera(input);
@@ -95,24 +104,24 @@ void wis::Stage::render()
 }
 
 
-void wis::Stage::handle_event([[maybe_unused]] const apeiron::engine::Key_down_event& event)
+void wis::Stage::handle_event([[maybe_unused]] const engine::Key_down_event& event)
 {
 }
 
 
-void wis::Stage::handle_event([[maybe_unused]] const apeiron::engine::Key_up_event& event)
+void wis::Stage::handle_event([[maybe_unused]] const engine::Key_up_event& event)
 {
 }
 
 
-void wis::Stage::handle_event(const apeiron::engine::Mouse_button_down_event& event)
+void wis::Stage::handle_event(const engine::Mouse_button_down_event& event)
 {
   switch (event.button) {
-    case apeiron::engine::Mouse_button::Right: {
+    case engine::Mouse_button::Right: {
       game_data_.camera.drag = true;
     }
     break;
-    case apeiron::engine::Mouse_button::Left: {
+    case engine::Mouse_button::Left: {
       game_data_.stage.selected_scene_index = game_data_.cursor.stage.scene_index;
       path_finder_.clear();
     }
@@ -122,10 +131,10 @@ void wis::Stage::handle_event(const apeiron::engine::Mouse_button_down_event& ev
 }
 
 
-void wis::Stage::handle_event(const apeiron::engine::Mouse_button_up_event& event)
+void wis::Stage::handle_event(const engine::Mouse_button_up_event& event)
 {
   switch (event.button) {
-    case apeiron::engine::Mouse_button::Right: {
+    case engine::Mouse_button::Right: {
       game_data_.camera.drag = false;
     }
     break;
@@ -134,7 +143,7 @@ void wis::Stage::handle_event(const apeiron::engine::Mouse_button_up_event& even
 }
 
 
-void wis::Stage::handle_event(const apeiron::engine::Mouse_motion_event& event)
+void wis::Stage::handle_event(const engine::Mouse_motion_event& event)
 {
   auto& cursor = game_data_.cursor.stage;
 
@@ -178,25 +187,8 @@ void wis::Stage::handle_event(const apeiron::engine::Mouse_motion_event& event)
 }
 
 
-void wis::Stage::handle_event([[maybe_unused]] const apeiron::engine::Mouse_wheel_event& event)
+void wis::Stage::handle_event([[maybe_unused]] const engine::Mouse_wheel_event& event)
 {
-  float delta = static_cast<float>(event.y);
-
-  auto& camera = game_data_.camera;
-  camera.zoom += delta;
-
-  if (camera.zoom < camera.min_zoom) {
-    camera.zoom = camera.min_zoom;
-    delta = 0.0f;
-  }
-  else if (camera.zoom > camera.max_zoom) {
-    camera.zoom = camera.max_zoom;
-    delta = 0.0f;
-  }
-
-  camera_.move(0.0f, -delta, -delta * 0.3f);
-  float pitch = camera_.pitch() + delta * 0.5f;
-  camera_.set_pitch(pitch);
 }
 
 
@@ -205,25 +197,24 @@ void wis::Stage::on_enemy_hit([[maybe_unused]] const event::Enemy_hit& event)
 }
 
 
-void wis::Stage::update_ego_camera(const apeiron::engine::Input* input)
+void wis::Stage::update_ego_camera(const engine::Input* input)
 {
   if (app_data_.debug.noclip) {
-    using Direction = apeiron::engine::Camera::Direction;
     auto distance = 10.0f * app_data_.timing.delta_s;
 
-    if (input->forward) { camera_.move(Direction::Forward, distance); }
-    if (input->backward) { camera_.move(Direction::Backward, distance); }
-    if (input->left) { camera_.move(Direction::Left, distance); }
-    if (input->right) { camera_.move(Direction::Right, distance); }
+    if (input->forward) { fps_controller_.move(engine::Direction::Forward, distance); }
+    if (input->backward) { fps_controller_.move(engine::Direction::Backward, distance); }
+    if (input->left) { fps_controller_.move(engine::Direction::Left, distance); }
+    if (input->right) { fps_controller_.move(engine::Direction::Right, distance); }
 
-    camera_.orient(input->mouse_x_rel, input->mouse_y_rel, 0.025f);
+    fps_controller_.orient(input->mouse_x_rel, input->mouse_y_rel, 0.025f);
   }
 }
 
 
 void wis::Stage::drag_camera(float dx, float dy)
 {
-  camera_.move(dx, 0.0f, dy);
+  fps_controller_.move(dx, 0.0f, dy);
 }
 
 
@@ -234,12 +225,12 @@ void wis::Stage::setup_view()
 
   pixel_renderer_.use();
   pixel_renderer_.preset_projection(projection);
-  pixel_renderer_.preset_view(camera_.perspective_view());
+  pixel_renderer_.preset_view(camera_.view());
   pixel_renderer_.set_view_projection();
 
   renderer_.use();
   renderer_.preset_projection(projection);
-  renderer_.preset_view(camera_.perspective_view());
+  renderer_.preset_view(camera_.view());
   renderer_.set_view_projection();
 }
 
@@ -354,7 +345,7 @@ void wis::Stage::render_debug()
 
 std::optional<glm::vec3> wis::Stage::ground_point(float screen_x, float screen_y)
 {
-  using namespace apeiron::engine::collision;
+  using namespace engine::collision;
 
   float nx = screen_x / static_cast<float>(app_data_.window.logical_width) * 2.0f - 1.0f;
   float ny = (screen_y / static_cast<float>(app_data_.window.logical_height) * 2.0f - 1.0f) * -1.0f;

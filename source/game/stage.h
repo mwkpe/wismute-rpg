@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 
 #include "apeiron/engine/camera.h"
+#include "apeiron/engine/controller.h"
 #include "apeiron/engine/event.h"
 #include "apeiron/engine/input.h"
 #include "apeiron/prefab/grid.h"
@@ -87,6 +88,9 @@ private:
   apeiron::engine::Camera camera_;
   apeiron::engine::Entity ground_entity_;
   apeiron::engine::Entity sprite_entity_;
+
+  // Controller
+  apeiron::engine::Fps_controller fps_controller_;
 
   // Tools
   Lattice lattice_;

@@ -17,7 +17,7 @@ wis::Game_ui::Game_ui(entt::registry& registry,
     app_data_{app_data},
     game_data_{game_data},
     atlas_{atlas},
-    camera_{{0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 30.0f, 0.0f}},
+    camera_{{0.0f, 30.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},
     action_panel_{dispatcher}
 {
 }
@@ -127,12 +127,12 @@ void wis::Game_ui::setup_view()
 
   pixel_renderer_.use();
   pixel_renderer_.preset_projection(projection);
-  pixel_renderer_.preset_view(camera_.perspective_view());
+  pixel_renderer_.preset_view(camera_.view());
   pixel_renderer_.set_view_projection();
 
   renderer_.use();
   renderer_.preset_projection(projection);
-  renderer_.preset_view(camera_.perspective_view());
+  renderer_.preset_view(camera_.view());
   renderer_.set_view_projection();
 }
 
