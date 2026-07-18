@@ -37,9 +37,7 @@ struct Camera_data
 {
   bool drag = false;
   float fov = 45.0f;
-  float zoom = 0.0f;
-  const float min_zoom = -6.0f;
-  const float max_zoom = 8.0f;
+  float height = 24.0f;
 };
 
 
@@ -49,10 +47,18 @@ struct Stage_data
 };
 
 
+struct Control_data
+{
+  bool use_orbit_camera;
+  float sensitivity = 0.025f;
+};
+
+
 struct Game_data
 {
   Cursor_data cursor;
   Camera_data camera;
+  Control_data control;
   Stage_data stage;
 };
 

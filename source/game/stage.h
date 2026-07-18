@@ -8,7 +8,7 @@
 #include <glm/glm.hpp>
 
 #include "apeiron/engine/camera.h"
-#include "apeiron/engine/controller.h"
+#include "apeiron/engine/camera_controller.h"
 #include "apeiron/engine/event.h"
 #include "apeiron/engine/input.h"
 #include "apeiron/prefab/grid.h"
@@ -38,6 +38,7 @@ public:
       const App_data& app_data, Game_data& game_data, const Atlas& atlas);
 
   void init();
+  void load_scene();
   void update();
   void update_input(const apeiron::engine::Input* input = nullptr);
   void render();
@@ -54,12 +55,15 @@ public:
   void on_enemy_hit(const event::Enemy_hit& event);
 
 private:
-  // Update
+  void init_dispatcher();
+  void init_renderer();
+  void init_camera_controllers();
+  void reset_orbit_controller();
+
   void update_ego_camera(const apeiron::engine::Input* input);
   void drag_camera(float dx, float dy);
   void setup_view();
 
-  // Render
   void render_ground();
   void render_overlay();
   void render_sprites();
@@ -90,7 +94,8 @@ private:
   apeiron::engine::Entity sprite_entity_;
 
   // Controller
-  apeiron::engine::Fps_controller fps_controller_;
+  apeiron::engine::Free_controller free_controller_;
+  apeiron::engine::Orbit_controller orbit_controller_;
 
   // Tools
   Lattice lattice_;

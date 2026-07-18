@@ -18,6 +18,12 @@ namespace {
 namespace engine = apeiron::engine;
 
 
+auto as_ndc(float x, float y, std::uint32_t w, std::uint32_t h) -> std::tuple<float, float>
+{
+  return {x / static_cast<float>(w) * 2.0f - 1.0f, 1.0f - y / static_cast<float>(h) * 2.0f};
+}
+
+
 }  // namespace
 
 
@@ -38,36 +44,41 @@ wis::Stage::Stage(entt::registry& registry,
 
 void wis::Stage::init()
 {
-  Renderer::gl_init();
-  Renderer::set_gl_viewport(0, 0, app_data_.window.pixel_width, app_data_.window.pixel_height);
+  init_dispatcher();
+  init_renderer();
 
-  renderer_.init();
-  pixel_renderer_.init(val::pixel_size(), val::sprite_size());
-
-  scene_.create_test();
-  lattice_.init(scene_.size(), val::tile_size());
-  auto field_size = lattice_.field_size();
-
-  grid_.init(field_size, lattice_.size(), Palette::colors[47]);
-  grid_.transform().set_position(field_size.x * 0.5f, 0.001f, field_size.y * 0.5f)
-      .set_rotation_deg(-90.0f, 0.0f, 0.0f);
+  load_scene();
+  init_camera_controllers();  // Must know scene size
 
   sprite_entity_.transform().set_origin(0.0f, 0.0f, -val::tile_size() * 0.5f)
       .set_rotation_deg(45.0f, 0.0f, 0.0f)
       .set_rotation_pivot(engine::Axis::X, 0.0f, 0.0f, val::tile_size() * 0.5f);
-
-  fps_controller_.init(-65.0f, -90.0f, {field_size.x * 0.5f, 24.0f, 21.0f});
-
-  dispatcher_.sink<event::Enemy_hit>().connect<&Stage::on_enemy_hit>(this);
 
   player_ = Player{lattice_.as_position_xz(53, glm::vec3{0.0f, 0.0f, 0.4f}),
       53, 102, 0.03f, 4.0f, val::tau()};
 }
 
 
+void wis::Stage::load_scene()
+{
+  scene_.create_test();
+  lattice_.init(scene_.size(), val::tile_size());
+
+  auto field_size = lattice_.field_size();
+  grid_.init(field_size, lattice_.size(), Palette::colors[47]);
+  grid_.transform().set_position(field_size.x * 0.5f, 0.001f, field_size.y * 0.5f)
+      .set_rotation_deg(-90.0f, 0.0f, 0.0f);
+}
+
+
 void wis::Stage::update()
 {
-  fps_controller_.apply(camera_);
+  if (game_data_.control.use_orbit_camera) {
+    orbit_controller_.apply(camera_);
+  }
+  else {
+    free_controller_.apply(camera_);
+  }
 }
 
 
@@ -82,9 +93,6 @@ void wis::Stage::update_input(const engine::Input* input)
 void wis::Stage::render()
 {
   setup_view();
-
-  Renderer::set_gl_frame_buffer(0);
-  Renderer::set_gl_viewport(0, 0, app_data_.window.pixel_width, app_data_.window.pixel_height);
   Renderer::gl_clear(Palette::colors[48]);
 
   if (app_data_.debug.wireframe) {
@@ -106,11 +114,22 @@ void wis::Stage::render()
 
 void wis::Stage::handle_event([[maybe_unused]] const engine::Key_down_event& event)
 {
+  switch (event.keycode) {
+    case SDLK_O:
+      reset_orbit_controller();
+      game_data_.control.use_orbit_camera = true;
+    break;
+  }
 }
 
 
 void wis::Stage::handle_event([[maybe_unused]] const engine::Key_up_event& event)
 {
+  switch (event.keycode) {
+    case SDLK_O:
+      game_data_.control.use_orbit_camera = false;
+    break;
+  }
 }
 
 
@@ -147,7 +166,10 @@ void wis::Stage::handle_event(const engine::Mouse_motion_event& event)
 {
   auto& cursor = game_data_.cursor.stage;
 
-  if (game_data_.camera.drag) {
+  if (game_data_.control.use_orbit_camera && game_data_.camera.drag) {
+    orbit_controller_.orbit(event.x_rel, -event.y_rel, game_data_.control.sensitivity * 4.0f);
+  }
+  else if (game_data_.camera.drag) {
     auto current_point = ground_point(event.x, event.y);
     auto previous_point = ground_point(event.x + event.x_rel, event.y + event.y_rel);
     drag_camera(current_point->x - previous_point->x, current_point->z - previous_point->z);
@@ -197,24 +219,66 @@ void wis::Stage::on_enemy_hit([[maybe_unused]] const event::Enemy_hit& event)
 }
 
 
+void wis::Stage::init_dispatcher()
+{
+  dispatcher_.sink<event::Enemy_hit>().connect<&Stage::on_enemy_hit>(this);
+}
+
+
+void wis::Stage::init_renderer()
+{
+  Renderer::gl_init();
+  Renderer::set_gl_frame_buffer(0);
+  Renderer::set_gl_viewport(0, 0, app_data_.window.pixel_width, app_data_.window.pixel_height);
+
+  renderer_.init();
+  pixel_renderer_.init(val::pixel_size(), val::sprite_size());
+}
+
+
+void wis::Stage::init_camera_controllers()
+{
+  constexpr float pitch = -65.0f;
+  constexpr float yaw = -90.0f;
+  const float height = game_data_.camera.height;
+  const auto dir = engine::direction_from_angles(pitch, yaw);
+  const float x = lattice_.field_size().x * 0.5f;
+  constexpr float z = 21.0f;
+
+  free_controller_.init(pitch, yaw, {x, height, z});
+  orbit_controller_.init(pitch, yaw, height, free_controller_.position() + dir * height);
+}
+
+
+void wis::Stage::reset_orbit_controller()
+{
+  const float pitch = free_controller_.pitch();
+  const float yaw = free_controller_.yaw();
+  const float height = free_controller_.position().y;
+  const auto dir = engine::direction_from_angles(pitch, yaw);
+
+  orbit_controller_.init(pitch, yaw, height, free_controller_.position() + dir * height);
+}
+
+
 void wis::Stage::update_ego_camera(const engine::Input* input)
 {
   if (app_data_.debug.noclip) {
     auto distance = 10.0f * app_data_.timing.delta_s;
 
-    if (input->forward) { fps_controller_.move(engine::Direction::Forward, distance); }
-    if (input->backward) { fps_controller_.move(engine::Direction::Backward, distance); }
-    if (input->left) { fps_controller_.move(engine::Direction::Left, distance); }
-    if (input->right) { fps_controller_.move(engine::Direction::Right, distance); }
+    if (input->forward) { free_controller_.move(engine::Direction::Forward, distance); }
+    if (input->backward) { free_controller_.move(engine::Direction::Backward, distance); }
+    if (input->left) { free_controller_.move(engine::Direction::Left, distance); }
+    if (input->right) { free_controller_.move(engine::Direction::Right, distance); }
 
-    fps_controller_.orient(input->mouse_x_rel, input->mouse_y_rel, 0.025f);
+    free_controller_.orient(input->mouse_x_rel, input->mouse_y_rel, 0.025f);
   }
 }
 
 
 void wis::Stage::drag_camera(float dx, float dy)
 {
-  fps_controller_.move(dx, 0.0f, dy);
+  free_controller_.move(dx, 0.0f, dy);
 }
 
 
@@ -347,8 +411,8 @@ std::optional<glm::vec3> wis::Stage::ground_point(float screen_x, float screen_y
 {
   using namespace engine::collision;
 
-  float nx = screen_x / static_cast<float>(app_data_.window.logical_width) * 2.0f - 1.0f;
-  float ny = (screen_y / static_cast<float>(app_data_.window.logical_height) * 2.0f - 1.0f) * -1.0f;
+  auto [nx, ny] = as_ndc(screen_x, screen_y, app_data_.window.logical_width,
+      app_data_.window.logical_height);
 
   Ray ray = screen_raycast(nx, ny, renderer_.inverse_view_projection());
   Plane plane{{0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}};
