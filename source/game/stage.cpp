@@ -4,6 +4,7 @@
 #include <SDL3/SDL_keycode.h>
 #include <iostream>
 
+#include "apeiron/engine/color_converter.h"
 #include "apeiron/engine/collision.h"
 #include "apeiron/engine/enums.h"
 
@@ -94,6 +95,7 @@ void wis::Stage::render()
 {
   setup_view();
   Renderer::gl_clear(Palette::colors[48]);
+  //Renderer::gl_clear(engine::as_rgb_norm("#1a1614"));
 
   if (app_data_.debug.wireframe) {
     Renderer::set_gl_wireframe(true);
@@ -332,19 +334,19 @@ void wis::Stage::render_overlay()
     for (const auto& tile : scene_.tiles()) {
       ground_entity_.transform().set_position(lattice_.as_position_xz(tile.index));
 
-      if (tile.north_index) {
+      if (tile.north_index()) {
         pixel_renderer_.render(ground_entity_, atlas_.stage(), 382);
       }
 
-      if (tile.south_index) {
+      if (tile.south_index()) {
         pixel_renderer_.render(ground_entity_, atlas_.stage(), 383);
       }
 
-      if (tile.east_index) {
+      if (tile.east_index()) {
         pixel_renderer_.render(ground_entity_, atlas_.stage(), 384);
       }
 
-      if (tile.west_index) {
+      if (tile.west_index()) {
         pixel_renderer_.render(ground_entity_, atlas_.stage(), 385);
       }
     }

@@ -10,32 +10,47 @@
 namespace wis {
 
 
-struct Tile
+class Tile
 {
-  void set_nil(bool b = true) { flags.set(0u, b); }
-  void set_marked(bool b = true) { flags.set(1u, b); }
-  void set_void(bool b = true) { flags.set(2u, b); }
-  void set_ground(bool b = true) { flags.set(3u, b); }
-
-  [[nodiscard]] bool is_nil() const { return flags.test(0u); }  // Null
-  [[nodiscard]] bool is_marked() const { return flags.test(1u); }  // Algorithm use
-  [[nodiscard]] bool is_void() const { return flags.test(2u); }  // No sprite or functionality
-  [[nodiscard]] bool is_ground() const { return flags.test(3u); }  // Playable tile
-
-  std::uint32_t index = 0u;
-  std::uint32_t row = 0u;
-  std::uint32_t col = 0u;
-  std::uint32_t mesh_index = 0u;
-
-  std::bitset<32> flags = 0b0000'0000;
-
-  // A zero-index means there is no neighbor (never use tile 0, always set it to nil)
-  std::uint32_t north_index = 0u;
-  std::uint32_t south_index = 0u;
-  std::uint32_t west_index = 0u;
-  std::uint32_t east_index = 0u;
+public:
+  bool is_nil = false;
+  bool is_wall = true;
+  bool has_player = false;
 
   Element element = Element::None;
+
+  std::uint32_t slime_id = 0;
+  std::uint32_t mesh_index = 0;
+
+  std::uint32_t index = 0;
+  std::uint32_t row = 0;
+  std::uint32_t col = 0;
+
+  void set_north_index(std::uint32_t index) { neighbors_[0] = index; }
+  void set_south_index(std::uint32_t index) { neighbors_[1] = index; }
+  void set_west_index(std::uint32_t index) { neighbors_[2] = index; }
+  void set_east_index(std::uint32_t index) { neighbors_[3] = index; }
+  void set_north_west_index(std::uint32_t index) { neighbors_[4] = index; }
+  void set_north_east_index(std::uint32_t index) { neighbors_[5] = index; }
+  void set_south_west_index(std::uint32_t index) { neighbors_[6] = index; }
+  void set_south_east_index(std::uint32_t index) { neighbors_[7] = index; }
+
+  std::uint32_t north_index() const { return neighbors_[0]; }
+  std::uint32_t south_index() const { return neighbors_[1]; }
+  std::uint32_t west_index() const { return neighbors_[2]; }
+  std::uint32_t east_index() const { return neighbors_[3]; }
+  std::uint32_t north_west_index() const { return neighbors_[4]; }
+  std::uint32_t north_east_index() const { return neighbors_[5]; }
+  std::uint32_t south_west_index() const { return neighbors_[6]; }
+  std::uint32_t south_east_index() const { return neighbors_[7]; }
+
+  bool is_free() const { return !is_nil && !is_wall && !has_player && slime_id == 0; }
+
+  std::span<const std::uint32_t> neighbors() const { return neighbors_; }
+  std::span<const std::uint32_t> cardinals() const { return std::span{neighbors_}.first(4); }
+
+private:
+  std::array<std::uint32_t, 8> neighbors_ = { 0 };
 };
 
 

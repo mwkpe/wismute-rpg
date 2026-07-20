@@ -10,7 +10,8 @@ namespace wis {
 
 struct Slime
 {
-  glm::vec3 position;
+  std::uint32_t id = 0;
+  glm::vec3 position = glm::vec3{0.0f};
   std::uint32_t scene_index = 0;
   std::uint32_t mesh_index = 0;
   float breathe_amplitude = 0.0f;

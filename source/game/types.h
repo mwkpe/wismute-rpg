@@ -20,10 +20,9 @@ enum class Cardinal : std::uint8_t
 enum class Element : std::uint8_t
 {
   None,
-  Earth,
+  Nature,
   Water,
   Fire,
-  Wind,
   Aether
 };
 

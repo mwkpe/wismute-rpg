@@ -30,15 +30,15 @@ bool wis::Path_finder::search(std::span<const Tile> tiles, std::uint32_t origin,
     const Tile& tile = tiles[queue[head++]];
 
     const std::array<std::uint32_t, 4> neighbors = {
-        tile.north_index,
-        tile.south_index,
-        tile.east_index,
-        tile.west_index
+        tile.north_index(),
+        tile.south_index(),
+        tile.east_index(),
+        tile.west_index()
     };
 
     for (const auto next : neighbors) {
       // The nil tile at index 0 is not ground, this catches missing neighbors
-      if (!tiles[next].is_ground() || came_from[next] != 0u) {
+      if (!tiles[next].is_free() || came_from[next] != 0u) {
         continue;
       }
 
