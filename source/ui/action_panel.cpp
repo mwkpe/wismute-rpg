@@ -14,8 +14,10 @@ void wis::ui::Action_panel::init()
   decoration_widgets_.emplace_back(3, 7.2f, 0.0f, 3.2f, 2.4f);
   decoration_widgets_.emplace_back(4, 9.6f, 0.0f, 3.2f, 2.4f);
   decoration_widgets_.emplace_back(5, 12.0f, 0.0f, 3.2f, 2.4f);
-  decoration_widgets_.emplace_back(20, 14.4f, 0.0f, 3.2f, 2.4f);
-  decoration_widgets_.emplace_back(26, 16.8f, 0.0f, 3.2f, 2.4f);
+  decoration_widgets_.emplace_back(21, 14.4f, 0.0f, 3.2f, 2.4f);
+  decoration_widgets_.emplace_back(22, 16.8f, 0.0f, 3.2f, 2.4f);
+  decoration_widgets_.emplace_back(23, 19.2f, 0.0f, 3.2f, 2.4f);
+  decoration_widgets_.emplace_back(24, 21.6f, 0.0f, 3.2f, 2.4f);
 }
 
 

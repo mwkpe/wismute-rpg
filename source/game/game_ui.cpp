@@ -44,7 +44,7 @@ void wis::Game_ui::init()
   float p = val::pixel_size();
 
   action_panel_.set_size(8 * s, s);
-  action_panel_.transform().set_position(0.0f, 0.0f, bottom_ - s * 0.5f)
+  action_panel_.transform().set_position(0.0f, 0.0f, bottom_ - s * 0.5f + 4.0f * p)
       .set_rotation_deg(-15.0f, 0.0f, 0.0f)
       .set_rotation_pivot(apeiron::engine::Axis::X, 0.0f, 0.0f, s * 0.5f);
   action_panel_.apply();
@@ -167,7 +167,7 @@ void wis::Game_ui::set_screen_limits()
 void wis::Game_ui::render_panel()
 {
   renderer_.use();
-  renderer_.render(action_panel_.quad(), Palette::colors[46]);
+  //renderer_.render(action_panel_.quad(), Palette::colors[46]);
 
   pixel_renderer_.use();
   Renderer::set_gl_depth_test(false);
