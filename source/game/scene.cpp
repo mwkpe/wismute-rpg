@@ -79,16 +79,6 @@ void wis::Scene::create_test()
   const glm::vec3 o{0.0f, 0.0f, 0.4f};
   const glm::vec3 o2{0.0f, 0.0f, 0.6f};
 
-  // Trees
-  // sprites_.emplace_back(lattice.as_position_xz(61, o), 61, glm::uvec2{1, 5}, 60);
-  // sprites_.emplace_back(lattice.as_position_xz(61, o), 61, glm::uvec2{1, 5}, 61);
-  // sprites_.emplace_back(lattice.as_position_xz(50, o), 50, glm::uvec2{2, 4}, 60);
-  // sprites_.emplace_back(lattice.as_position_xz(50, o), 50, glm::uvec2{2, 4}, 61);
-  // sprites_.emplace_back(lattice.as_position_xz(73, o), 73, glm::uvec2{1, 6}, 60);
-  // sprites_.emplace_back(lattice.as_position_xz(73, o), 73, glm::uvec2{1, 6}, 61);
-  // sprites_.emplace_back(lattice.as_position_xz(43, o), 43, glm::uvec2{7, 3}, 60);
-  // sprites_.emplace_back(lattice.as_position_xz(43, o), 43, glm::uvec2{7, 3}, 61);
-
   for (const auto& tile : tiles_) {
     if (tile.element == Element::Nature) {
       sprites_.emplace_back(lattice.as_position_xz(tile.index, o), tile.index,
@@ -145,6 +135,7 @@ void wis::Scene::connect_neighbors()
         tiles_[index].set_west_index(index - 1);
       }
     }
+
     for (int j=0; j<size_x-1; j++) {
       int index = i * size_x + j;
 
@@ -163,6 +154,7 @@ void wis::Scene::connect_neighbors()
         tiles_[index].set_north_index(index - size_x);
       }
     }
+
     for (int j=0; j<size_y-1; j++) {
       int index = j * size_x + i;
 
