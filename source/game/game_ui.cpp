@@ -30,7 +30,7 @@ void wis::Game_ui::init()
   renderer_.init();
   pixel_renderer_.init(val::pixel_size(), val::sprite_size_ui());
 
-  lattice_.init({12, 6}, val::tile_size_ui());
+  lattice_.init({16, 10}, val::tile_size_ui());
   auto field_size = lattice_.field_size();
 
   grid_.init(field_size, lattice_.size(), Palette::colors[47]);
@@ -41,10 +41,9 @@ void wis::Game_ui::init()
   set_screen_limits();  // Needs view initialized
 
   float s = val::tile_size_ui();
-  float p = val::pixel_size();
 
-  action_panel_.set_size(8 * s, s);
-  action_panel_.transform().set_position(0.0f, 0.0f, bottom_ - s * 0.5f + 4.0f * p)
+  action_panel_.set_size(10 * s, s);
+  action_panel_.transform().set_position(0.0f, 0.0f, bottom_ - s * 0.5f)
       .set_rotation_deg(-15.0f, 0.0f, 0.0f)
       .set_rotation_pivot(apeiron::engine::Axis::X, 0.0f, 0.0f, s * 0.5f);
   action_panel_.apply();
