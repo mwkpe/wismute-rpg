@@ -94,8 +94,8 @@ void wis::Stage::update_input(const engine::Input* input)
 void wis::Stage::render()
 {
   setup_view();
-  Renderer::gl_clear(Palette::colors[48]);
-  //Renderer::gl_clear(engine::as_rgb_norm("#1a1614"));
+  //Renderer::gl_clear(Palette::colors[48]);
+  Renderer::gl_clear(engine::as_rgb_norm("#181514"));
 
   if (app_data_.debug.wireframe) {
     Renderer::set_gl_wireframe(true);
@@ -240,12 +240,12 @@ void wis::Stage::init_renderer()
 
 void wis::Stage::init_camera_controllers()
 {
-  constexpr float pitch = -65.0f;
+  constexpr float pitch = -55.0f;
   constexpr float yaw = -90.0f;
   const float height = game_data_.camera.height;
   const auto dir = engine::direction_from_angles(pitch, yaw);
   const float x = lattice_.field_size().x * 0.5f;
-  constexpr float z = 21.0f;
+  constexpr float z = 26.0f;
 
   free_controller_.init(pitch, yaw, {x, height, z});
   orbit_controller_.init(pitch, yaw, height, free_controller_.position() + dir * height);
