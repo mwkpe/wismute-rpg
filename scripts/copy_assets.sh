@@ -20,6 +20,7 @@ rm -rf $BUILD_DIR/shader
 mkdir -p $BUILD_DIR/assets
 mkdir -p $BUILD_DIR/shader
 
+cp -vu ../assets/*.json $BUILD_DIR/assets
 cp -vu ../assets/*.png $BUILD_DIR/assets
 cp -vu ../source/shader/*.vs $BUILD_DIR/shader
 cp -vu ../source/shader/*.gs $BUILD_DIR/shader
