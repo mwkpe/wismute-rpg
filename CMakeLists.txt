@@ -35,6 +35,7 @@ add_executable(wismute
     source/core/pixel_renderer.h
     source/core/renderer.cpp
     source/core/renderer.h
+    source/game/cards.h
     source/game/constants.h
     source/game/events.h
     source/game/game.cpp
@@ -59,6 +60,8 @@ add_executable(wismute
     source/ui/panel.h
     source/ui/quad.h
     source/ui/widget.h
+    source/util/utility.cpp
+    source/util/utility.h
 )
 
 target_include_directories(wismute PRIVATE

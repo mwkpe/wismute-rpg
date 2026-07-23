@@ -4,6 +4,7 @@
 
 #include <span>
 #include <string>
+#include <string_view>
 #include <vector>
 #include <glm/glm.hpp>
 
@@ -18,7 +19,7 @@ namespace wis {
 class Scene final
 {
 public:
-  void create_test();
+  void load_scene(std::string_view filepath);
   void reset();
 
   [[nodiscard]] const glm::uvec2& size() const { return size_; }

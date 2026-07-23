@@ -4,7 +4,11 @@
 
 #include <span>
 #include <vector>
+
 #include <entt/entt.hpp>
+
+#include "game/cards.h"
+
 #include "ui/panel.h"
 #include "ui/widget.h"
 
@@ -22,7 +26,7 @@ class Action_panel final : public Panel
 {
 public:
   explicit Action_panel(entt::dispatcher& dispatcher);
-  void init();
+  void init(std::span<const Card> cards);
   void update(std::uint64_t elapsed_ns);
 
   [[nodiscard]] std::span<const Widget> decoration_widgets() const {

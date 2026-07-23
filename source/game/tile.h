@@ -13,18 +13,13 @@ namespace wis {
 class Tile
 {
 public:
+  std::uint32_t index = 0;
+  std::uint32_t col = 0;
+  std::uint32_t row = 0;
+  std::uint32_t mesh_index = 0;
+  Element element = Element::None;
   bool is_nil = false;
   bool is_wall = true;
-  bool has_player = false;
-
-  Element element = Element::None;
-
-  std::uint32_t slime_id = 0;
-  std::uint32_t mesh_index = 0;
-
-  std::uint32_t index = 0;
-  std::uint32_t row = 0;
-  std::uint32_t col = 0;
 
   void set_north_index(std::uint32_t index) { neighbors_[0] = index; }
   void set_south_index(std::uint32_t index) { neighbors_[1] = index; }
@@ -44,7 +39,7 @@ public:
   std::uint32_t south_west_index() const { return neighbors_[6]; }
   std::uint32_t south_east_index() const { return neighbors_[7]; }
 
-  bool is_free() const { return !is_nil && !is_wall && !has_player && slime_id == 0; }
+  bool is_free() const { return !is_nil && !is_wall; }
 
   std::span<const std::uint32_t> neighbors() const { return neighbors_; }
   std::span<const std::uint32_t> cardinals() const { return std::span{neighbors_}.first(4); }

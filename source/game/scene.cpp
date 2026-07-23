@@ -6,6 +6,7 @@
 #include "core/constants.h"
 #include "core/lattice.h"
 #include "game/constants.h"
+#include "util/utility.h"
 
 
 auto wis::Scene::tile(std::uint32_t index) -> Tile*
@@ -28,84 +29,77 @@ auto wis::Scene::tile(std::uint32_t index) const -> const Tile*
 }
 
 
-void wis::Scene::create_test()
+void wis::Scene::load_scene(std::string_view filepath)
 {
-  name_ = "test";
-  size_ = glm::uvec2{12, 8};
+  auto j = util::read_json(filepath);
 
-  tiles_.clear();
-  tiles_.resize(size_.x * size_.y, Tile{});
+  const auto& attributes = j["attributes"];
 
-  std::vector<std::uint32_t> test = {
-    23, 20, 22, 20, 25, 25, 25, 25, 25, 25, 25, 25,
-    25, 20, 20, 20, 23, 22, 25, 25, 25, 25, 25, 20,
-    25, 25, 20, 20, 22, 22, 23, 25, 25, 25, 20, 23,
-    25, 25, 25, 20, 20, 20, 23, 40, 25, 25, 20, 22,
-    25, 25, 40, 20, 20, 20, 22, 20, 20, 25, 20, 20,
-    25, 40, 20, 23, 20, 20, 20, 22, 20, 25, 23, 20,
-    25, 40, 20, 20, 22, 20, 20, 20, 20, 20, 20, 20,
-    25, 25, 22, 20, 20, 20, 20, 20, 22, 20, 20, 22
-  };
+  name_ = attributes["name"];
+  size_ = glm::uvec2{attributes["cols"], attributes["rows"]};
 
+  Lattice lattice{size_, val::tile_size()};
+  glm::vec3 sprite_offset{0.0f, 0.0f, 0.4f};
+
+  // Tiles
   {
+    tiles_.clear();
+    tiles_.resize(size_.x * size_.y, Tile{});
+
     std::uint32_t index = 0;
 
     for (auto& tile : tiles_) {
-      tile.mesh_index = test[index];
+      const auto& tile_data = j["tiles"][index];
+
+      tile.mesh_index = tile_data["mesh_index"];
       tile.index = index++;
       tile.col = tile.index % size_.x;
       tile.row = tile.index / size_.x;
       tile.is_nil = tile.index == 0;
+      tile.is_wall = tile_data["is_wall"];
 
-      if (tile.mesh_index == 25) {
-        tile.element = Element::Water;
-      }
-
-      if (tile.mesh_index == 40) {
-        tile.element = Element::Nature;
-      }
-
-      if (tile.mesh_index >= 20 &&  tile.mesh_index <= 23) {
-        tile.is_wall = false;
+      switch (tile_data["element"].get<std::uint32_t>()) {
+        case 1: tile.element = Element::Fire; break;
+        case 2: tile.element = Element::Water; break;
+        case 3: tile.element = Element::Wind; break;
+        case 4: tile.element = Element::Aether; break;
       }
     }
   }
 
-  Lattice lattice{size_, val::tile_size()};
-
-  sprites_.clear();
-  slimes_.clear();
-
-  const glm::vec3 o{0.0f, 0.0f, 0.4f};
-  const glm::vec3 o2{0.0f, 0.0f, 0.6f};
-
+  // Sprites
   for (const auto& tile : tiles_) {
-    if (tile.element == Element::Nature) {
-      sprites_.emplace_back(lattice.as_position_xz(tile.index, o), tile.index,
+    if (tile.element == Element::Wind) {
+      sprites_.emplace_back(lattice.as_position_xz(tile.index, sprite_offset), tile.index,
           glm::uvec2{tile.col, tile.row}, 60);
-      sprites_.emplace_back(lattice.as_position_xz(tile.index, o), tile.index,
+      sprites_.emplace_back(lattice.as_position_xz(tile.index, sprite_offset), tile.index,
           glm::uvec2{tile.col, tile.row}, 61);
     }
   }
 
-  // Stones
-  sprites_.emplace_back(lattice.as_position_xz(78, o), 78, glm::uvec2{7, 6}, 66);
-  sprites_.emplace_back(lattice.as_position_xz(78, o2), 78, glm::uvec2{7, 6}, 67);
-  sprites_.emplace_back(lattice.as_position_xz(62, o), 62, glm::uvec2{2, 5}, 66);
-  sprites_.emplace_back(lattice.as_position_xz(62, o2), 62, glm::uvec2{2, 5}, 67);
-
-  for (const auto& sprite : sprites_) {
-    tiles_[sprite.scene_index].is_wall = true;
-  }
-
   // Slimes
-  slimes_.emplace_back(1, lattice.as_position_xz(15, o), 15 , 140, 0.06f, 4.8f, val::tau() * 0.15f);
-  slimes_.emplace_back(2, lattice.as_position_xz(52, o), 52 , 140, 0.06f, 4.8f, val::tau() * 0.65f);
-  slimes_.emplace_back(3, lattice.as_position_xz(46, o), 46 , 141, 0.06f, 4.8f, val::tau() * 0.35f);
-  slimes_.emplace_back(4, lattice.as_position_xz(56, o), 56, 143, 0.05f, 3.4f, val::tau() * 0.65f);
+  {
+    slimes_.clear();
+    std::uint32_t id = 0;
+    float offset = 0.15f;
 
-  for (const auto& slime : slimes_) {
-    tiles_[slime.scene_index].slime_id = slime.id;
+    for (const auto& slime : j["slimes"]) {
+      std::uint32_t index = slime["index"];
+      std::uint32_t weight = slime["weight"];
+      std::uint32_t mesh = weight == 2 ? 141 : 143;
+
+      slimes_.emplace_back(id++,
+          slime["health"],
+          weight,
+          lattice.as_position_xz(index, sprite_offset),
+          index,
+          mesh,
+          0.06f,
+          5.0f,
+          val::tau() * offset);
+
+      offset += 0.1f;
+    }
   }
 
   connect_neighbors();

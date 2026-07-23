@@ -55,14 +55,15 @@ void wis::Stage::init()
       .set_rotation_deg(45.0f, 0.0f, 0.0f)
       .set_rotation_pivot(engine::Axis::X, 0.0f, 0.0f, val::tile_size() * 0.5f);
 
-  player_ = Player{lattice_.as_position_xz(53, glm::vec3{0.0f, 0.0f, 0.4f}),
-      53, 102, 0.03f, 4.0f, val::tau()};
+  player_ = Player{lattice_.as_position_xz(9, glm::vec3{0.0f, 0.0f, 0.4f}),
+      9, 102, 0.03f, 4.0f, val::tau()};
 }
 
 
 void wis::Stage::load_scene()
 {
-  scene_.create_test();
+  //scene_.create_test_mini();
+  scene_.load_scene("assets/test_scene.json");
   lattice_.init(scene_.size(), val::tile_size());
 
   auto field_size = lattice_.field_size();
@@ -245,7 +246,7 @@ void wis::Stage::init_camera_controllers()
   const float height = game_data_.camera.height;
   const auto dir = engine::direction_from_angles(pitch, yaw);
   const float x = lattice_.field_size().x * 0.5f;
-  constexpr float z = 26.0f;
+  constexpr float z = 20.0f;
 
   free_controller_.init(pitch, yaw, {x, height, z});
   orbit_controller_.init(pitch, yaw, height, free_controller_.position() + dir * height);

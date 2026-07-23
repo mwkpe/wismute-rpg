@@ -1,0 +1,228 @@
+{
+  "actions": [],
+  "attributes": {
+    "name": "test",
+    "start_index": 9,
+    "cols": 8,
+    "rows": 5
+  },
+  "slimes": [
+    {
+      "index": 15,
+      "health": 20,
+      "weight": 2
+    },
+    {
+      "index": 21,
+      "health": 20,
+      "weight": 2
+    },
+    {
+      "index": 39,
+      "health": 40,
+      "weight": 1
+    }
+  ],
+  "tiles": [
+    {
+      "mesh_index": 23,
+      "element": 0,
+      "is_wall": false
+    },
+    {
+      "mesh_index": 20,
+      "element": 0,
+      "is_wall": false
+    },
+    {
+      "mesh_index": 40,
+      "element": 3,
+      "is_wall": true
+    },
+    {
+      "mesh_index": 20,
+      "element": 0,
+      "is_wall": false
+    },
+    {
+      "mesh_index": 25,
+      "element": 2,
+      "is_wall": true
+    },
+    {
+      "mesh_index": 25,
+      "element": 2,
+      "is_wall": true
+    },
+    {
+      "mesh_index": 25,
+      "element": 2,
+      "is_wall": true
+    },
+    {
+      "mesh_index": 20,
+      "element": 0,
+      "is_wall": false
+    },
+    {
+      "mesh_index": 22,
+      "element": 0,
+      "is_wall": false
+    },
+    {
+      "mesh_index": 20,
+      "element": 0,
+      "is_wall": false
+    },
+    {
+      "mesh_index": 20,
+      "element": 0,
+      "is_wall": false
+    },
+    {
+      "mesh_index": 20,
+      "element": 0,
+      "is_wall": false
+    },
+    {
+      "mesh_index": 25,
+      "element": 2,
+      "is_wall": true
+    },
+    {
+      "mesh_index": 25,
+      "element": 2,
+      "is_wall": true
+    },
+    {
+      "mesh_index": 20,
+      "element": 0,
+      "is_wall": false
+    },
+    {
+      "mesh_index": 20,
+      "element": 0,
+      "is_wall": false
+    },
+    {
+      "mesh_index": 25,
+      "element": 2,
+      "is_wall": true
+    },
+    {
+      "mesh_index": 23,
+      "element": 0,
+      "is_wall": false
+    },
+    {
+      "mesh_index": 20,
+      "element": 0,
+      "is_wall": false
+    },
+    {
+      "mesh_index": 20,
+      "element": 0,
+      "is_wall": false
+    },
+    {
+      "mesh_index": 22,
+      "element": 0,
+      "is_wall": false
+    },
+    {
+      "mesh_index": 20,
+      "element": 0,
+      "is_wall": false
+    },
+    {
+      "mesh_index": 20,
+      "element": 0,
+      "is_wall": false
+    },
+    {
+      "mesh_index": 23,
+      "element": 0,
+      "is_wall": false
+    },
+    {
+      "mesh_index": 25,
+      "element": 2,
+      "is_wall": true
+    },
+    {
+      "mesh_index": 25,
+      "element": 2,
+      "is_wall": true
+    },
+    {
+      "mesh_index": 25,
+      "element": 2,
+      "is_wall": true
+    },
+    {
+      "mesh_index": 20,
+      "element": 0,
+      "is_wall": false
+    },
+    {
+      "mesh_index": 20,
+      "element": 0,
+      "is_wall": false
+    },
+    {
+      "mesh_index": 25,
+      "element": 2,
+      "is_wall": true
+    },
+    {
+      "mesh_index": 22,
+      "element": 0,
+      "is_wall": false
+    },
+    {
+      "mesh_index": 40,
+      "element": 3,
+      "is_wall": true
+    },
+    {
+      "mesh_index": 40,
+      "element": 3,
+      "is_wall": true
+    },
+    {
+      "mesh_index": 40,
+      "element": 3,
+      "is_wall": true
+    },
+    {
+      "mesh_index": 25,
+      "element": 2,
+      "is_wall": true
+    },
+    {
+      "mesh_index": 25,
+      "element": 2,
+      "is_wall": true
+    },
+    {
+      "mesh_index": 20,
+      "element": 0,
+      "is_wall": false
+    },
+    {
+      "mesh_index": 25,
+      "element": 2,
+      "is_wall": true
+    },
+    {
+      "mesh_index": 22,
+      "element": 0,
+      "is_wall": false
+    },
+    {
+      "mesh_index": 20,
+      "element": 0,
+      "is_wall": false
+    }
+  ]
+}

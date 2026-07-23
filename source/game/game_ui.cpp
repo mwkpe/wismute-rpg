@@ -4,6 +4,7 @@
 #include "app/error.h"
 #include "core/palette.h"
 #include "game/constants.h"
+#include "game/cards.h"
 
 
 wis::Game_ui::Game_ui(entt::registry& registry,
@@ -42,12 +43,25 @@ void wis::Game_ui::init()
 
   float s = val::tile_size_ui();
 
+  std::vector<Card> cards{
+    Move{1},
+    Move{2},
+    Move{3},
+    Move{4},
+    Fireball{},
+    Inferno{},
+    Jet{},
+    Splash{},
+    Missile{},
+    Teleport{}
+  };
+
   action_panel_.set_size(10 * s, s);
   action_panel_.transform().set_position(0.0f, 0.0f, bottom_ - s * 0.5f)
       .set_rotation_deg(-15.0f, 0.0f, 0.0f)
       .set_rotation_pivot(apeiron::engine::Axis::X, 0.0f, 0.0f, s * 0.5f);
   action_panel_.apply();
-  action_panel_.init();
+  action_panel_.init(cards);
 
   undo_panel_.set_size(s, 8 * s);
   undo_panel_.transform().set_position(left_ + 1.2f, 0.0f, 0.0f)

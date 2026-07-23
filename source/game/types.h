@@ -8,7 +8,7 @@
 namespace wis {
 
 
-enum class Cardinal : std::uint8_t
+enum class Cardinal : std::uint32_t
 {
   North,
   South,
@@ -17,12 +17,12 @@ enum class Cardinal : std::uint8_t
 };
 
 
-enum class Element : std::uint8_t
+enum class Element : std::uint32_t
 {
   None,
-  Nature,
-  Water,
   Fire,
+  Water,
+  Wind,
   Aether
 };
 

@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <glm/glm.hpp>
 #include "apeiron/engine/collision.h"
+#include "game/constants.h"
 
 
 namespace wis::ui {
@@ -16,8 +17,8 @@ struct Widget
   Widget(std::uint16_t mesh_index,
       float x,
       float y,
-      float w,
-      float h)
+      float w = val::tile_size_ui(),
+      float h = val::tile_size_ui())
       :
       mesh_index{mesh_index},
       position{x, y},

@@ -11,6 +11,8 @@ namespace wis {
 struct Slime
 {
   std::uint32_t id = 0;
+  std::uint32_t health = 0;
+  std::uint32_t weight = 0;
   glm::vec3 position = glm::vec3{0.0f};
   std::uint32_t scene_index = 0;
   std::uint32_t mesh_index = 0;

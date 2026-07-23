@@ -1,23 +1,42 @@
 #include "action_panel.h"
 
 
+#include "game/constants.h"
+
+
+namespace {
+
+
+template<class... Ts> struct match : Ts... { using Ts::operator()...; };
+
+
+}  // namespace
+
+
 wis::ui::Action_panel::Action_panel(entt::dispatcher& dispatcher) : dispatcher_{dispatcher}
 {
 }
 
 
-void wis::ui::Action_panel::init()
+void wis::ui::Action_panel::init(std::span<const Card> cards)
 {
-  decoration_widgets_.emplace_back(0, 0.0f, 0.0f, 2.4f, 2.4f);
-  decoration_widgets_.emplace_back(1, 2.4f, 0.0f, 2.4f, 2.4f);
-  decoration_widgets_.emplace_back(2, 4.8f, 0.0f, 2.4f, 2.4f);
-  decoration_widgets_.emplace_back(3, 7.2f, 0.0f, 2.4f, 2.4f);
-  decoration_widgets_.emplace_back(4, 9.6f, 0.0f, 2.4f, 2.4f);
-  decoration_widgets_.emplace_back(5, 12.0f, 0.0f, 2.4f, 2.4f);
-  decoration_widgets_.emplace_back(11, 14.4f, 0.0f, 2.4f, 2.4f);
-  decoration_widgets_.emplace_back(12, 16.8f, 0.0f, 2.4f, 2.4f);
-  decoration_widgets_.emplace_back(13, 19.2f, 0.0f, 2.4f, 2.4f);
-  decoration_widgets_.emplace_back(14, 21.6f, 0.0f, 2.4f, 2.4f);
+  float pos = 0.0f;
+
+  for (const auto& card : cards) {
+    std::visit(match{
+        [&](Move m){ decoration_widgets_.emplace_back(9 + m.steps, pos, 0.0f); },
+        [&](Fireball){ decoration_widgets_.emplace_back(0, pos, 0.0f); },
+        [&](Inferno){ decoration_widgets_.emplace_back(1, pos, 0.0f); },
+        [&](Jet){ decoration_widgets_.emplace_back(2, pos, 0.0f); },
+        [&](Splash){ decoration_widgets_.emplace_back(3, pos, 0.0f); },
+        [&](Lightning){ },
+        [&](Gust){ },
+        [&](Missile){ decoration_widgets_.emplace_back(4, pos, 0.0f); },
+        [&](Teleport){ decoration_widgets_.emplace_back(5, pos, 0.0f); }
+    }, card);
+
+    pos += val::tile_size_ui();
+  }
 }
 
 
