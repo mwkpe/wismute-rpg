@@ -1,5 +1,9 @@
-#include "game_ui.h"
+#include "stage_ui.h"
 
+
+#include <memory>
+#include <print>
+#include <ranges>
 
 #include "app/error.h"
 #include "core/palette.h"
@@ -7,7 +11,17 @@
 #include "game/cards.h"
 
 
-wis::Game_ui::Game_ui(entt::registry& registry,
+namespace {
+
+
+constexpr auto is_spent = std::views::filter([](const auto& a) { return a.is_spent; });
+constexpr auto is_not_spent = std::views::filter([](const auto& a) { return !a.is_spent; });
+
+
+}  // namespace
+
+
+wis::Stage_ui::Stage_ui(entt::registry& registry,
     entt::dispatcher& dispatcher,
     const App_data& app_data,
     Game_data& game_data,
@@ -24,7 +38,7 @@ wis::Game_ui::Game_ui(entt::registry& registry,
 }
 
 
-void wis::Game_ui::init()
+void wis::Stage_ui::init()
 {
   // Viewport and GL init is done in stage class
 
@@ -68,17 +82,16 @@ void wis::Game_ui::init()
       .set_rotation_deg(0.0f, 0.0f, -45.0f)
       .set_rotation_pivot(apeiron::engine::Axis::Z, s * -0.5f, 0.0f, 0.0f);
   undo_panel_.apply();
-
-  dispatcher_.sink<event::Action_selected>().connect<&Game_ui::on_action_selected>(this);
 }
 
 
-void wis::Game_ui::update()
+void wis::Stage_ui::update(float delta_s)
 {
+  action_panel_.update(delta_s);
 }
 
 
-void wis::Game_ui::render()
+void wis::Stage_ui::render()
 {
   // Viewport and buffer selected in stage class
 
@@ -89,19 +102,24 @@ void wis::Game_ui::render()
 }
 
 
-bool wis::Game_ui::handle_event([[maybe_unused]] const apeiron::engine::Mouse_button_down_event& event)
+bool wis::Stage_ui::handle_event(const apeiron::engine::Mouse_button_down_event& event)
+{
+  if (auto point = panel_point(event.x, event.y, action_panel_.collision_quad()); point) {
+    action_panel_.click(*point);
+    return true;
+  }
+
+  return false;
+}
+
+
+bool wis::Stage_ui::handle_event([[maybe_unused]] const apeiron::engine::Mouse_button_up_event& event)
 {
   return false;
 }
 
 
-bool wis::Game_ui::handle_event([[maybe_unused]] const apeiron::engine::Mouse_button_up_event& event)
-{
-  return false;
-}
-
-
-bool wis::Game_ui::handle_event(const apeiron::engine::Mouse_motion_event& event)
+bool wis::Stage_ui::handle_event(const apeiron::engine::Mouse_motion_event& event)
 {
   auto& cursor = game_data_.cursor.ui;
 
@@ -118,8 +136,14 @@ bool wis::Game_ui::handle_event(const apeiron::engine::Mouse_motion_event& event
   if (auto point = panel_point(event.x, event.y, action_panel_.collision_quad()); point) {
     cursor.panel_position = *point;
     cursor.on_panel = true;
+
+    action_panel_.hover(*point);
   }
-  else if (auto point = panel_point(event.x, event.y, undo_panel_.collision_quad()); point) {
+  else {
+    action_panel_.clear_hover();
+  }
+
+  if (auto point = panel_point(event.x, event.y, undo_panel_.collision_quad()); point) {
     cursor.panel_position = *point;
     cursor.on_panel = true;
   }
@@ -128,12 +152,7 @@ bool wis::Game_ui::handle_event(const apeiron::engine::Mouse_motion_event& event
 }
 
 
-void wis::Game_ui::on_action_selected([[maybe_unused]] const event::Action_selected& event)
-{
-}
-
-
-void wis::Game_ui::setup_view()
+void wis::Stage_ui::setup_view()
 {
   glm::mat4 projection = glm::perspective(glm::radians(game_data_.camera.fov),
       app_data_.window.aspect_ratio, 1.0f, 100.0f);
@@ -150,7 +169,7 @@ void wis::Game_ui::setup_view()
 }
 
 
-void wis::Game_ui::set_screen_limits()
+void wis::Stage_ui::set_screen_limits()
 {
   auto logical_left = 0.0f;
   auto logical_right = static_cast<float>(app_data_.window.logical_width);
@@ -177,7 +196,7 @@ void wis::Game_ui::set_screen_limits()
 }
 
 
-void wis::Game_ui::render_panel()
+void wis::Stage_ui::render_panel()
 {
   renderer_.use();
   //renderer_.render(action_panel_.quad(), Palette::colors[46]);
@@ -185,16 +204,29 @@ void wis::Game_ui::render_panel()
   pixel_renderer_.use();
   Renderer::set_gl_depth_test(false);
 
-  for (const auto& widget : action_panel_.decoration_widgets()) {
+  for (const auto& widget : action_panel_.actions() | is_not_spent) {
+    entity_.transform() = action_panel_.as_world_transform(widget.position);
+    pixel_renderer_.render(entity_, atlas_.ui(), widget.mesh_index);
+
+    if (widget.hovered) {
+      pixel_renderer_.render(entity_, atlas_.ui(), widget.mesh_index + 40);
+    }
+  }
+
+  pixel_renderer_.set_desaturation_factor(1.0f);
+  pixel_renderer_.enable_desaturation();
+
+  for (const auto& widget : action_panel_.actions() | is_spent) {
     entity_.transform() = action_panel_.as_world_transform(widget.position);
     pixel_renderer_.render(entity_, atlas_.ui(), widget.mesh_index);
   }
 
+  pixel_renderer_.enable_desaturation(false);
   Renderer::set_gl_depth_test(true);
 }
 
 
-void wis::Game_ui::render_debug()
+void wis::Stage_ui::render_debug()
 {
   renderer_.use();
 
@@ -207,7 +239,7 @@ void wis::Game_ui::render_debug()
 }
 
 
-std::optional<glm::vec3> wis::Game_ui::screen_point(float screen_x, float screen_y)
+std::optional<glm::vec3> wis::Stage_ui::screen_point(float screen_x, float screen_y)
 {
   using namespace apeiron::engine::collision;
 
@@ -221,7 +253,7 @@ std::optional<glm::vec3> wis::Game_ui::screen_point(float screen_x, float screen
 }
 
 
-std::optional<glm::vec2> wis::Game_ui::panel_point(float screen_x, float screen_y,
+std::optional<glm::vec2> wis::Stage_ui::panel_point(float screen_x, float screen_y,
     const apeiron::engine::collision::Quad& panel)
 {
   using namespace apeiron::engine::collision;

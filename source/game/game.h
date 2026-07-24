@@ -6,12 +6,13 @@
 
 #include "apeiron/engine/event.h"
 #include "apeiron/engine/input.h"
+
 #include "app/app_data.h"
 #include "core/atlas.h"
 #include "game/events.h"
 #include "game/game_data.h"
-#include "game/game_ui.h"
 #include "game/stage.h"
+#include "game/stage_ui.h"
 
 
 namespace wis {
@@ -53,7 +54,7 @@ private:
   Game_data& game_data_;
   Atlas atlas_;
   Stage stage_;
-  Game_ui ui_;
+  Stage_ui stage_ui_;
 };
 
 

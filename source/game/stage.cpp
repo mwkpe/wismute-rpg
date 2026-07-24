@@ -2,7 +2,8 @@
 
 
 #include <SDL3/SDL_keycode.h>
-#include <iostream>
+#include <print>
+#include <ranges>
 
 #include "apeiron/engine/color_converter.h"
 #include "apeiron/engine/collision.h"
@@ -10,13 +11,19 @@
 
 #include "core/constants.h"
 #include "core/palette.h"
+
+#include "game/cards.h"
 #include "game/constants.h"
+#include "game/play_card.h"
 
 
 namespace {
 
 
 namespace engine = apeiron::engine;
+
+
+constexpr auto is_alive = std::views::filter([](const auto& s) { return s.health > 0; });
 
 
 auto as_ndc(float x, float y, std::uint32_t w, std::uint32_t h) -> std::tuple<float, float>
@@ -122,6 +129,9 @@ void wis::Stage::handle_event([[maybe_unused]] const engine::Key_down_event& eve
       reset_orbit_controller();
       game_data_.control.use_orbit_camera = true;
     break;
+    case SDLK_B:
+      play_card(Fireball{}, scene_.tiles(), scene_.slimes(), 9, 21);
+    break;
   }
 }
 
@@ -144,8 +154,19 @@ void wis::Stage::handle_event(const engine::Mouse_button_down_event& event)
     }
     break;
     case engine::Mouse_button::Left: {
-      game_data_.stage.selected_scene_index = game_data_.cursor.stage.scene_index;
-      path_finder_.clear();
+      if (selected_action_id_ == 0) {
+        game_data_.stage.selected_scene_index = game_data_.cursor.stage.scene_index;
+        path_finder_.clear();
+      }
+
+      if (game_data_.cursor.stage.scene_index > 0 && selected_action_id_ > 0) {
+        dispatcher_.trigger(event::Action_triggered{selected_action_id_});
+        selected_action_id_ = 0;
+      }
+      else {
+        dispatcher_.trigger(event::Action_deselected{selected_action_id_});
+        selected_action_id_ = 0;
+      }
     }
     break;
     default:;
@@ -217,14 +238,16 @@ void wis::Stage::handle_event([[maybe_unused]] const engine::Mouse_wheel_event& 
 }
 
 
-void wis::Stage::on_enemy_hit([[maybe_unused]] const event::Enemy_hit& event)
+void wis::Stage::on_action_selected(const event::Action_selected& event)
 {
+  selected_action_id_ = event.id;
+  std::print("Action {} selected\n", event.id);
 }
 
 
 void wis::Stage::init_dispatcher()
 {
-  dispatcher_.sink<event::Enemy_hit>().connect<&Stage::on_enemy_hit>(this);
+  dispatcher_.sink<event::Action_selected>().connect<&Stage::on_action_selected>(this);
 }
 
 
@@ -384,7 +407,7 @@ void wis::Stage::render_sprites()
   }
 
   // Slimes
-  for (const auto& slime : scene_.slimes()) {
+  for (const auto& slime : scene_.slimes() | is_alive) {
     pixel_renderer_.set_breathe_amplitude(slime.breathe_amplitude);
     pixel_renderer_.set_breathe_speed(slime.breathe_speed);
     pixel_renderer_.set_breathe_phase(slime.breathe_phase);

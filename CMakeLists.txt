@@ -41,10 +41,10 @@ add_executable(wismute
     source/game/game.cpp
     source/game/game.h
     source/game/game_data.h
-    source/game/game_ui.cpp
-    source/game/game_ui.h
     source/game/path_finder.cpp
     source/game/path_finder.h
+    source/game/play_card.cpp
+    source/game/play_card.h
     source/game/player.h
     source/game/scene.cpp
     source/game/scene.h
@@ -52,6 +52,8 @@ add_executable(wismute
     source/game/sprite.h
     source/game/stage.cpp
     source/game/stage.h
+    source/game/stage_ui.cpp
+    source/game/stage_ui.h
     source/game/tile.h
     source/game/types.h
     source/ui/action_panel.cpp

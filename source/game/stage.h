@@ -52,7 +52,7 @@ public:
   void handle_event(const apeiron::engine::Mouse_wheel_event& event);
 
   // Game event sinks
-  void on_enemy_hit(const event::Enemy_hit& event);
+  void on_action_selected(const event::Action_selected& event);
 
 private:
   void init_dispatcher();
@@ -104,6 +104,7 @@ private:
   // Debug
   apeiron::prefab::Grid grid_;
   Player player_;
+  std::uint32_t selected_action_id_ = 0;
 };
 
 

@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <entt/entt.hpp>
+#include "game/cards.h"
 
 
 namespace wis::event {
@@ -17,14 +18,20 @@ struct Achievement_unlocked
 
 struct Action_selected
 {
-  std::uint32_t id = 0;
+  std::uint32_t id;
+  Card card;
 };
 
 
-struct Enemy_hit
+struct Action_deselected
 {
-  entt::entity entity;
-  std::uint32_t value = 0;
+  std::uint32_t id;
+};
+
+
+struct Action_triggered
+{
+  std::uint32_t id;
 };
 
 

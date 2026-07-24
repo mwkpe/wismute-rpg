@@ -23,12 +23,14 @@ struct Widget
       mesh_index{mesh_index},
       position{x, y},
       size{w, h},
-      rect{x - 0.5f * w, y - 0.5f * h, w, h} {}
+      rect{x, y, w, h} {}
 
   std::uint32_t mesh_index = 0;
   glm::vec2 position = glm::vec2{0.0f};
   glm::vec2 size = glm::vec2{0.0f};
   apeiron::engine::collision::Rect<float> rect = {};
+  bool hovered = false;
+  bool selected = false;
 };
 
 

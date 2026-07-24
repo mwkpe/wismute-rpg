@@ -1,5 +1,5 @@
-#ifndef WIS_GAME_GAME_UI_H
-#define WIS_GAME_GAME_UI_H
+#ifndef WIS_GAME_STAGE_UI_H
+#define WIS_GAME_STAGE_UI_H
 
 
 #include <cstdint>
@@ -14,15 +14,11 @@
 #include "apeiron/prefab/grid.h"
 
 #include "app/app_data.h"
-
 #include "core/atlas.h"
 #include "core/lattice.h"
 #include "core/pixel_renderer.h"
 #include "core/renderer.h"
-
-#include "game/events.h"
 #include "game/game_data.h"
-
 #include "ui/action_panel.h"
 #include "ui/panel.h"
 
@@ -30,24 +26,21 @@
 namespace wis {
 
 
-class Game_ui final
+class Stage_ui final
 {
 public:
-  Game_ui() = delete;
-  Game_ui(entt::registry& registry, entt::dispatcher& dispatcher,
+  Stage_ui() = delete;
+  Stage_ui(entt::registry& registry, entt::dispatcher& dispatcher,
       const App_data& app_data, Game_data& game_data, const Atlas& atlas);
 
   void init();
-  void update();
+  void update(float delta_s);
   void render();
 
   // Engine event handlers
   bool handle_event(const apeiron::engine::Mouse_button_down_event& event);
   bool handle_event(const apeiron::engine::Mouse_button_up_event& event);
   bool handle_event(const apeiron::engine::Mouse_motion_event& event);
-
-  // Game event sinks
-  void on_action_selected(const event::Action_selected& event);
 
 private:
   // Update
@@ -101,4 +94,4 @@ private:
 }  // namespace wis
 
 
-#endif  // WIS_GAME_GAME_UI_H
+#endif  // WIS_GAME_STAGE_UI_H
