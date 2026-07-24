@@ -88,14 +88,6 @@ void apply_material(inout vec3 pixel_position)
   if (a_material == 1u) {
     float offset = wave_offset(global_col, global_row, 4.0, 0.06, 2.5, 0.2) +
         wave_offset(global_col, global_row, 3.0, 0.04, 1.0, 0.6);
-
-    const uint trough_color = 14u;
-    float trough_threshold = pixel_size * -0.3;
-
-    if (offset < trough_threshold) {
-      pixel_color = colors[trough_color];
-    }
-
     pixel_position.z -= offset;
   }
 
