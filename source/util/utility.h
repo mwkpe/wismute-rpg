@@ -9,6 +9,9 @@
 namespace wis::util {
 
 
+template<class... Ts> struct match : Ts... { using Ts::operator()...; };
+
+
 nlohmann::json read_json(const std::filesystem::path& filepath);
 
 
