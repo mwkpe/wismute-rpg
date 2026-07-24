@@ -33,7 +33,8 @@ struct Pixel
 };
 
 
-auto load_spritesheet(std::string_view filename, std::uint32_t rows, std::uint32_t cols)
+auto load_spritesheet(std::string_view filename, std::uint32_t rows, std::uint32_t cols,
+    bool apply_material)
 {
   auto&& [bytes, image_w, image_h, channel_count] = apeiron::engine::load_image(filename, false);
 
@@ -61,12 +62,14 @@ auto load_spritesheet(std::string_view filename, std::uint32_t rows, std::uint32
           if (it != std::end(palette.color_map)) {
             std::uint8_t material = 0;
 
-            if (index == 25) {
-              material = 1;  // Water
-            }
+            if (apply_material) {
+              if (index == 25) {
+                material = 1;  // Water
+              }
 
-            if (index == 61) {
-              material = 2;  // Foliage
+              if (index == 61) {
+                material = 2;  // Foliage
+              }
             }
 
             vertices.emplace_back(pixel_index, it->second, material);
@@ -122,12 +125,12 @@ auto load_spritesheet(std::string_view filename, std::uint32_t rows, std::uint32
 void wis::Atlas::init()
 {
   {
-    auto&& [vertices, entries] = load_spritesheet("assets/stage.png", 20, 20);
+    auto&& [vertices, entries] = load_spritesheet("assets/stage.png", 20, 20, true);
     stage_.init(vertices, std::move(entries));
   }
 
   {
-    auto&& [vertices, entries] = load_spritesheet("assets/ui.png", 10, 10);
+    auto&& [vertices, entries] = load_spritesheet("assets/ui.png", 10, 10, false);
     ui_.init(vertices, std::move(entries));
   }
 }
