@@ -22,8 +22,6 @@ mkdir -p $BUILD_DIR/shader
 
 cp -vu ../assets/*.json $BUILD_DIR/assets
 cp -vu ../assets/*.png $BUILD_DIR/assets
-cp -vu ../source/shader/*.vs $BUILD_DIR/shader
-cp -vu ../source/shader/*.gs $BUILD_DIR/shader
-cp -vu ../source/shader/*.fs $BUILD_DIR/shader
-cp -vu ../apeiron/apeiron/opengl/shader/*.vs $BUILD_DIR/shader
-cp -vu ../apeiron/apeiron/opengl/shader/*.fs $BUILD_DIR/shader
+cp -vu ../source/shader/*.vert $BUILD_DIR/shader
+cp -vu ../source/shader/*.frag $BUILD_DIR/shader
+cp -vu ../source/shader/*.geom $BUILD_DIR/shader

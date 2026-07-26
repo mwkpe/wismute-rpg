@@ -6,7 +6,7 @@
 
 void wis::Pixel_renderer::init(float pixel_size, std::uint32_t tile_size)
 {
-  shader_.load("shader/pixel.vs", "shader/pixel.fs", "shader/pixel.gs");
+  shader_.load("shader/pixel.vert", "shader/pixel.frag", "shader/pixel.geom");
   shader_.use();
 
   // Init uniforms

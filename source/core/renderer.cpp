@@ -6,7 +6,7 @@
 
 void wis::Renderer::init()
 {
-  shader_.load("shader/basic.vs", "shader/basic.fs");
+  shader_.load("shader/standard.vert", "shader/standard.frag");
   shader_.use();
 
   // Init uniforms
