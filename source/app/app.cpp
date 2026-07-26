@@ -66,6 +66,13 @@ void handle_event(auto* window, const SDL_Event& sdl_event, apeiron::engine::Eve
           break;
           case SDLK_F1: {
             app_data.debug.show_ui = !app_data.debug.show_ui;
+
+            if (app_data.debug.show_ui ) {
+              SDL_ShowCursor();
+            }
+            else {
+              SDL_HideCursor();
+            }
           }
           break;
           case SDLK_F2: {
@@ -175,6 +182,8 @@ void wis::App::init()
   app_data_.window.aspect_ratio = static_cast<float>(wa.pixel_width) /
       static_cast<float>(wa.pixel_height);
   app_data_.window.video_driver = SDL_GetCurrentVideoDriver();
+
+  SDL_HideCursor();
 }
 
 
