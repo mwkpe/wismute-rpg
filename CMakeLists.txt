@@ -46,6 +46,8 @@ add_executable(wismute
     source/game/play_card.cpp
     source/game/play_card.h
     source/game/player.h
+    source/game/range_finder.cpp
+    source/game/range_finder.h
     source/game/scene.cpp
     source/game/scene.h
     source/game/slime.h

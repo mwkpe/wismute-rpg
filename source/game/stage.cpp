@@ -170,6 +170,7 @@ void wis::Stage::handle_event(const engine::Mouse_button_down_event& event)
           dispatcher_.trigger(event::Action_deselected{selected_action_id_});
         }
 
+        range_finder_.clear();
         selected_action_id_ = 0;
       }
 
@@ -244,7 +245,7 @@ void wis::Stage::handle_event(const engine::Mouse_motion_event& event)
     auto [a, b] = path_finder_.endpoints();
 
     if (player_.scene_index != a || cursor.scene_index != b) {
-      path_finder_.search(scene_.tiles(), player_.scene_index, cursor.scene_index);
+      path_finder_.find(scene_.tiles(), player_.scene_index, cursor.scene_index);
     }
   }
 }
@@ -259,6 +260,11 @@ void wis::Stage::on_action_selected(const event::Action_selected& event)
 {
   selected_action_id_ = event.id;
   player_.mesh_index = 104;
+
+  if (auto card = scene_.card(selected_action_id_); card) {
+    range_finder_.find(scene_.tiles(), scene_.size().x, player_.scene_index, *card);
+  }
+
   std::print("Action {} selected\n", event.id);
 }
 
@@ -364,6 +370,13 @@ void wis::Stage::render_overlay()
     for (const auto index : path_finder_.path()) {
       ground_entity_.transform().set_position(lattice_.as_position_xz(index));
       pixel_renderer_.render(ground_entity_, atlas_.stage(), 386);
+    }
+  }
+
+  if (range_finder_.has_range()) {
+    for (const auto index : range_finder_.range()) {
+      ground_entity_.transform().set_position(lattice_.as_position_xz(index));
+      pixel_renderer_.render(ground_entity_, atlas_.stage(), 380);
     }
   }
 
