@@ -258,7 +258,7 @@ void wis::Stage::handle_event([[maybe_unused]] const engine::Mouse_wheel_event& 
 void wis::Stage::on_action_selected(const event::Action_selected& event)
 {
   selected_action_id_ = event.id;
-  player_.mesh_index = 103;
+  player_.mesh_index = 104;
   std::print("Action {} selected\n", event.id);
 }
 
