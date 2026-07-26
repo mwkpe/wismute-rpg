@@ -140,6 +140,8 @@ void wis::Stage::handle_event([[maybe_unused]] const engine::Key_up_event& event
 
 void wis::Stage::handle_event(const engine::Mouse_button_down_event& event)
 {
+  const auto& cursor = game_data_.cursor.stage;
+
   switch (event.button) {
     case engine::Mouse_button::Right: {
       game_data_.camera.drag = true;
@@ -147,8 +149,8 @@ void wis::Stage::handle_event(const engine::Mouse_button_down_event& event)
     break;
     case engine::Mouse_button::Left: {
       if (selected_action_id_ == 0) {
-        if (!scene_.tile(game_data_.cursor.stage.scene_index)->is_nil) {
-          game_data_.stage.selected_index = game_data_.cursor.stage.scene_index;
+        if (!scene_.tile(cursor.scene_index)->is_nil) {
+          game_data_.stage.selected_index = cursor.scene_index;
           path_finder_.clear();
         }
         else {
@@ -156,21 +158,18 @@ void wis::Stage::handle_event(const engine::Mouse_button_down_event& event)
         }
       }
 
-      if (game_data_.cursor.stage.scene_index > 0 && selected_action_id_ > 0) {
-        if (auto card = scene_.card(selected_action_id_); card) {
-          play_card(*card, player_, scene_.tiles(), scene_.slimes(),
-            game_data_.cursor.stage.scene_index);
-            dispatcher_.trigger(event::Action_triggered{selected_action_id_});
-            selected_action_id_ = 0;
+      if (selected_action_id_) {
+        auto* tile = scene_.tile(cursor.scene_index);
+        auto card = scene_.card(selected_action_id_);
+
+        if (!tile->is_nil && card) {
+          play_card(*card, player_, scene_.tiles(), scene_.slimes(), cursor.scene_index);
+          dispatcher_.trigger(event::Action_triggered{selected_action_id_});
         }
         else {
           dispatcher_.trigger(event::Action_deselected{selected_action_id_});
-          selected_action_id_ = 0;
-          std::print("Invalid action: {}\n", selected_action_id_);
         }
-      }
-      else {
-        dispatcher_.trigger(event::Action_deselected{selected_action_id_});
+
         selected_action_id_ = 0;
       }
 
