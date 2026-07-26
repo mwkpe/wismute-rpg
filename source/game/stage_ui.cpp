@@ -36,7 +36,7 @@ wis::Stage_ui::Stage_ui(entt::registry& registry,
     app_data_{app_data},
     game_data_{game_data},
     atlas_{atlas},
-    camera_{{0.0f, 30.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},
+    camera_{{0.0f, 32.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},
     action_panel_{dispatcher}
 {
 }
