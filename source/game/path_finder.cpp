@@ -5,8 +5,7 @@
 #include <array>
 
 
-bool wis::Path_finder::search(std::span<const Tile> tiles, std::uint32_t origin,
-    std::uint32_t target)
+bool wis::Path_finder::find(std::span<const Tile> tiles, std::uint32_t origin, std::uint32_t target)
 {
   path_.clear();
   path_.reserve(tiles.size());

@@ -43,12 +43,12 @@ void play(const wis::Move move, wis::Player& player, std::span<const wis::Tile> 
 }
 
 
-void play(const wis::Fireball card, std::span<const wis::Tile> tiles, std::span<wis::Slime> slimes,
+void play(wis::Fireball fireball, std::span<const wis::Tile> tiles, std::span<wis::Slime> slimes,
     std::uint32_t player_index, std::uint32_t target_index)
 {
-  std::uint32_t damage = card.damage;
+  std::uint32_t damage = fireball.damage;
 
-  if (is_amplified(tiles, player_index, card.element)) {
+  if (is_amplified(tiles, player_index, fireball.element)) {
     damage *= 2u;
   }
 
@@ -67,22 +67,22 @@ void play(const wis::Fireball card, std::span<const wis::Tile> tiles, std::span<
 }  // namespace
 
 
-void wis::play_card(const Card card, Player& player, std::span<const Tile> tiles,
+void wis::play_card(Card card, Player& player, std::span<const Tile> tiles,
     std::span<Slime> slimes, std::uint32_t target_index)
 {
   std::visit(util::match{
-      [&](const Move move) {
+      [&](Move move) {
         play(move, player, tiles, slimes, target_index);
       },
-      [&](const Fireball fireball) {
+      [&](Fireball fireball) {
         play(fireball, tiles, slimes, player.scene_index, target_index);
       },
-      [&](const Inferno){ std::print("Inferno not implemented\n"); },
-      [&](const Jet){ std::print("Jet not implemented\n"); },
-      [&](const Splash){ std::print("Splash not implemented\n"); },
-      [&](const Lightning){ std::print("Lightning not implemented\n"); },
-      [&](const Gust){ std::print("Gust not implemented\n"); },
-      [&](const Missile){ std::print("Missile not implemented\n"); },
-      [&](const Teleport){ std::print("Teleport not implemented\n"); }
+      [&](Inferno){ std::print("Inferno not implemented\n"); },
+      [&](Jet){ std::print("Jet not implemented\n"); },
+      [&](Splash){ std::print("Splash not implemented\n"); },
+      [&](Lightning){ std::print("Lightning not implemented\n"); },
+      [&](Gust){ std::print("Gust not implemented\n"); },
+      [&](Missile){ std::print("Missile not implemented\n"); },
+      [&](Teleport){ std::print("Teleport not implemented\n"); }
   }, card);
 }

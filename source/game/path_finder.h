@@ -16,7 +16,7 @@ namespace wis {
 class Path_finder
 {
 public:
-  bool search(std::span<const Tile> tiles, std::uint32_t origin, std::uint32_t target);
+  bool find(std::span<const Tile> tiles, std::uint32_t origin, std::uint32_t target);
   void clear() { path_.clear(); };
   bool has_path() const { return !path_.empty(); }
   std::span<const std::uint32_t> path() const { return path_; }
