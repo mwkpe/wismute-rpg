@@ -57,6 +57,12 @@ void wis::ui::Action_panel::init(std::span<const Card> cards)
 
     x += val::tile_size_ui();
   }
+
+  for (auto& action : actions_) {
+    if (!action.is_available) {
+      action.mesh_index += 20u;
+    }
+  }
 }
 
 
