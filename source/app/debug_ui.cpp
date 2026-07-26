@@ -83,7 +83,7 @@ void wis::Debug_ui::build(Settings& settings, App_data& app_data, Game_data& gam
     ImGui::Checkbox("Fullscreen", &settings.window.fullscreen);
     ImGui::Checkbox("Limit", &settings.render.limit_fps);
     ImGui::SameLine();
-    ImGui::SliderInt("FPS", &settings.render.max_fps, 30, 300);
+    ImGui::SliderInt("FPS", &settings.render.max_fps, 30, 240);
     ImGui::Dummy({0.0f, 8.0f});
 
     ImGui::Text("Debug");
