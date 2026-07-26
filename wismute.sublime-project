@@ -1,0 +1,41 @@
+{
+  "folders":
+  [
+    {
+      "path": ".",
+    },
+    {
+      "path": "apeiron/apeiron/engine",
+    },
+    {
+      "path": "apeiron/apeiron/opengl",
+    },
+    {
+      "path": "source/app",
+    },
+    {
+      "path": "source/core",
+    },
+    {
+      "path": "source/ui",
+    },
+    {
+      "path": "source/util",
+    },
+    {
+      "path": "source/shader",
+    },
+    {
+      "path": "source/game",
+    },
+    {
+      "path": "assets",
+    },
+    {
+      "path": "cmake-build-release",
+    },
+    {
+      "path": "scripts",
+    }
+  ]
+}
