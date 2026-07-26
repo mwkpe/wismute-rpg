@@ -9,9 +9,13 @@
 #include "core/palette.h"
 #include "game/constants.h"
 #include "game/cards.h"
+#include "util/utility.h"
 
 
 namespace {
+
+
+namespace engine = apeiron::engine;
 
 
 constexpr auto is_spent = std::views::filter([](const auto& a) { return a.is_spent; });
@@ -250,10 +254,10 @@ void wis::Stage_ui::render_cursor()
 
 std::optional<glm::vec3> wis::Stage_ui::screen_point(float screen_x, float screen_y)
 {
-  using namespace apeiron::engine::collision;
+  using namespace engine::collision;
 
-  float nx = screen_x / static_cast<float>(app_data_.window.logical_width) * 2.0f - 1.0f;
-  float ny = (screen_y / static_cast<float>(app_data_.window.logical_height) * 2.0f - 1.0f) * -1.0f;
+  auto [nx, ny] = util::as_ndc(screen_x, screen_y, app_data_.window.logical_width,
+      app_data_.window.logical_height);
 
   Ray ray = screen_raycast(nx, ny, renderer_.inverse_view_projection());
   Plane plane{{0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}};
@@ -265,10 +269,10 @@ std::optional<glm::vec3> wis::Stage_ui::screen_point(float screen_x, float scree
 std::optional<glm::vec2> wis::Stage_ui::panel_point(float screen_x, float screen_y,
     const apeiron::engine::collision::Quad& panel)
 {
-  using namespace apeiron::engine::collision;
+  using namespace engine::collision;
 
-  float nx = screen_x / static_cast<float>(app_data_.window.logical_width) * 2.0f - 1.0f;
-  float ny = (screen_y / static_cast<float>(app_data_.window.logical_height) * 2.0f - 1.0f) * -1.0f;
+  auto [nx, ny] = util::as_ndc(screen_x, screen_y, app_data_.window.logical_width,
+      app_data_.window.logical_height);
 
   Ray ray = screen_raycast(nx, ny, renderer_.inverse_view_projection());
 

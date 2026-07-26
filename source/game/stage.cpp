@@ -15,6 +15,8 @@
 #include "game/constants.h"
 #include "game/play_card.h"
 
+#include "util/utility.h"
+
 
 namespace {
 
@@ -24,12 +26,6 @@ namespace engine = apeiron::engine;
 
 constexpr auto is_alive = std::views::filter([](const auto& e) { return e.health > 0; });
 constexpr auto has_mesh = std::views::filter([](const auto& e) { return e.mesh_index != 20; });
-
-
-auto as_ndc(float x, float y, std::uint32_t w, std::uint32_t h) -> std::tuple<float, float>
-{
-  return {x / static_cast<float>(w) * 2.0f - 1.0f, 1.0f - y / static_cast<float>(h) * 2.0f};
-}
 
 
 }  // namespace
@@ -459,7 +455,7 @@ std::optional<glm::vec3> wis::Stage::ground_point(float screen_x, float screen_y
 {
   using namespace engine::collision;
 
-  auto [nx, ny] = as_ndc(screen_x, screen_y, app_data_.window.logical_width,
+  auto [nx, ny] = util::as_ndc(screen_x, screen_y, app_data_.window.logical_width,
       app_data_.window.logical_height);
 
   Ray ray = screen_raycast(nx, ny, renderer_.inverse_view_projection());
