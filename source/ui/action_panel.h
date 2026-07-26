@@ -32,7 +32,7 @@ struct Action_widget final : Widget
 
   std::uint32_t id = 0;
   Card card;
-  bool is_spent = false;
+  bool is_available = true;
 };
 
 

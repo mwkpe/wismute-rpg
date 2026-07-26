@@ -18,8 +18,8 @@ namespace {
 namespace engine = apeiron::engine;
 
 
-constexpr auto is_spent = std::views::filter([](const auto& a) { return a.is_spent; });
-constexpr auto is_not_spent = std::views::filter([](const auto& a) { return !a.is_spent; });
+constexpr auto not_available = std::views::filter([](const auto& e) { return !e.is_available; });
+constexpr auto is_available = std::views::filter([](const auto& e) { return e.is_available; });
 
 
 }  // namespace
@@ -198,7 +198,7 @@ void wis::Stage_ui::render_panels()
   pixel_renderer_.use();
 
   // Actions
-  for (const auto& widget : action_panel_.actions() | is_not_spent) {
+  for (const auto& widget : action_panel_.actions() | is_available) {
     entity_.transform() = action_panel_.as_world_transform(widget.position);
     pixel_renderer_.render(entity_, atlas_.ui(), widget.mesh_index);
 
@@ -210,7 +210,7 @@ void wis::Stage_ui::render_panels()
   pixel_renderer_.set_desaturation_factor(1.0f);
   pixel_renderer_.enable_desaturation();
 
-  for (const auto& widget : action_panel_.actions() | is_spent) {
+  for (const auto& widget : action_panel_.actions() | not_available) {
     entity_.transform() = action_panel_.as_world_transform(widget.position);
     pixel_renderer_.render(entity_, atlas_.ui(), widget.mesh_index);
   }

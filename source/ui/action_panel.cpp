@@ -15,7 +15,7 @@ namespace {
 namespace engine = apeiron::engine;
 
 
-constexpr auto is_not_spent = std::views::filter([](const auto& a) { return !a.is_spent; });
+constexpr auto is_available = std::views::filter([](const auto& e) { return e.is_available; });
 
 
 wis::ui::Action_widget* get_widget(std::span<wis::ui::Action_widget> widgets, std::uint32_t id)
@@ -82,7 +82,7 @@ void wis::ui::Action_panel::update(float delta_s)
 {
   float d = 3.0f * delta_s;
 
-  for (auto& widget : actions_ | is_not_spent) {
+  for (auto& widget : actions_ | is_available) {
     if (widget.hovered) {
       // Raise hovered widget
       widget.position.y = std::max(-0.4f, widget.position.y - d);
@@ -99,7 +99,7 @@ void wis::ui::Action_panel::hover(const glm::vec2& point)
 {
   clear_hover();
 
-  for (auto& widget : actions_ | is_not_spent) {
+  for (auto& widget : actions_ | is_available) {
     if (engine::collision::within({point.x, point.y}, widget.rect)) {
       widget.hovered = true;
     }
@@ -142,7 +142,7 @@ void wis::ui::Action_panel::clear_selection()
 void wis::ui::Action_panel::on_action_triggered(const event::Action_triggered& event)
 {
   if (auto* widget = get_widget(actions_, event.id); widget) {
-    widget->is_spent = true;
+    widget->is_available = false;
     widget->mesh_index += 20u;
     widget->position.y = 0.0f;
 
