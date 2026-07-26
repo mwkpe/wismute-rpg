@@ -60,6 +60,8 @@ add_executable(wismute
     source/ui/action_panel.h
     source/ui/panel.cpp
     source/ui/panel.h
+    source/ui/portrait_panel.cpp
+    source/ui/portrait_panel.h
     source/ui/quad.h
     source/ui/widget.h
     source/util/utility.cpp
