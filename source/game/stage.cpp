@@ -157,10 +157,17 @@ void wis::Stage::handle_event(const engine::Mouse_button_down_event& event)
       }
 
       if (game_data_.cursor.stage.scene_index > 0 && selected_action_id_ > 0) {
-        play_card(card_, player_, scene_.tiles(), scene_.slimes(),
+        if (auto card = scene_.card(selected_action_id_); card) {
+          play_card(*card, player_, scene_.tiles(), scene_.slimes(),
             game_data_.cursor.stage.scene_index);
-        dispatcher_.trigger(event::Action_triggered{selected_action_id_});
-        selected_action_id_ = 0;
+            dispatcher_.trigger(event::Action_triggered{selected_action_id_});
+            selected_action_id_ = 0;
+        }
+        else {
+          dispatcher_.trigger(event::Action_deselected{selected_action_id_});
+          selected_action_id_ = 0;
+          std::print("Invalid action: {}\n", selected_action_id_);
+        }
       }
       else {
         dispatcher_.trigger(event::Action_deselected{selected_action_id_});
@@ -252,7 +259,6 @@ void wis::Stage::handle_event([[maybe_unused]] const engine::Mouse_wheel_event& 
 void wis::Stage::on_action_selected(const event::Action_selected& event)
 {
   selected_action_id_ = event.id;
-  card_ = event.card;
   player_.mesh_index = 103;
   std::print("Action {} selected\n", event.id);
 }

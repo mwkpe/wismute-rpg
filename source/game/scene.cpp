@@ -1,7 +1,10 @@
 #include "scene.h"
 
 
+#include <algorithm>
 #include <cstdint>
+#include <ranges>
+
 #include "app/error.h"
 #include "core/constants.h"
 #include "core/lattice.h"
@@ -86,6 +89,19 @@ auto wis::Scene::tile(std::uint32_t index) const -> const Tile*
 }
 
 
+auto wis::Scene::card(std::uint8_t id) const -> std::optional<Card>
+{
+  auto p = [](const Card& c) { return std::visit([](const auto& e){ return e.id; }, c); };
+  auto it = std::ranges::find(cards_, id, p);
+
+  if (it != cards_.end()) {
+    return *it;
+  }
+
+  return std::nullopt;
+}
+
+
 void wis::Scene::load_scene(std::string_view filepath)
 {
   auto scene_data = util::read_json(filepath);
@@ -102,18 +118,22 @@ void wis::Scene::load_scene(std::string_view filepath)
   const Lattice lattice{size_, val::tile_size()};
 
   // Cards
-  cards_ = {
-    Move{1},
-    Move{2},
-    Move{3},
-    Move{4},
-    Fireball{},
-    Inferno{},
-    Jet{},
-    Splash{},
-    Missile{},
-    Teleport{}
-  };
+  {
+    std::uint8_t id = 0;
+
+    cards_ = {
+      Move{++id, 1},
+      Move{++id, 2},
+      Move{++id, 3},
+      Move{++id, 4},
+      Fireball{++id},
+      Inferno{++id},
+      Jet{++id},
+      Splash{++id},
+      Missile{++id},
+      Teleport{++id}
+    };
+  }
 
   // Tiles
   {

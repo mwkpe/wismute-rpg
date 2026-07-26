@@ -19,7 +19,7 @@ namespace wis::ui {
 struct Action_widget final : Widget
 {
   Action_widget(std::uint32_t id,
-      Card card,
+      bool is_played,
       std::uint16_t mesh_index,
       float x,
       float y,
@@ -28,10 +28,9 @@ struct Action_widget final : Widget
       :
       Widget{mesh_index, x, y, w, h},
       id{id},
-      card{card} {}
+      is_available{!is_played} {}
 
   std::uint32_t id = 0;
-  Card card;
   bool is_available = true;
 };
 

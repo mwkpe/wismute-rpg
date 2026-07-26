@@ -3,6 +3,7 @@
 
 
 #include <cstdint>
+#include <optional>
 #include <span>
 #include <string>
 #include <string_view>
@@ -27,9 +28,14 @@ public:
 
   [[nodiscard]] const glm::uvec2& size() const { return size_; }
   [[nodiscard]] const glm::uvec2& margin() const { return margin_; }
+
   [[nodiscard]] std::uint32_t start_index() const { return start_index_; }
+
   [[nodiscard]] Tile* tile(std::uint32_t index);
   [[nodiscard]] const Tile* tile(std::uint32_t index) const;
+
+  [[nodiscard]] std::optional<Card> card(std::uint8_t id) const;
+
   [[nodiscard]] std::span<Card> cards() { return cards_; }
   [[nodiscard]] std::span<const Card> cards() const { return cards_; }
   [[nodiscard]] std::span<Tile> tiles() { return tiles_; }

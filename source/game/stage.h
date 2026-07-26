@@ -20,7 +20,6 @@
 #include "core/pixel_renderer.h"
 #include "core/renderer.h"
 
-#include "game/cards.h"
 #include "game/events.h"
 #include "game/game_data.h"
 #include "game/path_finder.h"
@@ -105,7 +104,6 @@ private:
   apeiron::prefab::Grid grid_;
   Player player_;
   std::uint32_t selected_action_id_ = 0;
-  Card card_;
 };
 
 

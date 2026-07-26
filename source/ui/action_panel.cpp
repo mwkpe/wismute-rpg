@@ -47,23 +47,15 @@ void wis::ui::Action_panel::init(std::span<const Card> cards)
   reset();
 
   float x = 0.0f;
-  std::uint32_t id = 1;
+  constexpr float y = 0.0f;
 
   for (const auto& card : cards) {
     std::visit(util::match{
-        [&](Move c){ actions_.emplace_back(id, c, 9 + c.steps, x, 0.0f); },
-        [&](Fireball c){ actions_.emplace_back(id, c, 0, x, 0.0f); },
-        [&](Inferno c){ actions_.emplace_back(id, c, 1, x, 0.0f); },
-        [&](Jet c){ actions_.emplace_back(id, c, 2, x, 0.0f); },
-        [&](Splash c){ actions_.emplace_back(id, c, 3, x, 0.0f); },
-        [&](Lightning){ },
-        [&](Gust){ },
-        [&](Missile c){ actions_.emplace_back(id, c, 4, x, 0.0f); },
-        [&](Teleport c){ actions_.emplace_back(id, c, 5, x, 0.0f); }
+        [&](Move c){ actions_.emplace_back(c.id, c.was_played, c.mesh_index + c.steps - 1, x, y); },
+        [&](auto c){ actions_.emplace_back(c.id, c.was_played, c.mesh_index, x, y); },
     }, card);
 
     x += val::tile_size_ui();
-    id++;
   }
 }
 
@@ -112,7 +104,7 @@ void wis::ui::Action_panel::click([[maybe_unused]] const glm::vec2& point)
   if (auto* widget = get_hovered(actions_); widget) {
     clear_selection();
     widget->selected = true;
-    dispatcher_.trigger(event::Action_selected{widget->id, widget->card});
+    dispatcher_.trigger(event::Action_selected{widget->id});
   }
 }
 

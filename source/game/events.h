@@ -19,7 +19,6 @@ struct Achievement_unlocked
 struct Action_selected
 {
   std::uint32_t id;
-  Card card;
 };
 
 
