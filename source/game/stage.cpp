@@ -5,7 +5,6 @@
 #include <print>
 #include <ranges>
 
-#include "apeiron/engine/color_converter.h"
 #include "apeiron/engine/collision.h"
 #include "apeiron/engine/enums.h"
 
@@ -104,8 +103,6 @@ void wis::Stage::update_input(const engine::Input* input)
 void wis::Stage::render()
 {
   setup_view();
-  //Renderer::gl_clear(Palette::colors[48]);
-  Renderer::gl_clear(engine::as_rgb_norm("#1d171c"));  // 48 monochromatic - 1
 
   if (app_data_.debug.wireframe) {
     Renderer::set_gl_wireframe(true);
@@ -267,10 +264,6 @@ void wis::Stage::on_action_selected(const event::Action_selected& event)
 
 void wis::Stage::init_renderer()
 {
-  Renderer::gl_init();
-  Renderer::set_gl_frame_buffer(0);
-  Renderer::set_gl_viewport(0, 0, app_data_.window.pixel_width, app_data_.window.pixel_height);
-
   renderer_.init();
   pixel_renderer_.init(val::pixel_size(), val::sprite_size());
 }

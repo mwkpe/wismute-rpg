@@ -1,6 +1,8 @@
 #include "game.h"
 
 
+#include "apeiron/engine/color_converter.h"
+#include "core/renderer.h"
 #include "game/events.h"
 
 
@@ -17,6 +19,10 @@ wis::Game::Game(const App_data& app_data,
 
 void wis::Game::init()
 {
+  Renderer::gl_init();
+  Renderer::set_gl_frame_buffer(0);
+  Renderer::set_gl_viewport(0, 0, app_data_.window.pixel_width, app_data_.window.pixel_height);
+
   atlas_.init();
   stage_.init();
   stage_ui_.init();
@@ -46,6 +52,9 @@ void wis::Game::update(const apeiron::engine::Event_queue& engine_events,
 
 void wis::Game::render()
 {
+  // Palette 48 but darker (monochromatic - 1)
+  Renderer::gl_clear(apeiron::engine::as_rgb_norm("#1d171c"));
+
   stage_.render();
   stage_ui_.render();
 }

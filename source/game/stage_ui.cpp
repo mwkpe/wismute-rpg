@@ -40,8 +40,6 @@ wis::Stage_ui::Stage_ui(entt::registry& registry,
 
 void wis::Stage_ui::init()
 {
-  // Viewport and GL init is done in stage class
-
   renderer_.init();
   pixel_renderer_.init(val::pixel_size(), val::sprite_size_ui());
 
@@ -71,9 +69,8 @@ void wis::Stage_ui::update(float delta_s)
 
 void wis::Stage_ui::render()
 {
-  // Viewport and buffer selected in stage class
-
   Renderer::gl_clear_depth_buffer();
+
   setup_view();
   render_panels();
   render_debug();
