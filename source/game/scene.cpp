@@ -9,6 +9,63 @@
 #include "util/utility.h"
 
 
+namespace {
+
+
+std::uint32_t reindex(std::uint32_t index, std::uint32_t size_x, std::uint32_t margin_x)
+{
+  return (index / size_x + margin_x) * (size_x + 2u * margin_x) + (index % size_x + margin_x);
+}
+
+
+void assign_neighbors(std::span<wis::Tile> tiles, const glm::uvec2& size)
+{
+  auto size_x = static_cast<std::int32_t>(size.x);
+  auto size_y = static_cast<std::int32_t>(size.y);
+
+  // East and west
+  for (int i=0; i<size_y; i++) {
+    for (int j=1; j<size_x; j++) {
+      int index = i * size_x + j;
+
+      if (!tiles[index].is_nil && !tiles[index - 1].is_nil) {
+        tiles[index].set_west_index(index - 1);
+      }
+    }
+
+    for (int j=0; j<size_x-1; j++) {
+      int index = i * size_x + j;
+
+      if (!tiles[index].is_nil && !tiles[index + 1].is_nil) {
+        tiles[index].set_east_index(index + 1);
+      }
+    }
+  }
+
+  // North and south
+  for (int i=0; i<size_x; i++) {
+    for (int j=1; j<size_y; j++) {
+      int index = j * size_x + i;
+
+      if (!tiles[index].is_nil && !tiles[index - size_x].is_nil) {
+        tiles[index].set_north_index(index - size_x);
+      }
+    }
+
+    for (int j=0; j<size_y-1; j++) {
+      int index = j * size_x + i;
+
+      if (!tiles[index].is_nil && !tiles[index + size_x].is_nil) {
+        tiles[index].set_south_index(index + size_x);
+      }
+    }
+  }
+}
+
+
+}  // namespace
+
+
 auto wis::Scene::tile(std::uint32_t index) -> Tile*
 {
   if (index >= tiles_.size()) {
@@ -31,15 +88,32 @@ auto wis::Scene::tile(std::uint32_t index) const -> const Tile*
 
 void wis::Scene::load_scene(std::string_view filepath)
 {
-  auto j = util::read_json(filepath);
+  auto scene_data = util::read_json(filepath);
 
-  const auto& attributes = j["attributes"];
-
+  const auto& attributes = scene_data["attributes"];
   name_ = attributes["name"];
-  size_ = glm::uvec2{attributes["cols"], attributes["rows"]};
 
-  Lattice lattice{size_, val::tile_size()};
-  glm::vec3 sprite_offset{0.0f, 0.0f, 0.4f};
+  margin_ = {3u, 3u};
+  const glm::uvec2 map_size{attributes["cols"], attributes["rows"]};
+
+  size_ = map_size + margin_ * 2u;
+  start_index_ = reindex(attributes["start_index"], map_size.x, margin_.x);
+
+  const Lattice lattice{size_, val::tile_size()};
+
+  // Cards
+  cards_ = {
+    Move{1},
+    Move{2},
+    Move{3},
+    Move{4},
+    Fireball{},
+    Inferno{},
+    Jet{},
+    Splash{},
+    Missile{},
+    Teleport{}
+  };
 
   // Tiles
   {
@@ -49,13 +123,22 @@ void wis::Scene::load_scene(std::string_view filepath)
     std::uint32_t index = 0;
 
     for (auto& tile : tiles_) {
-      const auto& tile_data = j["tiles"][index];
-
-      tile.mesh_index = tile_data["mesh_index"];
       tile.index = index++;
       tile.col = tile.index % size_.x;
       tile.row = tile.index / size_.x;
-      tile.is_nil = tile.index == 0;
+      tile.mesh_index = 20;  // Empty tile
+    }
+
+    index = 0;
+
+    for (const auto& tile_data : scene_data["tiles"]) {
+      std::uint32_t map_index = tile_data["index"];
+      std::uint32_t scene_index = reindex(map_index, map_size.x, margin_.x);
+
+      auto& tile = tiles_[scene_index];
+
+      tile.mesh_index = tile_data["mesh_index"];
+      tile.is_nil = tile_data.value("is_nil", false);
       tile.is_wall = tile_data["is_wall"];
 
       switch (tile_data["element"].get<std::uint32_t>()) {
@@ -68,6 +151,8 @@ void wis::Scene::load_scene(std::string_view filepath)
   }
 
   // Sprites
+  const glm::vec3 sprite_offset{0.0f, 0.0f, 0.4f};
+
   for (const auto& tile : tiles_) {
     if (tile.element == Element::Wind) {
       sprites_.emplace_back(lattice.as_position_xz(tile.index, sprite_offset), tile.index,
@@ -80,11 +165,12 @@ void wis::Scene::load_scene(std::string_view filepath)
   // Slimes
   {
     slimes_.clear();
+
     std::uint32_t id = 0;
     float offset = 0.15f;
 
-    for (const auto& slime : j["slimes"]) {
-      std::uint32_t index = slime["index"];
+    for (const auto& slime : scene_data["slimes"]) {
+      std::uint32_t index = reindex(slime["index"], map_size.x, margin_.x);
       std::uint32_t weight = slime["weight"];
       std::uint32_t mesh = weight == 2 ? 141 : 143;
 
@@ -102,59 +188,16 @@ void wis::Scene::load_scene(std::string_view filepath)
     }
   }
 
-  connect_neighbors();
+  assign_neighbors(tiles_, size_);
 }
 
 
 void wis::Scene::reset()
 {
   name_ = {};
-  size_ = glm::vec2{1.0f, 1.0f};
+  size_ = {1, 1};
+  cards_.clear();
   tiles_.clear();
   sprites_.clear();
-}
-
-
-void wis::Scene::connect_neighbors()
-{
-  auto size_x = static_cast<std::int32_t>(size_.x);
-  auto size_y = static_cast<std::int32_t>(size_.y);
-
-  // East and west
-  for (int i=0; i<size_y; i++) {
-    for (int j=1; j<size_x; j++) {
-      int index = i * size_x + j;
-
-      if (!tiles_[index].is_nil && !tiles_[index - 1].is_nil) {
-        tiles_[index].set_west_index(index - 1);
-      }
-    }
-
-    for (int j=0; j<size_x-1; j++) {
-      int index = i * size_x + j;
-
-      if (!tiles_[index].is_nil && !tiles_[index + 1].is_nil) {
-        tiles_[index].set_east_index(index + 1);
-      }
-    }
-  }
-
-  // North and south
-  for (int i=0; i<size_x; i++) {
-    for (int j=1; j<size_y; j++) {
-      int index = j * size_x + i;
-
-      if (!tiles_[index].is_nil && !tiles_[index - size_x].is_nil) {
-        tiles_[index].set_north_index(index - size_x);
-      }
-    }
-
-    for (int j=0; j<size_y-1; j++) {
-      int index = j * size_x + i;
-
-      if (!tiles_[index].is_nil && !tiles_[index + size_x].is_nil) {
-        tiles_[index].set_south_index(index + size_x);
-      }
-    }
-  }
+  slimes_.clear();
 }

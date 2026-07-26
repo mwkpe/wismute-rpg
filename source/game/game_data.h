@@ -37,13 +37,14 @@ struct Camera_data
 {
   bool drag = false;
   float fov = 45.0f;
-  float height = 24.0f;
+  float height = 20.0f;
 };
 
 
 struct Stage_data
 {
-  std::uint32_t selected_scene_index = 0;
+  std::uint32_t hovered_index = 0;
+  std::uint32_t selected_index = 0;
 };
 
 

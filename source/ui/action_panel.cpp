@@ -146,7 +146,7 @@ void wis::ui::Action_panel::on_action_triggered(const event::Action_triggered& e
     widget->mesh_index += 20u;
     widget->position.y = 0.0f;
 
-    std::print("Action {} used\n", event.id);
+    std::print("Action {} triggered\n", event.id);
   }
 
   clear_selection();

@@ -23,7 +23,8 @@ namespace {
 namespace engine = apeiron::engine;
 
 
-constexpr auto is_alive = std::views::filter([](const auto& s) { return s.health > 0; });
+constexpr auto is_alive = std::views::filter([](const auto& e) { return e.health > 0; });
+constexpr auto has_mesh = std::views::filter([](const auto& e) { return e.mesh_index != 20; });
 
 
 auto as_ndc(float x, float y, std::uint32_t w, std::uint32_t h) -> std::tuple<float, float>
@@ -39,44 +40,45 @@ wis::Stage::Stage(entt::registry& registry,
     entt::dispatcher& dispatcher,
     const App_data& app_data,
     Game_data& game_data,
-    const Atlas& atlas)
+    const Atlas& atlas,
+    Scene& scene)
     :
     registry_{registry},
     dispatcher_{dispatcher},
     app_data_{app_data},
     game_data_{game_data},
-    atlas_{atlas}
+    atlas_{atlas},
+    scene_{scene}
 {
+  dispatcher_.sink<event::Action_selected>().connect<&Stage::on_action_selected>(this);
 }
 
 
 void wis::Stage::init()
 {
-  init_dispatcher();
   init_renderer();
-
-  load_scene();
-  init_camera_controllers();  // Must know scene size
 
   sprite_entity_.transform().set_origin(0.0f, 0.0f, -val::tile_size() * 0.5f)
       .set_rotation_deg(45.0f, 0.0f, 0.0f)
       .set_rotation_pivot(engine::Axis::X, 0.0f, 0.0f, val::tile_size() * 0.5f);
-
-  player_ = Player{lattice_.as_position_xz(9, glm::vec3{0.0f, 0.0f, 0.4f}),
-      9, 102, 0.03f, 4.0f, val::tau()};
 }
 
 
-void wis::Stage::load_scene()
+void wis::Stage::init_scene()
 {
-  //scene_.create_test_mini();
-  scene_.load_scene("assets/test_scene.json");
   lattice_.init(scene_.size(), val::tile_size());
 
   auto field_size = lattice_.field_size();
   grid_.init(field_size, lattice_.size(), Palette::colors[47]);
   grid_.transform().set_position(field_size.x * 0.5f, 0.001f, field_size.y * 0.5f)
       .set_rotation_deg(-90.0f, 0.0f, 0.0f);
+
+  init_camera_controllers();
+
+  const auto start_index = scene_.start_index();
+  const auto start_position = lattice_.as_position_xz(start_index, glm::vec3{0.0f, 0.0f, 0.4f});
+
+  player_ = Player{start_position, start_index, 102, 0.03f, 4.0f, val::tau()};
 }
 
 
@@ -103,7 +105,7 @@ void wis::Stage::render()
 {
   setup_view();
   //Renderer::gl_clear(Palette::colors[48]);
-  Renderer::gl_clear(engine::as_rgb_norm("#181514"));
+  Renderer::gl_clear(engine::as_rgb_norm("#1d171c"));  // 48 monochromatic - 1
 
   if (app_data_.debug.wireframe) {
     Renderer::set_gl_wireframe(true);
@@ -129,9 +131,6 @@ void wis::Stage::handle_event([[maybe_unused]] const engine::Key_down_event& eve
       reset_orbit_controller();
       game_data_.control.use_orbit_camera = true;
     break;
-    case SDLK_B:
-      play_card(Fireball{}, scene_.tiles(), scene_.slimes(), 9, 21);
-    break;
   }
 }
 
@@ -155,11 +154,18 @@ void wis::Stage::handle_event(const engine::Mouse_button_down_event& event)
     break;
     case engine::Mouse_button::Left: {
       if (selected_action_id_ == 0) {
-        game_data_.stage.selected_scene_index = game_data_.cursor.stage.scene_index;
-        path_finder_.clear();
+        if (!scene_.tile(game_data_.cursor.stage.scene_index)->is_nil) {
+          game_data_.stage.selected_index = game_data_.cursor.stage.scene_index;
+          path_finder_.clear();
+        }
+        else {
+          game_data_.stage.selected_index = 0;
+        }
       }
 
       if (game_data_.cursor.stage.scene_index > 0 && selected_action_id_ > 0) {
+        play_card(card_, player_, scene_.tiles(), scene_.slimes(),
+            game_data_.cursor.stage.scene_index);
         dispatcher_.trigger(event::Action_triggered{selected_action_id_});
         selected_action_id_ = 0;
       }
@@ -167,6 +173,8 @@ void wis::Stage::handle_event(const engine::Mouse_button_down_event& event)
         dispatcher_.trigger(event::Action_deselected{selected_action_id_});
         selected_action_id_ = 0;
       }
+
+      player_.mesh_index = 102;
     }
     break;
     default:;
@@ -189,6 +197,7 @@ void wis::Stage::handle_event(const engine::Mouse_button_up_event& event)
 void wis::Stage::handle_event(const engine::Mouse_motion_event& event)
 {
   auto& cursor = game_data_.cursor.stage;
+  auto& stage = game_data_.stage;
 
   if (game_data_.control.use_orbit_camera && game_data_.camera.drag) {
     orbit_controller_.orbit(event.x_rel, -event.y_rel, game_data_.control.sensitivity * 4.0f);
@@ -205,11 +214,19 @@ void wis::Stage::handle_event(const engine::Mouse_motion_event& event)
       cursor.scene_index = *index;
       cursor.scene_coords = lattice_.as_coords(*index);
       cursor.scene_position = lattice_.as_position_xz(*index);
+
+      if (const auto* tile = scene_.tile(cursor.scene_index); tile && !tile->is_nil) {
+        stage.hovered_index = cursor.scene_index;
+      }
+      else {
+        stage.hovered_index = 0;
+      }
     }
     else {
       cursor.scene_index = 0;
       cursor.scene_coords = glm::uvec2{0};
       cursor.scene_position = glm::vec3{0.0f};
+      stage.hovered_index = 0;
       path_finder_.clear();
     }
   }
@@ -218,12 +235,13 @@ void wis::Stage::handle_event(const engine::Mouse_motion_event& event)
     cursor.scene_coords = glm::uvec2{0};
     cursor.scene_position = glm::vec3{0.0f};
     cursor.ground_position = glm::vec3{0.0f};
+    stage.hovered_index = 0;
     path_finder_.clear();
   }
 
-  if (game_data_.stage.selected_scene_index && cursor.scene_index &&
-      game_data_.stage.selected_scene_index != cursor.scene_index &&
-      game_data_.stage.selected_scene_index == player_.scene_index) {
+  if (game_data_.stage.selected_index && cursor.scene_index &&
+      game_data_.stage.selected_index != cursor.scene_index &&
+      game_data_.stage.selected_index == player_.scene_index) {
     auto [a, b] = path_finder_.endpoints();
 
     if (player_.scene_index != a || cursor.scene_index != b) {
@@ -241,13 +259,9 @@ void wis::Stage::handle_event([[maybe_unused]] const engine::Mouse_wheel_event& 
 void wis::Stage::on_action_selected(const event::Action_selected& event)
 {
   selected_action_id_ = event.id;
+  card_ = event.card;
+  player_.mesh_index = 103;
   std::print("Action {} selected\n", event.id);
-}
-
-
-void wis::Stage::init_dispatcher()
-{
-  dispatcher_.sink<event::Action_selected>().connect<&Stage::on_action_selected>(this);
 }
 
 
@@ -269,7 +283,7 @@ void wis::Stage::init_camera_controllers()
   const float height = game_data_.camera.height;
   const auto dir = engine::direction_from_angles(pitch, yaw);
   const float x = lattice_.field_size().x * 0.5f;
-  constexpr float z = 20.0f;
+  const float z = lattice_.field_size().y + 6.0f - static_cast<float>(scene_.margin().y * 2u);
 
   free_controller_.init(pitch, yaw, {x, height, z});
   orbit_controller_.init(pitch, yaw, height, free_controller_.position() + dir * height);
@@ -327,7 +341,7 @@ void wis::Stage::setup_view()
 
 void wis::Stage::render_ground()
 {
-  for (const auto& tile : scene_.tiles()) {
+  for (const auto& tile : scene_.tiles() | has_mesh) {
     ground_entity_.transform().set_position(lattice_.as_position_xz(tile.index));
     pixel_renderer_.set_tile_position({tile.col, tile.row});
     pixel_renderer_.render(ground_entity_, atlas_.stage(), tile.mesh_index);
@@ -337,12 +351,19 @@ void wis::Stage::render_ground()
 
 void wis::Stage::render_overlay()
 {
-  Renderer::gl_clear_depth_buffer();
+  Renderer::set_gl_depth_test(false);
 
-  if (game_data_.stage.selected_scene_index > 0) {
-    ground_entity_.transform().set_position(lattice_.as_position_xz(
-        game_data_.stage.selected_scene_index));
-    pixel_renderer_.render(ground_entity_, atlas_.stage(), 381);
+  const auto hovered_index = game_data_.stage.hovered_index;
+  const auto selected_index = game_data_.stage.selected_index;
+
+  if (hovered_index > 0 && hovered_index != selected_index) {
+    ground_entity_.transform().set_position(lattice_.as_position_xz(hovered_index));
+    //pixel_renderer_.render(ground_entity_, atlas_.stage(), 381);
+  }
+
+  if (selected_index > 0) {
+    ground_entity_.transform().set_position(lattice_.as_position_xz(selected_index));
+    pixel_renderer_.render(ground_entity_, atlas_.stage(), 380);
   }
 
   if (path_finder_.has_path()) {
@@ -357,6 +378,10 @@ void wis::Stage::render_overlay()
 
     for (const auto& tile : scene_.tiles()) {
       ground_entity_.transform().set_position(lattice_.as_position_xz(tile.index));
+
+      if (tile.is_nil) {
+        pixel_renderer_.render(ground_entity_, atlas_.stage(), 360);
+      }
 
       if (tile.north_index()) {
         pixel_renderer_.render(ground_entity_, atlas_.stage(), 382);
@@ -375,6 +400,8 @@ void wis::Stage::render_overlay()
       }
     }
   }
+
+  Renderer::set_gl_depth_test(true);
 }
 
 
@@ -385,9 +412,9 @@ void wis::Stage::render_sprites()
     pixel_renderer_.set_tile_position({sprite.scene_coords.x, sprite.scene_coords.y});
     pixel_renderer_.render(sprite_entity_, atlas_.stage(), sprite.mesh_index);
 
-    if (sprite.scene_index == game_data_.stage.selected_scene_index) {
-      pixel_renderer_.render(sprite_entity_, atlas_.stage(), sprite.mesh_index + 20);
-    }
+    // if (sprite.scene_index == game_data_.stage.selected_index) {
+    //   pixel_renderer_.render(sprite_entity_, atlas_.stage(), sprite.mesh_index + 20);
+    // }
   }
 
   pixel_renderer_.enable_breathe();
@@ -398,12 +425,14 @@ void wis::Stage::render_sprites()
     pixel_renderer_.set_breathe_speed(player_.breathe_speed);
     pixel_renderer_.set_breathe_phase(player_.breathe_phase);
 
-    sprite_entity_.transform().set_position(player_.position);
+    auto pos = lattice_.as_position_xz(player_.scene_index, glm::vec3{0.0f, 0.0f, 0.4f});
+
+    sprite_entity_.transform().set_position(pos);
     pixel_renderer_.render(sprite_entity_, atlas_.stage(), player_.mesh_index);
 
-    if (player_.scene_index == game_data_.stage.selected_scene_index) {
-      pixel_renderer_.render(sprite_entity_, atlas_.stage(), player_.mesh_index + 20);
-    }
+    // if (player_.scene_index == game_data_.stage.selected_index) {
+    //   pixel_renderer_.render(sprite_entity_, atlas_.stage(), player_.mesh_index + 20);
+    // }
   }
 
   // Slimes
@@ -415,9 +444,9 @@ void wis::Stage::render_sprites()
     sprite_entity_.transform().set_position(slime.position);
     pixel_renderer_.render(sprite_entity_, atlas_.stage(), slime.mesh_index);
 
-    if (slime.scene_index == game_data_.stage.selected_scene_index) {
-      pixel_renderer_.render(sprite_entity_, atlas_.stage(), slime.mesh_index + 20);
-    }
+    // if (slime.scene_index == game_data_.stage.selected_index) {
+    //   pixel_renderer_.render(sprite_entity_, atlas_.stage(), slime.mesh_index + 20);
+    // }
   }
 
   pixel_renderer_.enable_breathe(false);

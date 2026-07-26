@@ -6,6 +6,7 @@
 #include <span>
 
 #include "game/cards.h"
+#include "game/player.h"
 #include "game/slime.h"
 #include "game/tile.h"
 
@@ -13,8 +14,8 @@
 namespace wis {
 
 
-void play_card(const Card card, std::span<const Tile> tiles, std::span<Slime> slimes,
-    std::uint32_t player_index, std::uint32_t target_index);
+void play_card(const Card card, Player& player, std::span<const Tile> tiles,
+    std::span<Slime> slimes, std::uint32_t target_index);
 
 
 }  // namespace wis

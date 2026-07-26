@@ -18,7 +18,7 @@ public:
   std::uint32_t row = 0;
   std::uint32_t mesh_index = 0;
   Element element = Element::None;
-  bool is_nil = false;
+  bool is_nil = true;
   bool is_wall = true;
 
   void set_north_index(std::uint32_t index) { neighbors_[0] = index; }

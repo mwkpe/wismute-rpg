@@ -11,6 +11,8 @@
 #include "core/atlas.h"
 #include "game/events.h"
 #include "game/game_data.h"
+#include "game/player.h"
+#include "game/scene.h"
 #include "game/stage.h"
 #include "game/stage_ui.h"
 
@@ -55,6 +57,7 @@ private:
   Atlas atlas_;
   Stage stage_;
   Stage_ui stage_ui_;
+  Scene scene_;
 };
 
 

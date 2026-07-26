@@ -9,7 +9,7 @@ wis::Game::Game(const App_data& app_data,
     :
     app_data_{app_data},
     game_data_{game_data},
-    stage_{registry_, dispatcher_, app_data, game_data, atlas_},
+    stage_{registry_, dispatcher_, app_data, game_data, atlas_, scene_},
     stage_ui_{registry_, dispatcher_, app_data, game_data, atlas_}
 {
 }
@@ -20,6 +20,10 @@ void wis::Game::init()
   atlas_.init();
   stage_.init();
   stage_ui_.init();
+
+  scene_.load_scene("assets/test_scene.json");
+  stage_.init_scene();
+  stage_ui_.set_cards(scene_.cards());
 
   dispatcher_.sink<event::Achievement_unlocked>().connect<&Game::on_achievement_unlocked>(*this);
 }

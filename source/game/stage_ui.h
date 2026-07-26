@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <optional>
+#include <span>
 
 #include <glm/glm.hpp>
 #include <entt/entt.hpp>
@@ -18,9 +19,10 @@
 #include "core/lattice.h"
 #include "core/pixel_renderer.h"
 #include "core/renderer.h"
+#include "game/cards.h"
 #include "game/game_data.h"
 #include "ui/action_panel.h"
-#include "ui/panel.h"
+#include "ui/portrait_panel.h"
 
 
 namespace wis {
@@ -37,6 +39,8 @@ public:
   void update(float delta_s);
   void render();
 
+  void set_cards(std::span<const Card> cards);
+
   // Engine event handlers
   bool handle_event(const apeiron::engine::Mouse_button_down_event& event);
   bool handle_event(const apeiron::engine::Mouse_button_up_event& event);
@@ -48,8 +52,9 @@ private:
   void set_screen_limits();
 
   // Render
-  void render_panel();
+  void render_panels();
   void render_debug();
+  void render_cursor();
 
   // Helper
   std::optional<glm::vec3> screen_point(float screen_x, float screen_y);
@@ -72,13 +77,14 @@ private:
   Pixel_renderer pixel_renderer_;
   const apeiron::engine::Camera camera_;
   apeiron::engine::Entity entity_;
+  apeiron::engine::Entity cursor_;
 
   // Tools
   Lattice lattice_;
 
   // Panels
-  ui::Panel undo_panel_;
   ui::Action_panel action_panel_;
+  ui::Portrait_panel portrait_panel_;
 
   // Constants
   float top_ = -1.0f;

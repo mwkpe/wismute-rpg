@@ -20,6 +20,7 @@
 #include "core/pixel_renderer.h"
 #include "core/renderer.h"
 
+#include "game/cards.h"
 #include "game/events.h"
 #include "game/game_data.h"
 #include "game/path_finder.h"
@@ -35,10 +36,10 @@ class Stage final
 public:
   Stage() = delete;
   Stage(entt::registry& registry, entt::dispatcher& dispatcher,
-      const App_data& app_data, Game_data& game_data, const Atlas& atlas);
+      const App_data& app_data, Game_data& game_data, const Atlas& atlas, Scene& scene);
 
   void init();
-  void load_scene();
+  void init_scene();
   void update();
   void update_input(const apeiron::engine::Input* input = nullptr);
   void render();
@@ -55,7 +56,6 @@ public:
   void on_action_selected(const event::Action_selected& event);
 
 private:
-  void init_dispatcher();
   void init_renderer();
   void init_camera_controllers();
   void reset_orbit_controller();
@@ -84,7 +84,7 @@ private:
   const Atlas& atlas_;
 
   // Content
-  Scene scene_;
+  Scene& scene_;
 
   // Rendering
   Renderer renderer_;
@@ -105,6 +105,7 @@ private:
   apeiron::prefab::Grid grid_;
   Player player_;
   std::uint32_t selected_action_id_ = 0;
+  Card card_;
 };
 
 

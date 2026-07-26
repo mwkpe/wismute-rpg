@@ -32,7 +32,7 @@ wis::Stage_ui::Stage_ui(entt::registry& registry,
     app_data_{app_data},
     game_data_{game_data},
     atlas_{atlas},
-    camera_{{0.0f, 36.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},
+    camera_{{0.0f, 30.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},
     action_panel_{dispatcher}
 {
 }
@@ -55,33 +55,11 @@ void wis::Stage_ui::init()
   setup_view();
   set_screen_limits();  // Needs view initialized
 
-  float s = val::tile_size_ui();
+  constexpr float tile_size = val::tile_size_ui();
 
-  std::vector<Card> cards{
-    Move{1},
-    Move{2},
-    Move{3},
-    Move{4},
-    Fireball{},
-    Inferno{},
-    Jet{},
-    Splash{},
-    Missile{},
-    Teleport{}
-  };
-
-  action_panel_.set_size(10 * s, s);
-  action_panel_.transform().set_position(0.0f, 0.0f, bottom_ - s * 0.5f)
-      .set_rotation_deg(-15.0f, 0.0f, 0.0f)
-      .set_rotation_pivot(apeiron::engine::Axis::X, 0.0f, 0.0f, s * 0.5f);
-  action_panel_.apply();
-  action_panel_.init(cards);
-
-  undo_panel_.set_size(s, 8 * s);
-  undo_panel_.transform().set_position(left_ + 1.2f, 0.0f, 0.0f)
-      .set_rotation_deg(0.0f, 0.0f, -45.0f)
-      .set_rotation_pivot(apeiron::engine::Axis::Z, s * -0.5f, 0.0f, 0.0f);
-  undo_panel_.apply();
+  portrait_panel_.set_size(tile_size * 2.0f, tile_size * 2.0f);
+  portrait_panel_.transform().set_position(right_ - tile_size, 0.0f, top_ + tile_size);
+  portrait_panel_.apply();
 }
 
 
@@ -97,8 +75,22 @@ void wis::Stage_ui::render()
 
   Renderer::gl_clear_depth_buffer();
   setup_view();
-  render_panel();
+  render_panels();
   render_debug();
+  render_cursor();
+}
+
+
+void wis::Stage_ui::set_cards(std::span<const Card> cards)
+{
+  float s = val::tile_size_ui();
+
+  action_panel_.set_size(static_cast<float>(cards.size()) * s, s);
+  action_panel_.transform().set_position(0.0f, 0.0f, bottom_ - s * 0.5f)
+      .set_rotation_deg(-15.0f, 0.0f, 0.0f)
+      .set_rotation_pivot(apeiron::engine::Axis::X, 0.0f, 0.0f, s * 0.5f);
+  action_panel_.apply();
+  action_panel_.init(cards);
 }
 
 
@@ -143,7 +135,7 @@ bool wis::Stage_ui::handle_event(const apeiron::engine::Mouse_motion_event& even
     action_panel_.clear_hover();
   }
 
-  if (auto point = panel_point(event.x, event.y, undo_panel_.collision_quad()); point) {
+  if (auto point = panel_point(event.x, event.y, portrait_panel_.collision_quad()); point) {
     cursor.panel_position = *point;
     cursor.on_panel = true;
   }
@@ -181,8 +173,7 @@ void wis::Stage_ui::set_screen_limits()
     top_ = point->z;
   }
   else {
-    throw wis::Error::format("Error calculating screen limits at {}, {}", logical_left,
-        logical_top);
+    throw Error::format("Error setting screen limits at {}, {}", logical_left, logical_top);
   }
 
   if (auto point = screen_point(logical_right, logical_bottom); point) {
@@ -190,20 +181,22 @@ void wis::Stage_ui::set_screen_limits()
     bottom_ = point->z;
   }
   else {
-    throw wis::Error::format("Error calculating screen limits at {}, {}", logical_right,
-        logical_bottom);
+    throw Error::format("Error setting screen limits at {}, {}", logical_right, logical_bottom);
   }
 }
 
 
-void wis::Stage_ui::render_panel()
+void wis::Stage_ui::render_panels()
 {
-  renderer_.use();
-  //renderer_.render(action_panel_.quad(), Palette::colors[46]);
-
-  pixel_renderer_.use();
   Renderer::set_gl_depth_test(false);
 
+  renderer_.use();
+  //renderer_.render(action_panel_.quad(), Palette::colors[12]);
+  //renderer_.render(portrait_panel_.quad(), Palette::colors[12]);
+
+  pixel_renderer_.use();
+
+  // Actions
   for (const auto& widget : action_panel_.actions() | is_not_spent) {
     entity_.transform() = action_panel_.as_world_transform(widget.position);
     pixel_renderer_.render(entity_, atlas_.ui(), widget.mesh_index);
@@ -222,6 +215,13 @@ void wis::Stage_ui::render_panel()
   }
 
   pixel_renderer_.enable_desaturation(false);
+
+  // Portrait
+  for (const auto& widget : portrait_panel_.decorations()) {
+    entity_.transform() = portrait_panel_.as_world_transform(widget.position);
+    pixel_renderer_.render(entity_, atlas_.ui(), widget.mesh_index);
+  }
+
   Renderer::set_gl_depth_test(true);
 }
 
@@ -235,7 +235,19 @@ void wis::Stage_ui::render_debug()
   }
 
   //renderer_.render(action_panel_.quad(), Palette::colors[22]);
-  //renderer_.render(undo_panel_.quad(), Palette::colors[22]);
+  //renderer_.render(portrait_panel_.quad(), Palette::colors[22]);
+}
+
+
+void wis::Stage_ui::render_cursor()
+{
+  pixel_renderer_.use();
+  Renderer::set_gl_depth_test(false);
+
+  cursor_.transform().set_position(game_data_.cursor.ui.screen_position);
+  pixel_renderer_.render(cursor_, atlas_.ui(), 90);
+
+  Renderer::set_gl_depth_test(true);
 }
 
 
