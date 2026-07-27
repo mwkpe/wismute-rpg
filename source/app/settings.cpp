@@ -30,6 +30,7 @@ auto wis::load_settings(std::string_view filepath) -> Settings
     s.window.height = sec["height"].value_or(s.window.height);
     s.window.fullscreen = sec["fullscreen"].value_or(s.window.fullscreen);
     s.window.ignore_scaling = sec["ignore_scaling"].value_or(s.window.ignore_scaling);
+    s.window.force_x11 = sec["force_x11"].value_or(s.window.force_x11);
   }
 
   if (auto* section = t["render"].as_table(); section) {
@@ -53,6 +54,7 @@ void wis::save_settings(const Settings& s, std::string_view filepath)
   window.insert("height", s.window.height);
   window.insert("fullscreen", s.window.fullscreen);
   window.insert("ignore_scaling", s.window.ignore_scaling);
+  window.insert("force_x11", s.window.force_x11);
   t.insert("window", window);
 
   toml::table render;

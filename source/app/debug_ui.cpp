@@ -80,6 +80,8 @@ void wis::Debug_ui::build(Settings& settings, App_data& app_data, Game_data& gam
     ImGui::Begin("Settings");
 
     ImGui::Text("Window");
+    ImGui::Checkbox("Force X11", &settings.window.force_x11);
+    ImGui::Checkbox("Ignore scaling", &settings.window.ignore_scaling);
     ImGui::Checkbox("Fullscreen", &settings.window.fullscreen);
     ImGui::Checkbox("Limit", &settings.render.limit_fps);
     ImGui::SameLine();

@@ -132,6 +132,16 @@ void handle_event(auto* window, const SDL_Event& sdl_event, apeiron::engine::Eve
 }
 
 
+void force_x11()
+{
+  #ifdef __linux__
+    if (const char* w = SDL_getenv("WAYLAND_DISPLAY"); w && *w) {
+      SDL_SetHintWithPriority(SDL_HINT_VIDEO_DRIVER, "x11", SDL_HINT_OVERRIDE);
+    }
+  #endif
+}
+
+
 }  // namespace
 
 
@@ -154,6 +164,10 @@ void wis::App::init()
   }
   catch (const wis::Warning& e) {
     std::cout << e.what() << std::endl;
+  }
+
+  if (settings_.window.force_x11) {
+    force_x11();
   }
 
   window_.init({

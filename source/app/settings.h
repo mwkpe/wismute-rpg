@@ -14,6 +14,7 @@ struct Window_settings
   int height = 800;
   bool fullscreen = false;
   bool ignore_scaling = false;
+  bool force_x11 = true;
 };
 
 
