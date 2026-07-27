@@ -35,13 +35,15 @@ public:
   [[nodiscard]] const Tile* tile(std::uint32_t index) const;
 
   [[nodiscard]] std::optional<Card> card(std::uint8_t id) const;
-
   [[nodiscard]] std::span<Card> cards() { return cards_; }
   [[nodiscard]] std::span<const Card> cards() const { return cards_; }
+
   [[nodiscard]] std::span<Tile> tiles() { return tiles_; }
   [[nodiscard]] std::span<const Tile> tiles() const { return tiles_; }
+
   [[nodiscard]] std::span<Sprite> sprites() { return sprites_; }
   [[nodiscard]] std::span<const Sprite> sprites() const { return sprites_; }
+
   [[nodiscard]] std::span<Slime> slimes() { return slimes_; }
   [[nodiscard]] std::span<const Slime> slimes() const { return slimes_; }
 

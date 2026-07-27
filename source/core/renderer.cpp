@@ -218,6 +218,7 @@ void wis::Renderer::render(const apeiron::engine::Entity& entity,
   use_vertex_color_shading();
   shader_.set_uniform("model", entity.transform().model_matrix());
   meshset.render(index);
+
   draw_calls_++;
 }
 

@@ -77,12 +77,12 @@ void wis::play_card(Card card, Player& player, std::span<const Tile> tiles,
       [&](Fireball fireball) {
         play(fireball, tiles, slimes, player.scene_index, target_index);
       },
-      [&](Inferno){ std::print("Inferno not implemented\n"); },
-      [&](Jet){ std::print("Jet not implemented\n"); },
-      [&](Splash){ std::print("Splash not implemented\n"); },
-      [&](Lightning){ std::print("Lightning not implemented\n"); },
-      [&](Gust){ std::print("Gust not implemented\n"); },
-      [&](Missile){ std::print("Missile not implemented\n"); },
-      [&](Teleport){ std::print("Teleport not implemented\n"); }
+      [&](Inferno) { std::print("Inferno not implemented\n"); },
+      [&](Jet) { std::print("Jet not implemented\n"); },
+      [&](Splash) { std::print("Splash not implemented\n"); },
+      [&](Lightning) { std::print("Lightning not implemented\n"); },
+      [&](Gust) { std::print("Gust not implemented\n"); },
+      [&](Missile) { std::print("Missile not implemented\n"); },
+      [&](Teleport) { std::print("Teleport not implemented\n"); }
   }, card);
 }
