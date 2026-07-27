@@ -26,6 +26,7 @@
 #include "game/player.h"
 #include "game/range_finder.h"
 #include "game/scene.h"
+#include "game/game_state.h"
 
 
 namespace wis {
@@ -68,6 +69,7 @@ private:
   void render_overlay();
   void render_sprites();
   void render_debug();
+  void render_debug_overlay();
 
   // Helper
   std::optional<glm::vec3> ground_point(float screen_x, float screen_y);
@@ -79,6 +81,7 @@ private:
   // Data
   const App_data& app_data_;
   Game_data& game_data_;
+  Game_state game_state_;
 
   // Resources
   const Atlas& atlas_;

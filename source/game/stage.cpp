@@ -65,7 +65,7 @@ void wis::Stage::init_scene()
 
   auto field_size = lattice_.field_size();
   grid_.init(field_size, lattice_.size(), Palette::colors[47]);
-  grid_.transform().set_position(field_size.x * 0.5f, 0.001f, field_size.y * 0.5f)
+  grid_.transform().set_position(field_size.x * 0.5f, 0.0f, field_size.y * 0.5f)
       .set_rotation_deg(-90.0f, 0.0f, 0.0f);
 
   init_camera_controllers();
@@ -110,8 +110,12 @@ void wis::Stage::render()
   pixel_renderer_.use();
   pixel_renderer_.set_time(app_data_.timing.runtime_s);
 
+  Renderer::set_gl_depth_test(false);
   render_ground();
   render_overlay();
+  render_debug_overlay();
+
+  Renderer::set_gl_depth_test(true);
   render_sprites();
   render_debug();
 }
@@ -262,7 +266,7 @@ void wis::Stage::on_action_selected(const event::Action_selected& event)
   player_.mesh_index = 104;
 
   if (auto card = scene_.card(selected_action_id_); card) {
-    range_finder_.find(scene_.tiles(), scene_.size().x, player_.scene_index, *card);
+    range_finder_.find(scene_, player_.scene_index, *card);
   }
 
   std::print("Action {} selected\n", event.id);
@@ -351,8 +355,6 @@ void wis::Stage::render_ground()
 
 void wis::Stage::render_overlay()
 {
-  Renderer::set_gl_depth_test(false);
-
   const auto hovered_index = game_data_.stage.hovered_index;
   const auto selected_index = game_data_.stage.selected_index;
 
@@ -366,49 +368,15 @@ void wis::Stage::render_overlay()
     pixel_renderer_.render(ground_entity_, atlas_.stage(), 380);
   }
 
-  if (path_finder_.has_path()) {
-    for (const auto index : path_finder_.path()) {
-      ground_entity_.transform().set_position(lattice_.as_position_xz(index));
-      pixel_renderer_.render(ground_entity_, atlas_.stage(), 386);
-    }
+  for (const auto index : path_finder_.path()) {
+    ground_entity_.transform().set_position(lattice_.as_position_xz(index));
+    pixel_renderer_.render(ground_entity_, atlas_.stage(), 386);
   }
 
-  if (range_finder_.has_range()) {
-    for (const auto index : range_finder_.range()) {
-      ground_entity_.transform().set_position(lattice_.as_position_xz(index));
-      pixel_renderer_.render(ground_entity_, atlas_.stage(), 380);
-    }
+  for (const auto index : range_finder_.range()) {
+    ground_entity_.transform().set_position(lattice_.as_position_xz(index));
+    pixel_renderer_.render(ground_entity_, atlas_.stage(), 380);
   }
-
-  if (app_data_.debug.show_tile_info) {
-    Renderer::gl_clear_depth_buffer();
-
-    for (const auto& tile : scene_.tiles()) {
-      ground_entity_.transform().set_position(lattice_.as_position_xz(tile.index));
-
-      if (tile.is_nil) {
-        pixel_renderer_.render(ground_entity_, atlas_.stage(), 360);
-      }
-
-      if (tile.north_index()) {
-        pixel_renderer_.render(ground_entity_, atlas_.stage(), 382);
-      }
-
-      if (tile.south_index()) {
-        pixel_renderer_.render(ground_entity_, atlas_.stage(), 383);
-      }
-
-      if (tile.east_index()) {
-        pixel_renderer_.render(ground_entity_, atlas_.stage(), 384);
-      }
-
-      if (tile.west_index()) {
-        pixel_renderer_.render(ground_entity_, atlas_.stage(), 385);
-      }
-    }
-  }
-
-  Renderer::set_gl_depth_test(true);
 }
 
 
@@ -462,9 +430,27 @@ void wis::Stage::render_sprites()
 
 void wis::Stage::render_debug()
 {
+}
+
+
+void wis::Stage::render_debug_overlay()
+{
+  if (app_data_.debug.show_tile_info) {
+    for (const auto& tile : scene_.tiles()) {
+      ground_entity_.transform().set_position(lattice_.as_position_xz(tile.index));
+
+      if (tile.is_nil) { pixel_renderer_.render(ground_entity_, atlas_.stage(), 360); }
+      if (tile.north_index()) { pixel_renderer_.render(ground_entity_, atlas_.stage(), 382); }
+      if (tile.south_index()) { pixel_renderer_.render(ground_entity_, atlas_.stage(), 383); }
+      if (tile.east_index()) { pixel_renderer_.render(ground_entity_, atlas_.stage(), 384); }
+      if (tile.west_index()) { pixel_renderer_.render(ground_entity_, atlas_.stage(), 385); }
+    }
+  }
+
   if (app_data_.debug.show_stage_grid) {
     renderer_.use();
     renderer_.render(grid_);
+    pixel_renderer_.use();
   }
 }
 
