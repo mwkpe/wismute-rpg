@@ -16,11 +16,15 @@ uniform mat4 model;
 // Game constants
 uniform float pixel_size;
 uniform uint tile_size;
-uniform vec4 colors[53];
+const uint color_count = 53u;
+uniform vec4 colors[color_count];
 
 // Generic variables
 uniform float time;
 uniform uvec2 tile_position;
+
+// Color override
+uniform uint color_index;
 
 // Post process variables
 uniform bool blending_enabled;
@@ -160,7 +164,14 @@ void main()
   offset.z = tile_size * pixel_size * 0.5 - pixel_size * 0.5;
 
   vec3 pixel_position = vec3(col, 0.0, row) - offset;
-  pixel_color = colors[a_color];
+
+  if (color_index > 0u && color_index < color_count) {
+    pixel_color = colors[color_index];
+  }
+  else {
+    pixel_color = colors[a_color];
+  }
+
   pixel_stretch = vec2(1.0);
 
   apply_material(pixel_position);

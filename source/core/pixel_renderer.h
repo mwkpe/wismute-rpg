@@ -36,6 +36,9 @@ public:
   void set_time(float time);
   void set_tile_position(const glm::uvec2& position);
 
+  // Color override
+  void set_color_index(std::uint32_t index);
+
   // Post process variables
   void enable_blending(bool blending = true);
   void enable_desaturation(bool desaturation = true);
@@ -53,6 +56,8 @@ public:
   // Rendering
   void render(const apeiron::engine::Entity& entity, const apeiron::opengl::Meshset& meshset,
       std::uint32_t index);
+  void render(const apeiron::engine::Entity& entity, const apeiron::opengl::Meshset& meshset,
+      std::uint32_t index, std::uint32_t color_index);
 
   // Raycasting
   [[nodiscard]] glm::mat4 view_projection() { return view_projection_; }

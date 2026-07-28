@@ -20,6 +20,8 @@ void wis::Pixel_renderer::init(float pixel_size, std::uint32_t tile_size)
   enable_pixel_displacement(false);
   enable_breathe(false);
 
+  set_color_index(0);
+
   set_blending_alpha(0.0f);
   set_desaturation_factor(0.0f);
   set_tile_tilt(0.0f);
@@ -88,6 +90,12 @@ void wis::Pixel_renderer::set_time(float time)
 void wis::Pixel_renderer::set_tile_position(const glm::uvec2& position)
 {
   shader_.set_uniform("tile_position", position);
+}
+
+
+void wis::Pixel_renderer::set_color_index(std::uint32_t index)
+{
+  shader_.set_uniform("color_index", index);
 }
 
 
@@ -168,5 +176,18 @@ void wis::Pixel_renderer::render(const apeiron::engine::Entity& entity,
 {
   shader_.set_uniform("model", entity.transform().model_matrix());
   meshset.render_points(index);
+
+  draw_calls_++;
+}
+
+
+void wis::Pixel_renderer::render(const apeiron::engine::Entity& entity,
+    const apeiron::opengl::Meshset& meshset, std::uint32_t index, std::uint32_t color_index)
+{
+  shader_.set_uniform("model", entity.transform().model_matrix());
+  set_color_index(color_index);
+  meshset.render_points(index);
+  set_color_index(0);
+
   draw_calls_++;
 }
