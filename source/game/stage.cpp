@@ -163,10 +163,9 @@ void wis::Stage::handle_event(const engine::Mouse_button_down_event& event)
       }
 
       if (selected_action_id_) {
-        auto* tile = scene_.tile(cursor.scene_index);
         auto card = scene_.card(selected_action_id_);
 
-        if (!tile->is_nil && card) {
+        if (game_data_.cursor.type == Cursor_type::Cross && card) {
           play_card(*card, player_, scene_.tiles(), scene_.slimes(), cursor.scene_index);
           dispatcher_.trigger(event::Action_triggered{selected_action_id_});
         }
@@ -176,6 +175,7 @@ void wis::Stage::handle_event(const engine::Mouse_button_down_event& event)
 
         range_finder_.clear();
         selected_action_id_ = 0;
+        game_data_.cursor.type = Cursor_type::White;
       }
 
       player_.mesh_index = 102;
@@ -203,6 +203,8 @@ void wis::Stage::handle_event(const engine::Mouse_motion_event& event)
   auto& cursor = game_data_.cursor.stage;
   auto& stage = game_data_.stage;
 
+  game_data_.cursor.type = Cursor_type::White;
+
   if (game_data_.control.use_orbit_camera && game_data_.camera.drag) {
     orbit_controller_.orbit(event.x_rel, -event.y_rel, game_data_.control.sensitivity * 4.0f);
   }
@@ -221,6 +223,12 @@ void wis::Stage::handle_event(const engine::Mouse_motion_event& event)
 
       if (const auto* tile = scene_.tile(cursor.scene_index); tile && !tile->is_nil) {
         stage.hovered_index = cursor.scene_index;
+
+        if (selected_action_id_ > 0) {
+          if (range_finder_.within_valid_range(cursor.scene_index)) {
+            game_data_.cursor.type = Cursor_type::Cross;
+          }
+        }
       }
       else {
         stage.hovered_index = 0;
@@ -373,9 +381,14 @@ void wis::Stage::render_overlay()
     pixel_renderer_.render(ground_entity_, atlas_.stage(), 386);
   }
 
-  for (const auto index : range_finder_.range()) {
+  for (const auto index : range_finder_.full_range()) {
     ground_entity_.transform().set_position(lattice_.as_position_xz(index));
     pixel_renderer_.render(ground_entity_, atlas_.stage(), 380);
+  }
+
+  for (const auto index : range_finder_.valid_range()) {
+    ground_entity_.transform().set_position(lattice_.as_position_xz(index));
+    pixel_renderer_.render(ground_entity_, atlas_.stage(), 380, 5);
   }
 }
 

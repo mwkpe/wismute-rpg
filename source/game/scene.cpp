@@ -122,15 +122,23 @@ void wis::Scene::load_scene(std::string_view filepath)
     std::uint8_t id = 0;
 
     cards_ = {
-      Move{++id, 1},
-      Move{++id, 2},
-      Move{++id, 3},
-      Move{++id, 4},
+      //Move{++id, 1},
+      //Move{++id, 2},
+      //Move{++id, 3},
+      //Move{++id, 4},
+      //Fireball{++id},
+      //Inferno{++id},
+      //Jet{++id},
+      //Splash{++id},
+      //Missile{++id},
+      //Teleport{++id}
       Fireball{++id},
-      Inferno{++id},
-      Jet{++id},
-      Splash{++id},
-      Missile{++id},
+      Fireball{++id},
+      Fireball{++id},
+      Fireball{++id},
+      Teleport{++id},
+      Teleport{++id},
+      Teleport{++id},
       Teleport{++id}
     };
   }

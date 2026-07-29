@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <array>
+#include <ranges>
 #include "util/utility.h"
 
 
@@ -26,11 +27,17 @@ auto get_tile(auto tiles, std::uint32_t index) -> const wis::Tile*
 const wis::Slime* get_slime(auto slimes, std::uint32_t target_index)
 {
   auto it = std::ranges::find(slimes, target_index, &wis::Slime::scene_index);
-  return it != slimes.end() ? std::to_address(it) : nullptr;
+
+  if (it != slimes.end() && it->health > 0) {
+    return std::to_address(it);
+  }
+
+  return nullptr;
 }
 
 
-void find_fireball(const auto& scene, std::uint32_t index, auto& range)
+void find_fireball_range(const auto& scene, std::uint32_t index, auto& full_range,
+    auto& valid_range)
 {
   // Pattern
   //  xxx
@@ -70,13 +77,17 @@ void find_fireball(const auto& scene, std::uint32_t index, auto& range)
 
   for (auto i : indices) {
     if (const auto* tile = get_tile(scene.tiles(), i); !tile->is_nil) {
-      range.push_back(i);
+      full_range.push_back(i);
+    }
+
+    if (get_slime(scene.slimes(), i)) {
+      valid_range.push_back(i);
     }
   }
 }
 
 
-void find_inferno(const auto& scene, std::uint32_t index, auto& range)
+void find_inferno_range(const auto& scene, std::uint32_t index, auto& full_range)
 {
   // Pattern
   //  xxx
@@ -113,13 +124,13 @@ void find_inferno(const auto& scene, std::uint32_t index, auto& range)
   for (auto i : indices) {
     if (const auto* tile = get_tile(scene.tiles(), i); !tile->is_nil &&
         tile->element != wis::Element::Water) {
-      range.push_back(i);
+      full_range.push_back(i);
     }
   }
 }
 
 
-void find_jet(const auto& scene, std::uint32_t index, auto& range)
+void find_jet_range(const auto& scene, std::uint32_t index, auto& full_range)
 {
   // Pattern
   //    x
@@ -137,17 +148,17 @@ void find_jet(const auto& scene, std::uint32_t index, auto& range)
   const std::array left_indices{ index - 1u, index - 2u, index - 3u };
   const std::array right_indices{ index + 1u, index + 2u, index + 3u, };
 
-  auto add = [&scene, &range](std::span<const std::uint32_t> indices) {
+  auto add = [&scene, &full_range](std::span<const std::uint32_t> indices) {
     for (auto i : indices) {
       const auto* tile = get_tile(scene.tiles(), i);
       const auto* slime = get_slime(scene.slimes(), i);
       bool not_wall = !tile->is_wall || tile->element == wis::Element::Water;
 
       if (!tile->is_nil && not_wall && !slime) {
-        range.push_back(i);
+        full_range.push_back(i);
       }
       else if (slime) {
-        range.push_back(i);
+        full_range.push_back(i);
         return;
       }
       else {
@@ -163,7 +174,7 @@ void find_jet(const auto& scene, std::uint32_t index, auto& range)
 }
 
 
-void find_splash(const auto& scene, std::uint32_t index, auto& range)
+void find_splash_range(const auto& scene, std::uint32_t index, auto& full_range)
 {
   // Pattern
   //  xxx
@@ -199,13 +210,13 @@ void find_splash(const auto& scene, std::uint32_t index, auto& range)
 
   for (auto i : indices) {
     if (const auto* tile = get_tile(scene.tiles(), i); !tile->is_nil) {
-      range.push_back(i);
+      full_range.push_back(i);
     }
   }
 }
 
 
-void find_missile(const auto& scene, std::uint32_t index, auto& range)
+void find_missile_range(const auto& scene, std::uint32_t index, auto& full_range)
 {
   // Pattern
   //  xxx
@@ -245,19 +256,22 @@ void find_missile(const auto& scene, std::uint32_t index, auto& range)
 
   for (auto i : indices) {
     if (const auto* tile = get_tile(scene.tiles(), i); !tile->is_nil) {
-      range.push_back(i);
+      full_range.push_back(i);
     }
   }
 }
 
 
-void find_teleport(const auto& scene, std::uint32_t index, auto& range)
+void find_teleport_range(const auto& scene, std::uint32_t index, auto& full_range,
+    auto& valid_range)
 {
   // No pattern, global reach
 
-  for (const auto& tile : scene.tiles() | not_nil | not_wall) {
-    if (tile.index != index && !get_slime(scene.slimes(), tile.index)) {
-      range.push_back(tile.index);
+  for (const auto& tile : scene.tiles() | not_nil) {
+    full_range.push_back(tile.index);
+
+    if (tile.index != index && !tile.is_wall && !get_slime(scene.slimes(), tile.index)) {
+      valid_range.push_back(tile.index);
     }
   }
 }
@@ -268,7 +282,7 @@ void find_teleport(const auto& scene, std::uint32_t index, auto& range)
 
 bool wis::Range_finder::find(const Scene& scene, std::uint32_t index, Card card)
 {
-  range_.clear();
+  clear();
 
   if (auto* tile = get_tile(scene.tiles(), index); tile->is_nil) {
     return false;
@@ -276,19 +290,31 @@ bool wis::Range_finder::find(const Scene& scene, std::uint32_t index, Card card)
 
   std::visit(util::match{
       [&](Move) {},
-      [&](Fireball) { find_fireball(scene, index, range_); },
-      [&](Inferno) { find_inferno(scene, index, range_); },
-      [&](Jet) { find_jet(scene, index, range_); },
-      [&](Splash) { find_splash(scene, index, range_); },
+      [&](Fireball) { find_fireball_range(scene, index, full_range_, valid_range_); },
+      [&](Inferno) { find_inferno_range(scene, index, full_range_); },
+      [&](Jet) { find_jet_range(scene, index, full_range_); },
+      [&](Splash) { find_splash_range(scene, index, full_range_); },
       [&](Lightning) {},
       [&](Gust) {},
-      [&](Missile) { find_missile(scene, index, range_); },
-      [&](Teleport) { find_teleport(scene, index, range_); }
+      [&](Missile) { find_missile_range(scene, index, full_range_); },
+      [&](Teleport) { find_teleport_range(scene, index, full_range_, valid_range_); }
   }, card);
 
-  if (range_.empty()) {
+  if (full_range_.empty()) {
     return false;
   }
 
   return true;
+}
+
+
+bool wis::Range_finder::within_full_range(std::uint32_t index) const
+{
+  return std::ranges::contains(full_range_, index);
+}
+
+
+bool wis::Range_finder::within_valid_range(std::uint32_t index) const
+{
+  return std::ranges::contains(valid_range_, index);
 }

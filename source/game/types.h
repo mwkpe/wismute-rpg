@@ -8,6 +8,9 @@
 namespace wis {
 
 
+enum class Cursor_type : std::uint32_t { White, Green, Red, Check, Verboten, Wait, Cross };
+
+
 enum class Cardinal : std::uint32_t
 {
   North,

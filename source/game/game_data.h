@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <glm/glm.hpp>
+#include "game/types.h"
 
 
 namespace wis {
@@ -30,6 +31,7 @@ struct Cursor_data
 {
   Stage_cursor_data stage;
   Ui_cursor_data ui;
+  Cursor_type type = Cursor_type::White;
 };
 
 

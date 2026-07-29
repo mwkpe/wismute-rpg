@@ -246,7 +246,20 @@ void wis::Stage_ui::render_cursor()
   Renderer::set_gl_depth_test(false);
 
   cursor_.transform().set_position(game_data_.cursor.ui.screen_position);
-  pixel_renderer_.render(cursor_, atlas_.ui(), 90);
+
+  std::uint32_t cursor_index = 90;
+
+  switch (game_data_.cursor.type) {
+    case Cursor_type::White: cursor_index = 90; break;
+    case Cursor_type::Green: cursor_index = 91; break;
+    case Cursor_type::Red: cursor_index = 92; break;
+    case Cursor_type::Check: cursor_index = 93; break;
+    case Cursor_type::Verboten: cursor_index = 94; break;
+    case Cursor_type::Wait: cursor_index = 95; break;
+    case Cursor_type::Cross: cursor_index = 96; break;
+  }
+
+  pixel_renderer_.render(cursor_, atlas_.ui(), cursor_index);
 
   Renderer::set_gl_depth_test(true);
 }

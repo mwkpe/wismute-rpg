@@ -83,6 +83,6 @@ void wis::play_card(Card card, Player& player, std::span<const Tile> tiles,
       [&](Lightning) { std::print("Lightning not implemented\n"); },
       [&](Gust) { std::print("Gust not implemented\n"); },
       [&](Missile) { std::print("Missile not implemented\n"); },
-      [&](Teleport) { std::print("Teleport not implemented\n"); }
+      [&](Teleport) { player.scene_index = target_index; }
   }, card);
 }

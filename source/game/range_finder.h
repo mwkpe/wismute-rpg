@@ -17,14 +17,17 @@ class Range_finder
 {
 public:
   bool find(const Scene& scene, std::uint32_t index, Card card);
-  void clear() { range_.clear(); };
-  //bool has_range() const { return !range_.empty(); }
-  std::span<const std::uint32_t> range() const { return range_; }
+  void clear() { full_range_.clear(); valid_range_.clear(); };
+
+  bool within_full_range(std::uint32_t index) const;
+  bool within_valid_range(std::uint32_t index) const;
+
+  std::span<const std::uint32_t> full_range() const { return full_range_; }
+  std::span<const std::uint32_t> valid_range() const { return valid_range_; }
 
 private:
-  std::vector<std::uint32_t> range_;
+  std::vector<std::uint32_t> full_range_;
   std::vector<std::uint32_t> valid_range_;
-  std::vector<std::uint32_t> targets_;
 };
 
 
