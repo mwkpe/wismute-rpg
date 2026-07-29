@@ -15,7 +15,7 @@ namespace wis {
 struct Game_state
 {
   std::uint32_t player_index;
-  std::vector<Spell> spells;
+  std::vector<Spell_slot> spell_slots;
   std::vector<Slime> slimes;
 };
 

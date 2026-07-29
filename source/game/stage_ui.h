@@ -42,7 +42,7 @@ public:
   void update(float delta_s);
   void render();
 
-  void set_spells(std::span<const Spell> spells);
+  void set_spells(std::span<const Spell_slot> spell_slots);
 
   // Engine event handlers
   bool handle_event(const apeiron::engine::Mouse_button_down_event& event);

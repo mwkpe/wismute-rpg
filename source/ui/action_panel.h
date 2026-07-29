@@ -20,7 +20,7 @@ namespace wis::ui {
 struct Action_widget final : Widget
 {
   Action_widget(std::uint32_t id,
-      bool is_played,
+      bool is_available,
       std::uint16_t mesh_index,
       float x,
       float y,
@@ -29,7 +29,7 @@ struct Action_widget final : Widget
       :
       Widget{mesh_index, x, y, w, h},
       id{id},
-      is_available{!is_played} {}
+      is_available{is_available} {}
 
   std::uint32_t id = 0;
   bool is_available = true;
@@ -41,7 +41,7 @@ class Action_panel final : public Panel
 public:
   explicit Action_panel(entt::dispatcher& dispatcher);
 
-  void init(std::span<const Spell> spells);
+  void init(std::span<const Spell_slot> spell_slots);
   void reset();
 
   void update(float delta_s);

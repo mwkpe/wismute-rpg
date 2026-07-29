@@ -13,6 +13,7 @@
 
 #include "game/cast_spell.h"
 #include "game/constants.h"
+#include "game/spells.h"
 
 #include "util/utility.h"
 
@@ -73,6 +74,8 @@ void wis::Stage::init_scene()
   const auto start_position = lattice_.as_position_xz(start_index, glm::vec3{0.0f, 0.0f, 0.4f});
 
   player_ = Player{start_position, start_index, 102, 0.03f, 4.0f, val::tau()};
+
+  success_ = false;
 }
 
 
@@ -83,6 +86,22 @@ void wis::Stage::update()
   }
   else {
     free_controller_.apply(camera_);
+  }
+
+  if (!failure_ && !success_) {
+    const auto health = std::ranges::fold_left(scene_.slimes() |
+        std::views::transform(&Slime::health), 0u, std::plus{});
+
+    if (health == 0) {
+      std::print("All slimes defeated\n");
+      success_ = true;
+    }
+  }
+
+  if (!success_ && !failure_ &&
+      std::ranges::none_of(scene_.spell_slots(), std::identity{}, &Spell_slot::is_available)) {
+    std::print("Failed to defeat all slimes\n");
+    failure_ = true;
   }
 }
 
@@ -161,10 +180,11 @@ void wis::Stage::handle_event(const engine::Mouse_button_down_event& event)
       }
 
       if (selected_action_id_) {
-        auto spell = scene_.spell(selected_action_id_);
+        auto spell_slot = scene_.spell_slot(selected_action_id_);
 
-        if (game_data_.cursor.type == Cursor_type::Cross && spell) {
-          cast_spell(*spell, player_, scene_.tiles(), scene_.slimes(), cursor.scene_index);
+        if (game_data_.cursor.type == Cursor_type::Cross && spell_slot) {
+          cast_spell(spell_slot->spell, player_, scene_.tiles(), scene_.slimes(), cursor.scene_index);
+          spell_slot->is_available = false;
           dispatcher_.trigger(event::Action_triggered{selected_action_id_});
         }
         else {
@@ -259,8 +279,8 @@ void wis::Stage::on_action_selected(const event::Action_selected& event)
   selected_action_id_ = event.id;
   player_.mesh_index = 104;
 
-  if (auto spell = scene_.spell(selected_action_id_); spell) {
-    range_finder_.find(*spell, scene_, player_.scene_index);
+  if (auto spell_slot = scene_.spell_slot(selected_action_id_); spell_slot) {
+    range_finder_.find(spell_slot->spell, scene_, player_.scene_index);
   }
 
   std::print("Action {} selected\n", event.id);

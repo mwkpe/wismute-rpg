@@ -107,6 +107,8 @@ private:
   apeiron::prefab::Grid grid_;
   Player player_;
   std::uint32_t selected_action_id_ = 0;
+  bool success_ = false;
+  bool failure_ = false;
 };
 
 

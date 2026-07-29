@@ -3,7 +3,6 @@
 
 
 #include <cstdint>
-#include <optional>
 #include <span>
 #include <string>
 #include <string_view>
@@ -34,9 +33,11 @@ public:
   [[nodiscard]] Tile* tile(std::uint32_t index);
   [[nodiscard]] const Tile* tile(std::uint32_t index) const;
 
-  [[nodiscard]] std::optional<Spell> spell(std::uint8_t id) const;
-  [[nodiscard]] std::span<Spell> spells() { return spells_; }
-  [[nodiscard]] std::span<const Spell> spells() const { return spells_; }
+  [[nodiscard]] Spell_slot* spell_slot(std::uint8_t id);
+  [[nodiscard]] const Spell_slot* spell_slot(std::uint8_t id) const;
+
+  [[nodiscard]] std::span<Spell_slot> spell_slots() { return spell_slots_; }
+  [[nodiscard]] std::span<const Spell_slot> spell_slots() const { return spell_slots_; }
 
   [[nodiscard]] std::span<Tile> tiles() { return tiles_; }
   [[nodiscard]] std::span<const Tile> tiles() const { return tiles_; }
@@ -52,7 +53,7 @@ private:
   glm::uvec2 size_ = glm::uvec2{1, 1};
   glm::uvec2 margin_ = glm::uvec2{1, 1};
   std::uint32_t start_index_ = 0;
-  std::vector<Spell> spells_;
+  std::vector<Spell_slot> spell_slots_;
   std::vector<Tile> tiles_;
   std::vector<Sprite> sprites_;
   std::vector<Slime> slimes_;

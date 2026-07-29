@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <memory>
 #include <ranges>
 
 #include "app/error.h"
@@ -89,16 +90,27 @@ auto wis::Scene::tile(std::uint32_t index) const -> const Tile*
 }
 
 
-auto wis::Scene::spell(std::uint8_t id) const -> std::optional<Spell>
+auto wis::Scene::spell_slot(std::uint8_t id) const -> const Spell_slot*
 {
-  auto p = [](const auto& s) { return std::visit([](const auto& e){ return e.id; }, s); };
-  auto it = std::ranges::find(spells_, id, p);
+  auto it = std::ranges::find(spell_slots_, id, &wis::Spell_slot::id);
 
-  if (it != spells_.end()) {
-    return *it;
+  if (it != spell_slots_.end()) {
+    return std::to_address(it);
   }
 
-  return std::nullopt;
+  return nullptr;
+}
+
+
+auto wis::Scene::spell_slot(std::uint8_t id) -> Spell_slot*
+{
+  auto it = std::ranges::find(spell_slots_, id, &wis::Spell_slot::id);
+
+  if (it != spell_slots_.end()) {
+    return std::to_address(it);
+  }
+
+  return nullptr;
 }
 
 
@@ -121,24 +133,14 @@ void wis::Scene::load_scene(std::string_view filepath)
   {
     std::uint8_t id = 0;
 
-    spells_ = {
-      //Blink{++id, 1},
-      //Blink{++id, 2},
-      //Blink{++id, 3},
-      //Blink{++id, 4},
-      //Fireball{++id},
-      //Inferno{++id},
-      //Jet{++id},
-      //Splash{++id},
-      //Missile{++id},
-      //Teleport{++id}
-      Blink{++id, 1},
-      Blink{++id, 2},
-      Blink{++id, 3},
-      Fireball{++id},
-      Fireball{++id},
-      Fireball{++id},
-      Fireball{++id}
+    spell_slots_ = {
+      {Blink{1}, ++id},
+      {Blink{2}, ++id},
+      {Blink{3}, ++id},
+      {Fireball{}, ++id},
+      {Fireball{}, ++id},
+      //{Fireball{}, ++id},
+      {Fireball{}, ++id}
     };
   }
 
@@ -223,7 +225,7 @@ void wis::Scene::reset()
 {
   name_ = {};
   size_ = {1, 1};
-  spells_.clear();
+  spell_slots_.clear();
   tiles_.clear();
   sprites_.clear();
   slimes_.clear();
