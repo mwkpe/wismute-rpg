@@ -43,8 +43,6 @@ add_executable(wismute
     source/game/game.h
     source/game/game_data.h
     source/game/game_state.h
-    source/game/path_finder.cpp
-    source/game/path_finder.h
     source/game/player.h
     source/game/range_finder.cpp
     source/game/range_finder.h

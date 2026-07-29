@@ -154,7 +154,6 @@ void wis::Stage::handle_event(const engine::Mouse_button_down_event& event)
       if (selected_action_id_ == 0) {
         if (!scene_.tile(cursor.scene_index)->is_nil) {
           game_data_.stage.selected_index = cursor.scene_index;
-          path_finder_.clear();
         }
         else {
           game_data_.stage.selected_index = 0;
@@ -238,7 +237,6 @@ void wis::Stage::handle_event(const engine::Mouse_motion_event& event)
       cursor.scene_coords = glm::uvec2{0};
       cursor.scene_position = glm::vec3{0.0f};
       stage.hovered_index = 0;
-      path_finder_.clear();
     }
   }
   else {
@@ -247,17 +245,6 @@ void wis::Stage::handle_event(const engine::Mouse_motion_event& event)
     cursor.scene_position = glm::vec3{0.0f};
     cursor.ground_position = glm::vec3{0.0f};
     stage.hovered_index = 0;
-    path_finder_.clear();
-  }
-
-  if (game_data_.stage.selected_index && cursor.scene_index &&
-      game_data_.stage.selected_index != cursor.scene_index &&
-      game_data_.stage.selected_index == player_.scene_index) {
-    auto [a, b] = path_finder_.endpoints();
-
-    if (player_.scene_index != a || cursor.scene_index != b) {
-      path_finder_.find(scene_.tiles(), player_.scene_index, cursor.scene_index);
-    }
   }
 }
 
@@ -373,11 +360,6 @@ void wis::Stage::render_overlay()
   if (selected_index > 0) {
     ground_entity_.transform().set_position(lattice_.as_position_xz(selected_index));
     pixel_renderer_.render(ground_entity_, atlas_.stage(), 380);
-  }
-
-  for (const auto index : path_finder_.path()) {
-    ground_entity_.transform().set_position(lattice_.as_position_xz(index));
-    pixel_renderer_.render(ground_entity_, atlas_.stage(), 386);
   }
 
   {
