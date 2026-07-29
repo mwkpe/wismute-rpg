@@ -1,5 +1,5 @@
-#ifndef WIS_GAME_CARDS_H
-#define WIS_GAME_CARDS_H
+#ifndef WIS_GAME_SPELLS_H
+#define WIS_GAME_SPELLS_H
 
 
 #include <cstdint>
@@ -9,15 +9,6 @@
 
 namespace wis {
 
-
-struct Move
-{
-  static constexpr auto element = Element::None;
-  static constexpr std::uint32_t mesh_index = 10;
-  std::uint8_t id = 0;
-  std::uint8_t steps = 0;
-  bool was_played = false;
-};
 
 struct Fireball
 {
@@ -85,6 +76,15 @@ struct Missile
   bool was_played = false;
 };
 
+struct Blink
+{
+  static constexpr auto element = Element::None;
+  static constexpr std::uint32_t mesh_index = 10;
+  std::uint8_t id = 0;
+  std::uint8_t steps = 0;
+  bool was_played = false;
+};
+
 struct Teleport
 {
   static constexpr auto element = Element::Aether;
@@ -94,18 +94,18 @@ struct Teleport
 };
 
 
-using Card = std::variant<Move,
-    Fireball,
+using Spell = std::variant<Fireball,
     Inferno,
     Jet,
     Splash,
     Lightning,
     Gust,
     Missile,
+    Blink,
     Teleport>;
 
 
 }  // namespace wis
 
 
-#endif  // WIS_GAME_CARDS_H
+#endif  // WIS_GAME_SPELLS_H

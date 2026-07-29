@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "game/scene.h"
+#include "game/spells.h"
 #include "game/tile.h"
 
 
@@ -16,7 +17,7 @@ namespace wis {
 class Range_finder
 {
 public:
-  bool find(const Scene& scene, std::uint32_t index, Card card);
+  bool find(Spell spell, const Scene& scene, std::uint32_t index);
   void clear() { full_range_.clear(); valid_range_.clear(); };
 
   bool within_full_range(std::uint32_t index) const;

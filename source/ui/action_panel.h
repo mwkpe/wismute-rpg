@@ -7,8 +7,9 @@
 
 #include <entt/entt.hpp>
 
-#include "game/cards.h"
 #include "game/events.h"
+#include "game/spells.h"
+
 #include "ui/panel.h"
 #include "ui/widget.h"
 
@@ -40,7 +41,7 @@ class Action_panel final : public Panel
 public:
   explicit Action_panel(entt::dispatcher& dispatcher);
 
-  void init(std::span<const Card> cards);
+  void init(std::span<const Spell> spells);
   void reset();
 
   void update(float delta_s);

@@ -89,12 +89,12 @@ auto wis::Scene::tile(std::uint32_t index) const -> const Tile*
 }
 
 
-auto wis::Scene::card(std::uint8_t id) const -> std::optional<Card>
+auto wis::Scene::spell(std::uint8_t id) const -> std::optional<Spell>
 {
-  auto p = [](const Card& c) { return std::visit([](const auto& e){ return e.id; }, c); };
-  auto it = std::ranges::find(cards_, id, p);
+  auto p = [](const auto& s) { return std::visit([](const auto& e){ return e.id; }, s); };
+  auto it = std::ranges::find(spells_, id, p);
 
-  if (it != cards_.end()) {
+  if (it != spells_.end()) {
     return *it;
   }
 
@@ -117,29 +117,28 @@ void wis::Scene::load_scene(std::string_view filepath)
 
   const Lattice lattice{size_, val::tile_size()};
 
-  // Cards
+  // Spells
   {
     std::uint8_t id = 0;
 
-    cards_ = {
-      //Move{++id, 1},
-      //Move{++id, 2},
-      //Move{++id, 3},
-      //Move{++id, 4},
+    spells_ = {
+      //Blink{++id, 1},
+      //Blink{++id, 2},
+      //Blink{++id, 3},
+      //Blink{++id, 4},
       //Fireball{++id},
       //Inferno{++id},
       //Jet{++id},
       //Splash{++id},
       //Missile{++id},
       //Teleport{++id}
+      Blink{++id, 1},
+      Blink{++id, 2},
+      Blink{++id, 3},
       Fireball{++id},
       Fireball{++id},
       Fireball{++id},
-      Fireball{++id},
-      Teleport{++id},
-      Teleport{++id},
-      Teleport{++id},
-      Teleport{++id}
+      Fireball{++id}
     };
   }
 
@@ -224,7 +223,7 @@ void wis::Scene::reset()
 {
   name_ = {};
   size_ = {1, 1};
-  cards_.clear();
+  spells_.clear();
   tiles_.clear();
   sprites_.clear();
   slimes_.clear();

@@ -1,24 +1,24 @@
-#ifndef WIS_GAME_PLAY_CARD_H
-#define WIS_GAME_PLAY_CARD_H
+#ifndef WIS_GAME_CAST_SPELL_H
+#define WIS_GAME_CAST_SPELL_H
 
 
 #include <cstdint>
 #include <span>
 
-#include "game/cards.h"
 #include "game/player.h"
 #include "game/slime.h"
+#include "game/spells.h"
 #include "game/tile.h"
 
 
 namespace wis {
 
 
-void play_card(const Card card, Player& player, std::span<const Tile> tiles,
+void cast_spell(const Spell spell, Player& player, std::span<const Tile> tiles,
     std::span<Slime> slimes, std::uint32_t target_index);
 
 
 }  // namespace wis
 
 
-#endif  // WIS_GAME_PLAY_CARD_H
+#endif  // WIS_GAME_CAST_SPELL_H

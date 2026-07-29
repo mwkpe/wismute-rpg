@@ -262,6 +262,82 @@ void find_missile_range(const auto& scene, std::uint32_t index, auto& full_range
 }
 
 
+void find_blink_range(const wis::Blink& blink, const auto& scene, std::uint32_t index,
+    auto& full_range, auto& valid_range)
+{
+  // Pattern (reach depends on step value)
+  //    x
+  //    x
+  //    x
+  // xxxoxxx
+  //    x
+  //    x
+  //    x
+
+  const auto cols = scene.size().x;
+
+  std::array<std::uint32_t, 20> indices{0};
+  std::size_t i = 0;
+
+  if (blink.steps == 0 || blink.steps > 5) {
+    return;
+  }
+
+  switch (blink.steps) {
+    case 5: {
+      indices[i++] = index - cols * 5u;
+      indices[i++] = index + cols * 5u;
+      indices[i++] = index - 5u;
+      indices[i++] = index + 5u;
+    }
+    [[fallthrough]];
+    case 4: {
+      indices[i++] = index - cols * 4u;
+      indices[i++] = index + cols * 4u;
+      indices[i++] = index - 4u;
+      indices[i++] = index + 4u;
+    }
+    [[fallthrough]];
+    case 3: {
+      indices[i++] = index - cols * 3u;
+      indices[i++] = index + cols * 3u;
+      indices[i++] = index - 3u;
+      indices[i++] = index + 3u;
+    }
+    [[fallthrough]];
+    case 2: {
+      indices[i++] = index - cols * 2u;
+      indices[i++] = index + cols * 2u;
+      indices[i++] = index - 2u;
+      indices[i++] = index + 2u;
+    }
+    [[fallthrough]];
+    case 1: {
+      indices[i++] = index - cols;
+      indices[i++] = index + cols;
+      indices[i++] = index - 1u;
+      indices[i++] = index + 1u;
+    }
+    break;
+    default: return;
+  }
+
+  for (auto i : indices) {
+    if (const auto* tile = get_tile(scene.tiles(), i); !tile->is_nil) {
+      full_range.push_back(i);
+    }
+  }
+
+  for (auto i : std::span{indices}.first(4)) {
+    const auto* tile = get_tile(scene.tiles(), i);
+
+    if (!tile->is_nil && !tile->is_wall && !get_slime(scene.slimes(), i)) {
+      valid_range.push_back(i);
+    }
+  }
+}
+
+
 void find_teleport_range(const auto& scene, std::uint32_t index, auto& full_range,
     auto& valid_range)
 {
@@ -280,7 +356,7 @@ void find_teleport_range(const auto& scene, std::uint32_t index, auto& full_rang
 }  // namespace
 
 
-bool wis::Range_finder::find(const Scene& scene, std::uint32_t index, Card card)
+bool wis::Range_finder::find(Spell spell, const Scene& scene, std::uint32_t index)
 {
   clear();
 
@@ -289,7 +365,6 @@ bool wis::Range_finder::find(const Scene& scene, std::uint32_t index, Card card)
   }
 
   std::visit(util::match{
-      [&](Move) {},
       [&](Fireball) { find_fireball_range(scene, index, full_range_, valid_range_); },
       [&](Inferno) { find_inferno_range(scene, index, full_range_); },
       [&](Jet) { find_jet_range(scene, index, full_range_); },
@@ -297,8 +372,9 @@ bool wis::Range_finder::find(const Scene& scene, std::uint32_t index, Card card)
       [&](Lightning) {},
       [&](Gust) {},
       [&](Missile) { find_missile_range(scene, index, full_range_); },
+      [&](Blink blink) { find_blink_range(blink, scene, index, full_range_, valid_range_); },
       [&](Teleport) { find_teleport_range(scene, index, full_range_, valid_range_); }
-  }, card);
+  }, spell);
 
   if (full_range_.empty()) {
     return false;

@@ -15,12 +15,15 @@
 #include "apeiron/prefab/grid.h"
 
 #include "app/app_data.h"
+
 #include "core/atlas.h"
 #include "core/lattice.h"
 #include "core/pixel_renderer.h"
 #include "core/renderer.h"
-#include "game/cards.h"
+
 #include "game/game_data.h"
+#include "game/spells.h"
+
 #include "ui/action_panel.h"
 #include "ui/portrait_panel.h"
 
@@ -39,7 +42,7 @@ public:
   void update(float delta_s);
   void render();
 
-  void set_cards(std::span<const Card> cards);
+  void set_spells(std::span<const Spell> spells);
 
   // Engine event handlers
   bool handle_event(const apeiron::engine::Mouse_button_down_event& event);

@@ -8,7 +8,6 @@
 #include "app/error.h"
 #include "core/palette.h"
 #include "game/constants.h"
-#include "game/cards.h"
 #include "util/utility.h"
 
 
@@ -82,16 +81,16 @@ void wis::Stage_ui::render()
 }
 
 
-void wis::Stage_ui::set_cards(std::span<const Card> cards)
+void wis::Stage_ui::set_spells(std::span<const Spell> spells)
 {
   float s = val::tile_size_ui();
 
-  action_panel_.set_size(static_cast<float>(cards.size()) * s, s);
+  action_panel_.set_size(static_cast<float>(spells.size()) * s, s);
   action_panel_.transform().set_position(0.0f, 0.0f, bottom_ - s * 0.5f)
       .set_rotation_deg(-15.0f, 0.0f, 0.0f)
       .set_rotation_pivot(apeiron::engine::Axis::X, 0.0f, 0.0f, s * 0.5f);
   action_panel_.apply();
-  action_panel_.init(cards);
+  action_panel_.init(spells);
 }
 
 

@@ -4,8 +4,9 @@
 
 #include <cstdint>
 #include <vector>
-#include "game/cards.h"
+
 #include "game/slime.h"
+#include "game/spells.h"
 
 
 namespace wis {
@@ -14,7 +15,7 @@ namespace wis {
 struct Game_state
 {
   std::uint32_t player_index;
-  std::vector<Card> cards;
+  std::vector<Spell> spells;
   std::vector<Slime> slimes;
 };
 

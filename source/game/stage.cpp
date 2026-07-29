@@ -11,9 +11,8 @@
 #include "core/constants.h"
 #include "core/palette.h"
 
-#include "game/cards.h"
+#include "game/cast_spell.h"
 #include "game/constants.h"
-#include "game/play_card.h"
 
 #include "util/utility.h"
 
@@ -163,10 +162,10 @@ void wis::Stage::handle_event(const engine::Mouse_button_down_event& event)
       }
 
       if (selected_action_id_) {
-        auto card = scene_.card(selected_action_id_);
+        auto spell = scene_.spell(selected_action_id_);
 
-        if (game_data_.cursor.type == Cursor_type::Cross && card) {
-          play_card(*card, player_, scene_.tiles(), scene_.slimes(), cursor.scene_index);
+        if (game_data_.cursor.type == Cursor_type::Cross && spell) {
+          cast_spell(*spell, player_, scene_.tiles(), scene_.slimes(), cursor.scene_index);
           dispatcher_.trigger(event::Action_triggered{selected_action_id_});
         }
         else {
@@ -273,8 +272,8 @@ void wis::Stage::on_action_selected(const event::Action_selected& event)
   selected_action_id_ = event.id;
   player_.mesh_index = 104;
 
-  if (auto card = scene_.card(selected_action_id_); card) {
-    range_finder_.find(scene_, player_.scene_index, *card);
+  if (auto spell = scene_.spell(selected_action_id_); spell) {
+    range_finder_.find(*spell, scene_, player_.scene_index);
   }
 
   std::print("Action {} selected\n", event.id);
@@ -381,14 +380,19 @@ void wis::Stage::render_overlay()
     pixel_renderer_.render(ground_entity_, atlas_.stage(), 386);
   }
 
-  for (const auto index : range_finder_.full_range()) {
-    ground_entity_.transform().set_position(lattice_.as_position_xz(index));
-    pixel_renderer_.render(ground_entity_, atlas_.stage(), 380);
-  }
+  {
+    auto valid_range = range_finder_.valid_range();
 
-  for (const auto index : range_finder_.valid_range()) {
-    ground_entity_.transform().set_position(lattice_.as_position_xz(index));
-    pixel_renderer_.render(ground_entity_, atlas_.stage(), 380, 5);
+    for (const auto index : range_finder_.full_range()) {
+      ground_entity_.transform().set_position(lattice_.as_position_xz(index));
+
+      if (std::ranges::find(valid_range, index) != valid_range.end()) {
+        pixel_renderer_.render(ground_entity_, atlas_.stage(), 380, 5);
+      }
+      else {
+        pixel_renderer_.render(ground_entity_, atlas_.stage(), 386);
+      }
+    }
   }
 }
 

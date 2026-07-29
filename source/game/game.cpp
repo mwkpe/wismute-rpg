@@ -29,7 +29,7 @@ void wis::Game::init()
 
   scene_.load_scene("assets/test_scene.json");
   stage_.init_scene();
-  stage_ui_.set_cards(scene_.cards());
+  stage_ui_.set_spells(scene_.spells());
 
   dispatcher_.sink<event::Achievement_unlocked>().connect<&Game::on_achievement_unlocked>(*this);
 }

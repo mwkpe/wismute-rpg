@@ -42,18 +42,21 @@ wis::ui::Action_panel::Action_panel(entt::dispatcher& dispatcher) : dispatcher_{
 }
 
 
-void wis::ui::Action_panel::init(std::span<const Card> cards)
+void wis::ui::Action_panel::init(std::span<const Spell> spells)
 {
   reset();
 
   float x = 0.0f;
   constexpr float y = 0.0f;
 
-  for (const auto& card : cards) {
+  for (const auto& spell : spells) {
     std::visit(util::match{
-        [&](Move c){ actions_.emplace_back(c.id, c.was_played, c.mesh_index + c.steps - 1, x, y); },
-        [&](auto c){ actions_.emplace_back(c.id, c.was_played, c.mesh_index, x, y); },
-    }, card);
+        [&](Blink blink){
+            const auto mesh_index = blink.mesh_index + blink.steps - 1;
+            actions_.emplace_back(blink.id, blink.was_played, mesh_index, x, y);
+        },
+        [&](auto s){ actions_.emplace_back(s.id, s.was_played, s.mesh_index, x, y); },
+    }, spell);
 
     x += val::tile_size_ui();
   }

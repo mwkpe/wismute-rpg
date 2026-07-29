@@ -35,23 +35,23 @@ add_executable(wismute
     source/core/pixel_renderer.h
     source/core/renderer.cpp
     source/core/renderer.h
-    source/game/cards.h
     source/game/constants.h
     source/game/events.h
+    source/game/cast_spell.cpp
+    source/game/cast_spell.h
     source/game/game.cpp
     source/game/game.h
     source/game/game_data.h
     source/game/game_state.h
     source/game/path_finder.cpp
     source/game/path_finder.h
-    source/game/play_card.cpp
-    source/game/play_card.h
     source/game/player.h
     source/game/range_finder.cpp
     source/game/range_finder.h
     source/game/scene.cpp
     source/game/scene.h
     source/game/slime.h
+    source/game/spells.h
     source/game/sprite.h
     source/game/stage.cpp
     source/game/stage.h

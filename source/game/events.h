@@ -3,8 +3,6 @@
 
 
 #include <cstdint>
-#include <entt/entt.hpp>
-#include "game/cards.h"
 
 
 namespace wis::event {
@@ -18,19 +16,19 @@ struct Achievement_unlocked
 
 struct Action_selected
 {
-  std::uint32_t id;
+  std::uint32_t id = 0;
 };
 
 
 struct Action_deselected
 {
-  std::uint32_t id;
+  std::uint32_t id = 0;
 };
 
 
 struct Action_triggered
 {
-  std::uint32_t id;
+  std::uint32_t id = 0;
 };
 
 

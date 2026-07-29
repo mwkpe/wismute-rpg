@@ -1,4 +1,4 @@
-#include "play_card.h"
+#include "cast_spell.h"
 
 
 #include <algorithm>
@@ -31,19 +31,7 @@ wis::Slime* get_slime(std::span<wis::Slime> slimes, std::uint32_t target_index)
 }
 
 
-void play(const wis::Move move, wis::Player& player, std::span<const wis::Tile> tiles,
-    std::span<wis::Slime> slimes, std::uint32_t target_index)
-{
-  if (auto* slime = get_slime(slimes, target_index); !tiles[target_index].is_wall && !slime) {
-    player.scene_index = target_index;
-  }
-  else {
-    std::print("Can't move there\n");
-  }
-}
-
-
-void play(wis::Fireball fireball, std::span<const wis::Tile> tiles, std::span<wis::Slime> slimes,
+void cast_fireball(auto fireball, std::span<const wis::Tile> tiles, std::span<wis::Slime> slimes,
     std::uint32_t player_index, std::uint32_t target_index)
 {
   std::uint32_t damage = fireball.damage;
@@ -64,18 +52,21 @@ void play(wis::Fireball fireball, std::span<const wis::Tile> tiles, std::span<wi
 }
 
 
+void cast_blink(wis::Player& player, std::uint32_t target_index)
+{
+  player.scene_index = target_index;
+}
+
+
 }  // namespace
 
 
-void wis::play_card(Card card, Player& player, std::span<const Tile> tiles,
+void wis::cast_spell(Spell spell, Player& player, std::span<const Tile> tiles,
     std::span<Slime> slimes, std::uint32_t target_index)
 {
   std::visit(util::match{
-      [&](Move move) {
-        play(move, player, tiles, slimes, target_index);
-      },
       [&](Fireball fireball) {
-        play(fireball, tiles, slimes, player.scene_index, target_index);
+        cast_fireball(fireball, tiles, slimes, player.scene_index, target_index);
       },
       [&](Inferno) { std::print("Inferno not implemented\n"); },
       [&](Jet) { std::print("Jet not implemented\n"); },
@@ -83,6 +74,7 @@ void wis::play_card(Card card, Player& player, std::span<const Tile> tiles,
       [&](Lightning) { std::print("Lightning not implemented\n"); },
       [&](Gust) { std::print("Gust not implemented\n"); },
       [&](Missile) { std::print("Missile not implemented\n"); },
+      [&](Blink blink) { cast_blink(player, target_index); },
       [&](Teleport) { player.scene_index = target_index; }
-  }, card);
+  }, spell);
 }

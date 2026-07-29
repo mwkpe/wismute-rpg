@@ -10,8 +10,8 @@
 #include <vector>
 #include <glm/glm.hpp>
 
-#include "game/cards.h"
 #include "game/slime.h"
+#include "game/spells.h"
 #include "game/sprite.h"
 #include "game/tile.h"
 
@@ -34,9 +34,9 @@ public:
   [[nodiscard]] Tile* tile(std::uint32_t index);
   [[nodiscard]] const Tile* tile(std::uint32_t index) const;
 
-  [[nodiscard]] std::optional<Card> card(std::uint8_t id) const;
-  [[nodiscard]] std::span<Card> cards() { return cards_; }
-  [[nodiscard]] std::span<const Card> cards() const { return cards_; }
+  [[nodiscard]] std::optional<Spell> spell(std::uint8_t id) const;
+  [[nodiscard]] std::span<Spell> spells() { return spells_; }
+  [[nodiscard]] std::span<const Spell> spells() const { return spells_; }
 
   [[nodiscard]] std::span<Tile> tiles() { return tiles_; }
   [[nodiscard]] std::span<const Tile> tiles() const { return tiles_; }
@@ -52,7 +52,7 @@ private:
   glm::uvec2 size_ = glm::uvec2{1, 1};
   glm::uvec2 margin_ = glm::uvec2{1, 1};
   std::uint32_t start_index_ = 0;
-  std::vector<Card> cards_;
+  std::vector<Spell> spells_;
   std::vector<Tile> tiles_;
   std::vector<Sprite> sprites_;
   std::vector<Slime> slimes_;
