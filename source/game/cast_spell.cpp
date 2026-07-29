@@ -58,6 +58,12 @@ void cast_blink(wis::Player& player, std::uint32_t target_index)
 }
 
 
+void cast_teleport(wis::Player& player, std::uint32_t target_index)
+{
+  player.scene_index = target_index;
+}
+
+
 }  // namespace
 
 
@@ -74,7 +80,11 @@ void wis::cast_spell(Spell spell, Player& player, std::span<const Tile> tiles,
       [&](Lightning) { std::print("Lightning not implemented\n"); },
       [&](Gust) { std::print("Gust not implemented\n"); },
       [&](Missile) { std::print("Missile not implemented\n"); },
-      [&](Blink blink) { cast_blink(player, target_index); },
-      [&](Teleport) { player.scene_index = target_index; }
+      [&](Blink blink) {
+        cast_blink(player, target_index);
+      },
+      [&](Teleport teleport) {
+        cast_teleport(player, target_index);
+      }
   }, spell);
 }
