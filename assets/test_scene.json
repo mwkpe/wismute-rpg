@@ -8,6 +8,11 @@
   },
   "slimes": [
     {
+      "index": 14,
+      "health": 20,
+      "weight": 2
+    },
+    {
       "index": 28,
       "health": 20,
       "weight": 2
@@ -18,9 +23,47 @@
       "weight": 2
     },
     {
+      "index": 47,
+      "health": 20,
+      "weight": 2
+    },
+    {
       "index": 58,
       "health": 40,
       "weight": 1
+    }
+  ],
+  "spells": [
+    {
+      "key": 41,
+      "steps": 1
+    },
+    {
+      "key": 41,
+      "steps": 2
+    },
+    {
+      "key": 41,
+      "steps": 2
+    },
+    {
+      "key": 41,
+      "steps": 3
+    },
+    {
+      "key": 20
+    },
+    {
+      "key": 20
+    },
+    {
+      "key": 10
+    },
+    {
+      "key": 10
+    },
+    {
+      "key": 11
     }
   ],
   "tiles": [
