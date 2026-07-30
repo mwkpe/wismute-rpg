@@ -87,7 +87,8 @@ void find_fireball_range(const auto& scene, std::uint32_t index, auto& full_rang
 }
 
 
-void find_inferno_range(const auto& scene, std::uint32_t index, auto& full_range)
+void find_inferno_range(const auto& scene, std::uint32_t index, auto& full_range,
+    auto& valid_range)
 {
   // Pattern
   //  xxx
@@ -122,17 +123,35 @@ void find_inferno_range(const auto& scene, std::uint32_t index, auto& full_range
   };
 
   for (auto i : indices) {
-    if (const auto* tile = get_tile(scene.tiles(), i); !tile->is_nil &&
-        tile->element != wis::Element::Water) {
+    const auto* tile = get_tile(scene.tiles(), i);
+
+    if (!tile->is_nil) {
       full_range.push_back(i);
+    }
+
+    if (!tile->is_wall) {
+      // Slime on tile?
+      if (get_slime(scene.slimes(), i)) {
+        valid_range.push_back(i);
+      }
+      else {
+        // Slime in any of the cardinal directions?
+        for (auto j : tile->cardinals()) {
+          if (get_slime(scene.slimes(), j)) {
+            valid_range.push_back(i);
+            break;
+          }
+        }
+      }
     }
   }
 }
 
 
-void find_jet_range(const auto& scene, std::uint32_t index, auto& full_range)
+void find_jet_range(const auto& scene, std::uint32_t index, auto& full_range,
+    auto& valid_range)
 {
-  // Pattern
+  // Pattern (reach may be blocked by walls)
   //    x
   //    x
   //    x
@@ -148,17 +167,18 @@ void find_jet_range(const auto& scene, std::uint32_t index, auto& full_range)
   const std::array left_indices{ index - 1u, index - 2u, index - 3u };
   const std::array right_indices{ index + 1u, index + 2u, index + 3u, };
 
-  auto add = [&scene, &full_range](std::span<const std::uint32_t> indices) {
+  auto add = [&scene, &full_range, &valid_range](std::span<const std::uint32_t> indices) {
     for (auto i : indices) {
       const auto* tile = get_tile(scene.tiles(), i);
       const auto* slime = get_slime(scene.slimes(), i);
-      bool not_wall = !tile->is_wall || tile->element == wis::Element::Water;
+      bool is_wall = tile->is_wall && tile->element != wis::Element::Water;
 
-      if (!tile->is_nil && not_wall && !slime) {
+      if (!tile->is_nil && !is_wall && !slime) {
         full_range.push_back(i);
       }
       else if (slime) {
         full_range.push_back(i);
+        valid_range.push_back(i);
         return;
       }
       else {
@@ -366,8 +386,8 @@ bool wis::Range_finder::find(Spell spell, const Scene& scene, std::uint32_t inde
 
   std::visit(util::match{
       [&](Fireball) { find_fireball_range(scene, index, full_range_, valid_range_); },
-      [&](Inferno) { find_inferno_range(scene, index, full_range_); },
-      [&](Jet) { find_jet_range(scene, index, full_range_); },
+      [&](Inferno) { find_inferno_range(scene, index, full_range_, valid_range_); },
+      [&](Jet) { find_jet_range(scene, index, full_range_, valid_range_); },
       [&](Splash) { find_splash_range(scene, index, full_range_); },
       [&](Lightning) {},
       [&](Gust) {},

@@ -14,6 +14,7 @@ class Tile
 {
 public:
   std::uint32_t index = 0;
+  std::uint32_t map_index = 0;
   std::uint32_t col = 0;
   std::uint32_t row = 0;
   std::uint32_t mesh_index = 0;

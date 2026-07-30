@@ -34,20 +34,59 @@ wis::Slime* get_slime(std::span<wis::Slime> slimes, std::uint32_t target_index)
 void cast_fireball(auto fireball, std::span<const wis::Tile> tiles, std::span<wis::Slime> slimes,
     std::uint32_t player_index, std::uint32_t target_index)
 {
-  std::uint32_t damage = fireball.damage;
+  std::uint32_t spell_damage = fireball.damage;
 
   if (is_amplified(tiles, player_index, fireball.element)) {
-    damage *= 2u;
+    spell_damage *= 2u;
   }
 
   if (auto* slime = get_slime(slimes, target_index); slime) {
-    damage = std::min(slime->health, damage);
+    auto damage = std::min(slime->health, spell_damage);
     slime->health -= damage;
-
     std::print("Slime {} received {} fire damage\n", slime->id, damage);
   }
-  else {
-    std::print("Nothing hit\n");
+}
+
+
+void cast_inferno(auto inferno, std::span<const wis::Tile> tiles, std::span<wis::Slime> slimes,
+    std::uint32_t player_index, std::uint32_t target_index)
+{
+  std::uint32_t spell_damage = inferno.damage;
+
+  if (is_amplified(tiles, player_index, inferno.element)) {
+    spell_damage *= 2u;
+  }
+
+  if (auto* slime = get_slime(slimes, target_index); slime) {
+    auto damage = std::min(slime->health, spell_damage);
+    slime->health -= damage;
+    std::print("Slime {} received {} fire damage\n", slime->id, damage);
+  }
+
+  for (const auto i : tiles[target_index].cardinals()) {
+    if (auto* slime = get_slime(slimes, i); slime) {
+      auto damage = std::min(slime->health, spell_damage);
+      slime->health -= damage;
+      std::print("Slime {} received {} fire damage\n", slime->id, damage);
+    }
+  }
+}
+
+
+void cast_jet(auto jet, std::span<const wis::Tile> tiles, std::span<wis::Slime> slimes,
+    std::uint32_t player_index, std::uint32_t target_index)
+{
+  std::uint32_t spell_damage = jet.damage;
+
+  if (is_amplified(tiles, player_index, jet.element)) {
+    spell_damage *= 2u;
+    std::print("Spell amplified\n");
+  }
+
+  if (auto* slime = get_slime(slimes, target_index); slime) {
+    auto damage = std::min(slime->health, spell_damage);
+    slime->health -= damage;
+    std::print("Slime {} received {} water damage\n", slime->id, damage);
   }
 }
 
@@ -74,16 +113,20 @@ void wis::cast_spell(Spell spell, Player& player, std::span<const Tile> tiles,
       [&](Fireball fireball) {
         cast_fireball(fireball, tiles, slimes, player.scene_index, target_index);
       },
-      [&](Inferno) { std::print("Inferno not implemented\n"); },
-      [&](Jet) { std::print("Jet not implemented\n"); },
+      [&](Inferno inferno) {
+        cast_inferno(inferno, tiles, slimes, player.scene_index, target_index);
+      },
+      [&](Jet jet) {
+        cast_jet(jet, tiles, slimes, player.scene_index, target_index);
+      },
       [&](Splash) { std::print("Splash not implemented\n"); },
       [&](Lightning) { std::print("Lightning not implemented\n"); },
       [&](Gust) { std::print("Gust not implemented\n"); },
       [&](Missile) { std::print("Missile not implemented\n"); },
-      [&](Blink blink) {
+      [&](Blink) {
         cast_blink(player, target_index);
       },
-      [&](Teleport teleport) {
+      [&](Teleport) {
         cast_teleport(player, target_index);
       }
   }, spell);

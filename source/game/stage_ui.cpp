@@ -88,30 +88,36 @@ void wis::Stage_ui::set_spells(std::span<const Spell_slot> spell_slots)
   action_panel_.set_size(static_cast<float>(spell_slots.size()) * s, s);
   action_panel_.transform().set_position(0.0f, 0.0f, bottom_ - s * 0.5f)
       .set_rotation_deg(-15.0f, 0.0f, 0.0f)
-      .set_rotation_pivot(apeiron::engine::Axis::X, 0.0f, 0.0f, s * 0.5f);
+      .set_rotation_pivot(engine::Axis::X, 0.0f, 0.0f, s * 0.5f);
   action_panel_.apply();
   action_panel_.init(spell_slots);
 }
 
 
-bool wis::Stage_ui::handle_event(const apeiron::engine::Mouse_button_down_event& event)
+bool wis::Stage_ui::handle_event(const engine::Mouse_button_down_event& event)
 {
-  if (auto point = panel_point(event.x, event.y, action_panel_.collision_quad()); point) {
-    action_panel_.click(*point);
-    return true;
+  switch (event.button) {
+    case engine::Mouse_button::Left: {
+      if (auto point = panel_point(event.x, event.y, action_panel_.collision_quad()); point) {
+        action_panel_.click(*point);
+        return true;
+      }
+    }
+    break;
+    default:;
   }
 
   return false;
 }
 
 
-bool wis::Stage_ui::handle_event([[maybe_unused]] const apeiron::engine::Mouse_button_up_event& event)
+bool wis::Stage_ui::handle_event([[maybe_unused]] const engine::Mouse_button_up_event& event)
 {
   return false;
 }
 
 
-bool wis::Stage_ui::handle_event(const apeiron::engine::Mouse_motion_event& event)
+bool wis::Stage_ui::handle_event(const engine::Mouse_motion_event& event)
 {
   auto& cursor = game_data_.cursor.ui;
 
@@ -203,6 +209,10 @@ void wis::Stage_ui::render_panels()
 
     if (widget.hovered) {
       pixel_renderer_.render(entity_, atlas_.ui(), widget.mesh_index + 40);
+    }
+
+    if (game_data_.stage.amplification[widget.element]) {
+      pixel_renderer_.render(entity_, atlas_.ui(), widget.mesh_index + 60);
     }
   }
 

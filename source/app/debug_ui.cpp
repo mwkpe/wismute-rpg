@@ -120,6 +120,7 @@ void wis::Debug_ui::build(Settings& settings, App_data& app_data, Game_data& gam
     ImGui::Text("Ground Z: %.1f", game_data.cursor.stage.ground_position.z);
     ImGui::Text("Scene position X: %.1f", game_data.cursor.stage.scene_position.x);
     ImGui::Text("Scene position Z: %.1f", game_data.cursor.stage.scene_position.z);
+    ImGui::Text("Map index: %u", game_data.cursor.stage.map_index);
     ImGui::Text("Scene index: %u", game_data.cursor.stage.scene_index);
     ImGui::Text("Scene coords X: %u", game_data.cursor.stage.scene_coords.x);
     ImGui::Text("Scene coords Z: %u", game_data.cursor.stage.scene_coords.y);

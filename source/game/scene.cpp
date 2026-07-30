@@ -131,17 +131,25 @@ void wis::Scene::load_scene(std::string_view filepath)
 
   // Spells
   {
+    spell_slots_.clear();
+    spell_slots_.reserve(20);
+
     std::uint8_t id = 0;
 
-    spell_slots_ = {
-      {Blink{1}, ++id},
-      {Blink{2}, ++id},
-      {Blink{3}, ++id},
-      {Fireball{}, ++id},
-      {Fireball{}, ++id},
-      //{Fireball{}, ++id},
-      {Fireball{}, ++id}
-    };
+    for (const auto& spell_data : scene_data["spells"]) {
+      switch (spell_data["key"].get<std::uint32_t>()) {
+        case Fireball::key: { spell_slots_.emplace_back(Fireball{}, ++id); } break;
+        case Inferno::key: { spell_slots_.emplace_back(Inferno{}, ++id); } break;
+        case Jet::key: { spell_slots_.emplace_back(Jet{}, ++id); } break;
+        case Splash::key: { spell_slots_.emplace_back(Splash{}, ++id); } break;
+        case Lightning::key: { spell_slots_.emplace_back(Lightning{}, ++id); } break;
+        case Gust::key: { spell_slots_.emplace_back(Gust{}, ++id); } break;
+        case Missile::key: { spell_slots_.emplace_back(Missile{}, ++id); } break;
+        case Blink::key: { spell_slots_.emplace_back(Blink{spell_data["steps"]}, ++id); } break;
+        case Teleport::key: { spell_slots_.emplace_back(Teleport{}, ++id); } break;
+        default:;
+      }
+    }
   }
 
   // Tiles
@@ -166,6 +174,7 @@ void wis::Scene::load_scene(std::string_view filepath)
 
       auto& tile = tiles_[scene_index];
 
+      tile.map_index = map_index;
       tile.mesh_index = tile_data["mesh_index"];
       tile.is_nil = tile_data.value("is_nil", false);
       tile.is_wall = tile_data["is_wall"];

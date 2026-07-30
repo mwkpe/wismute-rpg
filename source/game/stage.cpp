@@ -28,6 +28,18 @@ constexpr auto is_alive = std::views::filter([](const auto& e) { return e.health
 constexpr auto has_mesh = std::views::filter([](const auto& e) { return e.mesh_index != 20; });
 
 
+bool is_amplified(std::span<const wis::Tile> tiles, std::uint32_t index, wis::Element element)
+{
+  for (const auto i : tiles[index].cardinals()) {
+    if (tiles[i].element == element) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+
 }  // namespace
 
 
@@ -165,10 +177,6 @@ void wis::Stage::handle_event(const engine::Mouse_button_down_event& event)
   const auto& cursor = game_data_.cursor.stage;
 
   switch (event.button) {
-    case engine::Mouse_button::Right: {
-      game_data_.camera.drag = true;
-    }
-    break;
     case engine::Mouse_button::Left: {
       if (selected_action_id_ == 0) {
         if (!scene_.tile(cursor.scene_index)->is_nil) {
@@ -183,9 +191,21 @@ void wis::Stage::handle_event(const engine::Mouse_button_down_event& event)
         auto spell_slot = scene_.spell_slot(selected_action_id_);
 
         if (game_data_.cursor.type == Cursor_type::Cross && spell_slot) {
-          cast_spell(spell_slot->spell, player_, scene_.tiles(), scene_.slimes(), cursor.scene_index);
+          cast_spell(spell_slot->spell, player_, scene_.tiles(), scene_.slimes(),
+              cursor.scene_index);
           spell_slot->is_available = false;
           dispatcher_.trigger(event::Action_triggered{selected_action_id_});
+
+          if (std::holds_alternative<Blink>(spell_slot->spell)) {
+            auto& amplification = game_data_.stage.amplification;
+            auto index = player_.scene_index;
+            auto tiles = scene_.tiles();
+
+            amplification[Element::Fire] = is_amplified(tiles, index, Element::Fire);
+            amplification[Element::Water] = is_amplified(tiles, index, Element::Water);
+            amplification[Element::Wind] = is_amplified(tiles, index, Element::Wind);
+            amplification[Element::Aether] = is_amplified(tiles, index, Element::Aether);
+          }
         }
         else {
           dispatcher_.trigger(event::Action_deselected{selected_action_id_});
@@ -197,6 +217,10 @@ void wis::Stage::handle_event(const engine::Mouse_button_down_event& event)
       }
 
       player_.mesh_index = 102;
+    }
+    break;
+    case engine::Mouse_button::Right: {
+      game_data_.camera.drag = true;
     }
     break;
     default:;
@@ -240,6 +264,7 @@ void wis::Stage::handle_event(const engine::Mouse_motion_event& event)
       cursor.scene_position = lattice_.as_position_xz(*index);
 
       if (const auto* tile = scene_.tile(cursor.scene_index); tile && !tile->is_nil) {
+        cursor.map_index = tile->map_index;
         stage.hovered_index = cursor.scene_index;
 
         if (selected_action_id_ > 0) {
@@ -249,10 +274,12 @@ void wis::Stage::handle_event(const engine::Mouse_motion_event& event)
         }
       }
       else {
+        cursor.map_index = 0;
         stage.hovered_index = 0;
       }
     }
     else {
+      cursor.map_index = 0;
       cursor.scene_index = 0;
       cursor.scene_coords = glm::uvec2{0};
       cursor.scene_position = glm::vec3{0.0f};
@@ -260,6 +287,7 @@ void wis::Stage::handle_event(const engine::Mouse_motion_event& event)
     }
   }
   else {
+    cursor.map_index = 0;
     cursor.scene_index = 0;
     cursor.scene_coords = glm::uvec2{0};
     cursor.scene_position = glm::vec3{0.0f};
@@ -374,27 +402,34 @@ void wis::Stage::render_overlay()
 
   if (hovered_index > 0 && hovered_index != selected_index) {
     ground_entity_.transform().set_position(lattice_.as_position_xz(hovered_index));
-    //pixel_renderer_.render(ground_entity_, atlas_.stage(), 381);
+    //pixel_renderer_.render(ground_entity_, atlas_.stage(), 380);
   }
 
   if (selected_index > 0) {
     ground_entity_.transform().set_position(lattice_.as_position_xz(selected_index));
-    pixel_renderer_.render(ground_entity_, atlas_.stage(), 380);
+    pixel_renderer_.render(ground_entity_, atlas_.stage(), 381);
   }
 
   {
     auto valid_range = range_finder_.valid_range();
 
+    pixel_renderer_.enable_blending();
+    Renderer::set_gl_blend(true);
+
     for (const auto index : range_finder_.full_range()) {
       ground_entity_.transform().set_position(lattice_.as_position_xz(index));
 
       if (std::ranges::find(valid_range, index) != valid_range.end()) {
-        pixel_renderer_.render(ground_entity_, atlas_.stage(), 380, 5);
+        pixel_renderer_.set_blending_alpha(1.0f);
+        pixel_renderer_.render(ground_entity_, atlas_.stage(), 380);
       }
       else {
-        pixel_renderer_.render(ground_entity_, atlas_.stage(), 386);
+        pixel_renderer_.set_blending_alpha(0.4f);
+        pixel_renderer_.render(ground_entity_, atlas_.stage(), 385);
       }
     }
+
+    pixel_renderer_.enable_blending(false);
   }
 }
 
@@ -459,10 +494,10 @@ void wis::Stage::render_debug_overlay()
       ground_entity_.transform().set_position(lattice_.as_position_xz(tile.index));
 
       if (tile.is_nil) { pixel_renderer_.render(ground_entity_, atlas_.stage(), 360); }
-      if (tile.north_index()) { pixel_renderer_.render(ground_entity_, atlas_.stage(), 382); }
-      if (tile.south_index()) { pixel_renderer_.render(ground_entity_, atlas_.stage(), 383); }
-      if (tile.east_index()) { pixel_renderer_.render(ground_entity_, atlas_.stage(), 384); }
-      if (tile.west_index()) { pixel_renderer_.render(ground_entity_, atlas_.stage(), 385); }
+      if (tile.north_index()) { pixel_renderer_.render(ground_entity_, atlas_.stage(), 340); }
+      if (tile.south_index()) { pixel_renderer_.render(ground_entity_, atlas_.stage(), 341); }
+      if (tile.east_index()) { pixel_renderer_.render(ground_entity_, atlas_.stage(), 342); }
+      if (tile.west_index()) { pixel_renderer_.render(ground_entity_, atlas_.stage(), 343); }
     }
   }
 

@@ -53,9 +53,11 @@ void wis::ui::Action_panel::init(std::span<const Spell_slot> spell_slots)
     std::visit(util::match{
         [&](Blink blink){
             const auto mesh_index = blink.mesh_index + blink.steps - 1;
-            actions_.emplace_back(slot.id, slot.is_available, mesh_index, x, y);
+            actions_.emplace_back(slot.id, slot.is_available, blink.element, mesh_index, x, y);
         },
-        [&](auto s){ actions_.emplace_back(slot.id, slot.is_available, s.mesh_index, x, y); },
+        [&](auto s){
+            actions_.emplace_back(slot.id, slot.is_available, s.element, s.mesh_index, x, y);
+        }
     }, slot.spell);
 
     x += val::tile_size_ui();

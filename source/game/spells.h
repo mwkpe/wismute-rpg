@@ -12,6 +12,7 @@ namespace wis {
 
 struct Fireball
 {
+  static constexpr std::uint32_t key = 10;
   static constexpr auto element = Element::Fire;
   static constexpr std::uint32_t mesh_index = 0;
   static constexpr std::uint32_t damage = 20;
@@ -19,20 +20,23 @@ struct Fireball
 
 struct Inferno
 {
+  static constexpr std::uint32_t key = 11;
   static constexpr auto element = Element::Fire;
   static constexpr std::uint32_t mesh_index = 1;
-  static constexpr std::uint32_t damage = 10;
+  static constexpr std::uint32_t damage = 20;
 };
 
 struct Jet
 {
+  static constexpr std::uint32_t key = 20;
   static constexpr auto element = Element::Water;
   static constexpr std::uint32_t mesh_index = 2;
-  static constexpr std::uint32_t damage = 5;
+  static constexpr std::uint32_t damage = 10;
 };
 
 struct Splash
 {
+  static constexpr std::uint32_t key = 21;
   static constexpr auto element = Element::Water;
   static constexpr std::uint32_t mesh_index = 3;
   static constexpr std::uint32_t primary_damage = 20;
@@ -41,6 +45,7 @@ struct Splash
 
 struct Lightning
 {
+  static constexpr std::uint32_t key = 30;
   static constexpr auto element = Element::Wind;
   static constexpr std::uint32_t mesh_index = 4;
   static constexpr std::uint32_t primary_damage = 20;
@@ -50,12 +55,14 @@ struct Lightning
 
 struct Gust
 {
+  static constexpr std::uint32_t key = 31;
   static constexpr auto element = Element::Wind;
   static constexpr std::uint32_t mesh_index = 5;
 };
 
 struct Missile
 {
+  static constexpr std::uint32_t key = 40;
   static constexpr auto element = Element::Aether;
   static constexpr std::uint32_t mesh_index = 6;
   static constexpr std::uint32_t damage = 10;
@@ -64,6 +71,7 @@ struct Missile
 
 struct Blink
 {
+  static constexpr std::uint32_t key = 41;
   static constexpr auto element = Element::None;
   static constexpr std::uint32_t mesh_index = 10;
   std::uint8_t steps = 0;
@@ -71,6 +79,7 @@ struct Blink
 
 struct Teleport
 {
+  static constexpr std::uint32_t key = 42;
   static constexpr auto element = Element::Aether;
   static constexpr std::uint32_t mesh_index = 7;
 };

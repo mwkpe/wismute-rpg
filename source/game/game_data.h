@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <glm/glm.hpp>
+#include <map>
 #include "game/types.h"
 
 
@@ -12,7 +13,8 @@ namespace wis {
 
 struct Stage_cursor_data
 {
-  std::uint32_t scene_index = 0;
+  std::uint32_t scene_index = 0u;
+  std::uint32_t map_index = 0u;
   glm::uvec2 scene_coords = glm::uvec2{0};
   glm::vec3 scene_position = glm::vec3{0.0f};
   glm::vec3 ground_position = glm::vec3{0.0f};
@@ -45,8 +47,9 @@ struct Camera_data
 
 struct Stage_data
 {
-  std::uint32_t hovered_index = 0;
-  std::uint32_t selected_index = 0;
+  std::uint32_t hovered_index = 0u;
+  std::uint32_t selected_index = 0u;
+  std::map<Element, bool> amplification;
 };
 
 

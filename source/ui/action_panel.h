@@ -9,6 +9,7 @@
 
 #include "game/events.h"
 #include "game/spells.h"
+#include "game/types.h"
 
 #include "ui/panel.h"
 #include "ui/widget.h"
@@ -21,6 +22,7 @@ struct Action_widget final : Widget
 {
   Action_widget(std::uint32_t id,
       bool is_available,
+      Element element,
       std::uint16_t mesh_index,
       float x,
       float y,
@@ -29,10 +31,12 @@ struct Action_widget final : Widget
       :
       Widget{mesh_index, x, y, w, h},
       id{id},
-      is_available{is_available} {}
+      is_available{is_available},
+      element{element} {}
 
   std::uint32_t id = 0;
   bool is_available = true;
+  Element element = Element::None;
 };
 
 
