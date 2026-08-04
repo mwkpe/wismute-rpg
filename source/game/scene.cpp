@@ -189,13 +189,11 @@ void wis::Scene::load_scene(std::string_view filepath)
   }
 
   // Sprites
-  const glm::vec3 sprite_offset{0.0f, 0.0f, 0.4f};
-
   for (const auto& tile : tiles_) {
     if (tile.element == Element::Wind) {
-      sprites_.emplace_back(lattice.as_position_xz(tile.index, sprite_offset), tile.index,
+      sprites_.emplace_back(lattice.as_position_xz(tile.index, val::sprite_offset), tile.index,
           glm::uvec2{tile.col, tile.row}, 60);
-      sprites_.emplace_back(lattice.as_position_xz(tile.index, sprite_offset), tile.index,
+      sprites_.emplace_back(lattice.as_position_xz(tile.index, val::sprite_offset), tile.index,
           glm::uvec2{tile.col, tile.row}, 61);
     }
   }
@@ -215,7 +213,7 @@ void wis::Scene::load_scene(std::string_view filepath)
       slimes_.emplace_back(id++,
           slime["health"],
           weight,
-          lattice.as_position_xz(index, sprite_offset),
+          lattice.as_position_xz(index, val::sprite_offset),
           index,
           mesh,
           0.06f,
