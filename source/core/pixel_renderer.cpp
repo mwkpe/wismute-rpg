@@ -10,7 +10,6 @@ void wis::Pixel_renderer::init(float pixel_size, std::uint32_t tile_size)
   shader_.use();
 
   // Init uniforms
-  set_palette();
   set_pixel_size(pixel_size);
   set_tile_size(tile_size);
 
@@ -57,13 +56,15 @@ void wis::Pixel_renderer::set_view_projection()
 }
 
 
-void wis::Pixel_renderer::set_palette()
+void wis::Pixel_renderer::set_palette(std::span<const glm::vec4> palette)
 {
-  static_assert(Palette::color_count == 53, "Color count mismatch");
+  if (palette.size() > 21u) {
+    return;
+  }
 
   auto index = 0;
 
-  for (const auto& color : Palette::colors) {
+  for (const auto& color : palette) {
     shader_.set_uniform(std::format("colors[{}]", index++).c_str(), color);
   }
 }

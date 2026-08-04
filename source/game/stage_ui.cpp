@@ -45,11 +45,12 @@ void wis::Stage_ui::init()
 {
   renderer_.init();
   pixel_renderer_.init(val::pixel_size(), val::sprite_size_ui());
+  pixel_renderer_.set_palette(game_data_.color.palette);
 
   lattice_.init({16, 10}, val::tile_size_ui());
   auto field_size = lattice_.field_size();
 
-  grid_.init(field_size, lattice_.size(), Palette::colors[47]);
+  grid_.init(field_size, lattice_.size(), game_data_.color.palette[3]);
   grid_.transform().set_position(0.0f, 0.001f, 0.0f)
       .set_rotation_deg(-90.0f, 0.0f, 0.0f);
 
@@ -67,6 +68,11 @@ void wis::Stage_ui::init()
 void wis::Stage_ui::update(float delta_s)
 {
   action_panel_.update(delta_s);
+
+  if (game_data_.color.live_update_palette) {
+    pixel_renderer_.use();
+    pixel_renderer_.set_palette(game_data_.color.palette);
+  }
 }
 
 
@@ -208,23 +214,23 @@ void wis::Stage_ui::render_panels()
     pixel_renderer_.render(entity_, atlas_.ui(), widget.mesh_index);
 
     if (widget.hovered) {
-      pixel_renderer_.render(entity_, atlas_.ui(), widget.mesh_index + 40);
+      pixel_renderer_.render(entity_, atlas_.ui(), 40);
     }
 
     if (game_data_.stage.amplification[widget.element]) {
-      pixel_renderer_.render(entity_, atlas_.ui(), widget.mesh_index + 60);
+      pixel_renderer_.render(entity_, atlas_.ui(), 41);
     }
   }
 
-  pixel_renderer_.set_desaturation_factor(1.0f);
-  pixel_renderer_.enable_desaturation();
+  //pixel_renderer_.set_desaturation_factor(1.0f);
+  //pixel_renderer_.enable_desaturation();
 
   for (const auto& widget : action_panel_.actions() | not_available) {
     entity_.transform() = action_panel_.as_world_transform(widget.position);
-    pixel_renderer_.render(entity_, atlas_.ui(), widget.mesh_index);
+    pixel_renderer_.render(entity_, atlas_.ui(), widget.mesh_index + 20);
   }
 
-  pixel_renderer_.enable_desaturation(false);
+  //pixel_renderer_.enable_desaturation(false);
 
   // Portrait
   for (const auto& widget : portrait_panel_.decorations()) {

@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror=return-type")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror=return-type -Wfloat-conversion")
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
 endif ()
@@ -17,6 +17,8 @@ include(apeiron)
 include(apeiron-gui-sdl3-opengl3)
 
 add_executable(wismute
+    external/lodepng.cpp
+    external/lodepng.h
     source/main.cpp
     source/app/app.cpp
     source/app/app.h
@@ -28,8 +30,12 @@ add_executable(wismute
     source/app/settings.h
     source/core/atlas.cpp
     source/core/atlas.h
+    source/core/color_math.h
+    source/core/color_ramp.cpp
+    source/core/color_ramp.h
     source/core/constants.h
     source/core/lattice.h
+    source/core/palette.cpp
     source/core/palette.h
     source/core/pixel_renderer.cpp
     source/core/pixel_renderer.h

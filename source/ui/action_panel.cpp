@@ -62,12 +62,6 @@ void wis::ui::Action_panel::init(std::span<const Spell_slot> spell_slots)
 
     x += val::tile_size_ui();
   }
-
-  for (auto& action : actions_) {
-    if (!action.is_available) {
-      action.mesh_index += 20u;
-    }
-  }
 }
 
 
@@ -146,7 +140,6 @@ void wis::ui::Action_panel::on_action_triggered(const event::Action_triggered& e
 {
   if (auto* widget = get_widget(actions_, event.id); widget) {
     widget->is_available = false;
-    widget->mesh_index += 20u;
     widget->position.y = 0.0f;
 
     std::print("Action {} triggered\n", event.id);

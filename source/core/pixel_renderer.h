@@ -3,6 +3,7 @@
 
 
 #include <cstdint>
+#include <span>
 #include <glm/glm.hpp>
 
 #include "apeiron/engine/entity.h"
@@ -28,7 +29,7 @@ public:
   void set_view_projection();
 
   // Game constants
-  void set_palette();
+  void set_palette(std::span<const glm::vec4> palette);
   void set_pixel_size(float pixel_size);
   void set_tile_size(std::uint32_t tile_size);
 

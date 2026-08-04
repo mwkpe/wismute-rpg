@@ -2,9 +2,11 @@
 #define WIS_GAME_GAME_DATA_H
 
 
+#include <array>
 #include <cstdint>
 #include <glm/glm.hpp>
 #include <map>
+#include "core/color_ramp.h"
 #include "game/types.h"
 
 
@@ -20,14 +22,12 @@ struct Stage_cursor_data
   glm::vec3 ground_position = glm::vec3{0.0f};
 };
 
-
 struct Ui_cursor_data
 {
   glm::vec3 screen_position = glm::vec3{0.0f};
   glm::vec2 panel_position = glm::vec2{-1.0f, -1.0f};
   bool on_panel = false;
 };
-
 
 struct Cursor_data
 {
@@ -36,7 +36,6 @@ struct Cursor_data
   Cursor_type type = Cursor_type::White;
 };
 
-
 struct Camera_data
 {
   bool drag = false;
@@ -44,6 +43,18 @@ struct Camera_data
   float height = 20.0f;
 };
 
+struct Color_data
+{
+  std::vector<Color_ramp> ramps;
+  std::array<glm::vec4, 21> palette;
+  bool live_update_palette = false;
+};
+
+struct Control_data
+{
+  bool use_orbit_camera;
+  float sensitivity = 0.025f;
+};
 
 struct Stage_data
 {
@@ -53,17 +64,11 @@ struct Stage_data
 };
 
 
-struct Control_data
-{
-  bool use_orbit_camera;
-  float sensitivity = 0.025f;
-};
-
-
 struct Game_data
 {
   Cursor_data cursor;
   Camera_data camera;
+  Color_data color;
   Control_data control;
   Stage_data stage;
 };

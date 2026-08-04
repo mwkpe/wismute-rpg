@@ -2,6 +2,9 @@
 
 
 #include "imgui/imgui.h"
+#include <glm/gtc/type_ptr.hpp>
+#include "core/color_ramp.h"
+#include "core/palette.h"
 
 
 namespace {
@@ -53,6 +56,36 @@ void set_main_color(ImGuiStyle& style, ImVec4 color)
   style.Colors[ImGuiCol_Text] = color;
   style.Colors[ImGuiCol_CheckMark] = color;
   style.Colors[ImGuiCol_ResizeGripActive] = color;
+}
+
+
+void draw_color_ramp_editor(auto& color_ramps)
+{
+  constexpr std::uint32_t min_steps = 2;
+  constexpr std::uint32_t max_steps = 5;
+
+  ImGui::Begin("Ramps");
+  int index = 0;
+
+  for (auto& ramp : color_ramps) {
+    ImGui::PushID(index++);
+    ImGui::Text(ramp.name.c_str());
+    ImGui::ColorEdit3("Anchor", glm::value_ptr(ramp.anchor));
+    ImGui::SliderFloat("L low", &ramp.lightness_low, 0.0f, 1.0f);
+    ImGui::SliderFloat("L high", &ramp.lightness_high, 0.0f, 1.0f);
+    ImGui::SliderFloat("C low", &ramp.chroma_low_scale, 0.0f, 1.5f);
+    ImGui::SliderFloat("C high", &ramp.chroma_high_scale, 0.0f, 1.5f);
+    ImGui::SliderFloat("H rotation", &ramp.hue_rotation, -120.0f, 120.0f);
+    ImGui::SliderScalar("Steps", ImGuiDataType_U32, &ramp.steps, &min_steps, &max_steps);
+    ImGui::Dummy({0.0f, 8.0f});
+    ImGui::PopID();
+  }
+
+  if (ImGui::Button("Save ramps")) {
+    wis::write_color_ramps(color_ramps, "color_ramps.json");
+  }
+
+  ImGui::End();
 }
 
 
@@ -134,6 +167,25 @@ void wis::Debug_ui::build(Settings& settings, App_data& app_data, Game_data& gam
     ImGui::Text("Panel Y: %.2f", game_data.cursor.ui.panel_position.y);
 
     ImGui::End();
+    ImGui::Begin("Palette");
+
+    int index = 0;
+
+    for (auto& color : game_data.color.palette) {
+      ImGui::PushID(index++);
+      ImGui::ColorEdit4("##color", glm::value_ptr(color));
+      ImGui::PopID();
+    }
+
+    ImGui::Checkbox("Live update", &game_data.color.live_update_palette);
+
+    if (ImGui::Button("Save palette")) {
+      wis::write_palette(game_data.color.palette, "palette.gpl", "test");
+    }
+
+    ImGui::End();
+
+    draw_color_ramp_editor(game_data.color.ramps);
   }
 
   has_mouse_ = io.WantCaptureMouse;

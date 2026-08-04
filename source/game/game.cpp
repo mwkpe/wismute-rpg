@@ -1,7 +1,12 @@
 #include "game.h"
 
 
+#include <print>
+
 #include "apeiron/engine/color_converter.h"
+#include "core/color_math.h"
+#include "core/color_ramp.h"
+#include "core/palette.h"
 #include "core/renderer.h"
 #include "game/events.h"
 
@@ -14,6 +19,7 @@ wis::Game::Game(const App_data& app_data,
     stage_{registry_, dispatcher_, app_data, game_data, atlas_, scene_},
     stage_ui_{registry_, dispatcher_, app_data, game_data, atlas_}
 {
+  dispatcher_.sink<event::Achievement_unlocked>().connect<&Game::on_achievement_unlocked>(*this);
 }
 
 
@@ -23,6 +29,8 @@ void wis::Game::init()
   Renderer::set_gl_frame_buffer(0);
   Renderer::set_gl_viewport(0, 0, app_data_.window.pixel_width, app_data_.window.pixel_height);
 
+  init_palette();
+
   atlas_.init();
   stage_.init();
   stage_ui_.init();
@@ -30,8 +38,6 @@ void wis::Game::init()
   scene_.load_scene("assets/test_scene.json");
   stage_.init_scene();
   stage_ui_.set_spells(scene_.spell_slots());
-
-  dispatcher_.sink<event::Achievement_unlocked>().connect<&Game::on_achievement_unlocked>(*this);
 }
 
 
@@ -47,16 +53,53 @@ void wis::Game::update(const apeiron::engine::Event_queue& engine_events,
   stage_ui_.update(app_data_.timing.delta_s);
 
   dispatcher_.update();
+
+  if (game_data_.color.live_update_palette) {
+    update_palette();
+  }
 }
 
 
 void wis::Game::render()
 {
-  // Palette 48 but darker (monochromatic - 1)
-  Renderer::gl_clear(apeiron::engine::as_rgb_norm("#1d171c"));
+  Renderer::gl_clear(game_data_.color.palette[2]);
 
   stage_.render();
   stage_ui_.render();
+}
+
+
+void wis::Game::init_palette()
+{
+  game_data_.color.palette.fill(glm::vec4{0.0f, 0.0f, 0.0f, 1.0f});
+  game_data_.color.ramps = wis::read_color_ramps("color_ramps.json");
+  update_palette();
+
+  //auto& color_ramps = game_data_.color.ramps;
+
+  //color_ramps.clear();
+  //color_ramps.emplace_back("A", 4);
+  //color_ramps.emplace_back("B", 4);
+  //color_ramps.emplace_back("C", 4);
+  //color_ramps.emplace_back("D", 4);
+  //color_ramps.emplace_back("E", 4);
+}
+
+
+void wis::Game::update_palette()
+{
+  auto& palette = game_data_.color.palette;
+  auto& color_ramps = game_data_.color.ramps;
+
+  std::size_t palette_index = 1;  // Jump over invalid color
+
+  for (const auto& ramp : color_ramps) {
+    for (std::uint32_t i=0; i<ramp.steps; ++i) {
+      if (auto color = calculate_color_step(ramp, i); color && palette_index < palette.size()) {
+        palette[palette_index++] = *color;
+      }
+    }
+  }
 }
 
 

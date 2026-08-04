@@ -7,40 +7,45 @@
 #include <vector>
 
 #include <glm/glm.hpp>
+#include "lodepng.h"
 
-#include "apeiron/engine/color_converter.h"
-#include "apeiron/engine/image_loader.h"
 #include "apeiron/engine/vertex.h"
 
 #include "app/error.h"
-#include "core/palette.h"
 
 
 namespace {
 
 
-struct Pixel
+auto load_image(std::string_view filepath)
+    -> std::tuple<std::vector<std::uint8_t>, std::uint32_t, std::uint32_t>
 {
-  auto operator<=>(const Pixel&) const = default;
-  [[nodiscard]] glm::vec4 rgba_norm() const {
-      return apeiron::engine::as_rgba_norm(r, g, b, a); }
-  [[nodiscard]] std::uint32_t rgba_uint() const {
-      return apeiron::engine::as_rgba_uint(r, g, b, a); }
-  std::uint8_t r;
-  std::uint8_t g;
-  std::uint8_t b;
-  std::uint8_t a;
-};
+  std::vector<std::uint8_t> file;
+
+  if (auto error = lodepng::load_file(file, std::string{filepath}); error) {
+    throw wis::Error::format("Could not read image {}: {}", filepath, lodepng_error_text(error));
+  }
+
+  lodepng::State state;
+  state.info_raw.colortype = LCT_PALETTE;
+  state.info_raw.bitdepth = 8;
+
+  std::vector<std::uint8_t> indices;
+  std::uint32_t image_w;
+  std::uint32_t image_h;
+
+  if (auto error = lodepng::decode(indices, image_w, image_h, state, file); error) {
+    throw wis::Error::format("Could not decode image {}: {}", filepath, lodepng_error_text(error));
+  }
+
+  return {std::move(indices), image_w, image_h};
+}
 
 
-auto load_spritesheet(std::string_view filename, std::uint32_t rows, std::uint32_t cols,
+auto load_spritesheet(std::string_view filepath, std::uint32_t rows, std::uint32_t cols,
     bool apply_material)
 {
-  auto&& [bytes, image_w, image_h, channel_count] = apeiron::engine::load_image(filename, false);
-
-  if (channel_count != 4) {
-    throw wis::Error::format("Image must be RGBA: {}", filename);
-  }
+  auto&& [indices, image_w, image_h] = load_image(filepath);
 
   const std::uint32_t tile_w = image_w / cols;
   const std::uint32_t tile_h = image_h / rows;
@@ -50,47 +55,30 @@ auto load_spritesheet(std::string_view filename, std::uint32_t rows, std::uint32
       -> std::uint32_t {
     std::uint32_t pixel_index = 0;
     std::uint32_t pixel_count = 0;
-    wis::Palette palette;
 
     for (std::uint32_t i=0; i<tile_h; i++) {
       for (std::uint32_t j=0; j<tile_w; j++) {
-        Pixel pixel{bytes[position], bytes[position + 1], bytes[position + 2], bytes[position + 3]};
+        if (std::uint8_t color_index = indices[position + j]; color_index != 0) {
+          std::uint8_t material = 0;
 
-        if (pixel.a == 255) {
-          auto it = palette.color_map.find(pixel.rgba_uint());
-
-          if (it != std::end(palette.color_map)) {
-            std::uint8_t material = 0;
-
-            if (apply_material) {
-              if (index == 25) {
-                material = 1;  // Water
-              }
-
-              if (index == 61) {
-                material = 2;  // Foliage
-              }
+          if (apply_material) {
+            if (index == 25) {
+              material = 1;  // Water
             }
 
-            vertices.emplace_back(pixel_index, it->second, material);
-          }
-          else {
-            // Invalid color
-            vertices.emplace_back(pixel_index, 0);
+            if (index == 61) {
+              material = 2;  // Foliage
+            }
           }
 
+          vertices.emplace_back(pixel_index, color_index, material);
           pixel_count++;
         }
-        else if (pixel.a > 0) {
-          throw wis::Error::format("Translucent pixels not allowed: {}", filename);
-        }
-        // Pixels with alpha 0 are ignored (true transparency)
 
-        position += channel_count;
         pixel_index++;
       }
 
-      position += stride - tile_w * channel_count;
+      position += stride;
     }
 
     return pixel_count;
@@ -99,10 +87,10 @@ auto load_spritesheet(std::string_view filename, std::uint32_t rows, std::uint32
   std::vector<apeiron::opengl::Meshset_entry> entries;
 
   for (std::uint32_t index=0; index<rows*cols; index++) {
-    const std::uint32_t col_offset = (index % cols) * tile_w * channel_count;
-    const std::uint32_t row_offset = (index / cols) * tile_h * image_w * channel_count;
+    const std::uint32_t col_offset = (index % cols) * tile_w;
+    const std::uint32_t row_offset = (index / cols) * tile_h * image_w;
     const std::uint32_t position = col_offset + row_offset;
-    const std::uint32_t stride = image_w * channel_count;
+    const std::uint32_t stride = image_w;
 
     const auto vertex_count = read_tile(index, position, stride);
 

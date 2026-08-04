@@ -76,7 +76,7 @@ void wis::Stage::init_scene()
   lattice_.init(scene_.size(), val::tile_size());
 
   auto field_size = lattice_.field_size();
-  grid_.init(field_size, lattice_.size(), Palette::colors[47]);
+  grid_.init(field_size, lattice_.size(), game_data_.color.palette[3]);
   grid_.transform().set_position(field_size.x * 0.5f, 0.0f, field_size.y * 0.5f)
       .set_rotation_deg(-90.0f, 0.0f, 0.0f);
 
@@ -114,6 +114,11 @@ void wis::Stage::update()
       std::ranges::none_of(scene_.spell_slots(), std::identity{}, &Spell_slot::is_available)) {
     std::print("Failed to defeat all slimes\n");
     failure_ = true;
+  }
+
+  if (game_data_.color.live_update_palette) {
+    pixel_renderer_.use();
+    pixel_renderer_.set_palette(game_data_.color.palette);
   }
 }
 
@@ -319,6 +324,7 @@ void wis::Stage::init_renderer()
 {
   renderer_.init();
   pixel_renderer_.init(val::pixel_size(), val::sprite_size());
+  pixel_renderer_.set_palette(game_data_.color.palette);
 }
 
 
@@ -420,12 +426,12 @@ void wis::Stage::render_overlay()
       ground_entity_.transform().set_position(lattice_.as_position_xz(index));
 
       if (std::ranges::find(valid_range, index) != valid_range.end()) {
-        pixel_renderer_.set_blending_alpha(1.0f);
+        pixel_renderer_.set_blending_alpha(0.8f);
         pixel_renderer_.render(ground_entity_, atlas_.stage(), 380);
       }
       else {
-        pixel_renderer_.set_blending_alpha(0.4f);
-        pixel_renderer_.render(ground_entity_, atlas_.stage(), 385);
+        pixel_renderer_.set_blending_alpha(0.5f);
+        pixel_renderer_.render(ground_entity_, atlas_.stage(), 385, 7);
       }
     }
 
@@ -454,7 +460,7 @@ void wis::Stage::render_sprites()
     pixel_renderer_.set_breathe_speed(player_.breathe_speed);
     pixel_renderer_.set_breathe_phase(player_.breathe_phase);
 
-    auto pos = lattice_.as_position_xz(player_.scene_index, glm::vec3{0.0f, 0.0f, 0.4f});
+    auto pos = lattice_.as_position_xz(player_.scene_index, val::sprite_offset);
 
     sprite_entity_.transform().set_position(pos);
     pixel_renderer_.render(sprite_entity_, atlas_.stage(), player_.mesh_index);

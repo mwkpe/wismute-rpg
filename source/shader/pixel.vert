@@ -16,7 +16,7 @@ uniform mat4 model;
 // Game constants
 uniform float pixel_size;
 uniform uint tile_size;
-const uint color_count = 53u;
+const uint color_count = 21u;
 uniform vec4 colors[color_count];
 
 // Generic variables
@@ -110,7 +110,7 @@ void apply_material(inout vec3 pixel_position)
 
     pixel_position.x += (hash_to_float(h1) * 2.0 - 1.0) * jitter_strength + wind_x * wind_strength;
     pixel_position.z += (hash_to_float(h2) * 2.0 - 1.0) * jitter_strength + wind_z * wind_strength;
-    pixel_position.y += 0.01 + hash_to_float(h3) * jitter_strength * 0.2;
+    pixel_position.y += 0.02 + hash_to_float(h3) * jitter_strength;
   }
 }
 
@@ -165,11 +165,20 @@ void main()
 
   vec3 pixel_position = vec3(col, 0.0, row) - offset;
 
-  if (color_index > 0u && color_index < color_count) {
-    pixel_color = colors[color_index];
+  // Override vertex color?
+  if (color_index > 0u) {
+    if (color_index < color_count) {
+      pixel_color = colors[color_index];
+    }
+    else {
+      pixel_color = colors[0];
+    }
+  }
+  else if (a_color < color_count) {
+    pixel_color = colors[a_color];
   }
   else {
-    pixel_color = colors[a_color];
+    pixel_color = colors[0];
   }
 
   pixel_stretch = vec2(1.0);
