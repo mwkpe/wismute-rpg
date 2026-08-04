@@ -27,7 +27,7 @@ public:
     field_size_ = glm::vec2{size_} * glm::vec2{cell_size};
   }
 
-  [[nodiscard]] inline glm::vec2 size() const { return size_; }
+  [[nodiscard]] inline glm::uvec2 size() const { return size_; }
   [[nodiscard]] inline glm::vec2 field_size() const { return field_size_; }
   [[nodiscard]] inline float cell_size() const { return cell_size_; }
 
