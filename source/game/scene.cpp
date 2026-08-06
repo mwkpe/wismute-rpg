@@ -213,7 +213,6 @@ void wis::Scene::load_scene(std::string_view filepath)
       slimes_.emplace_back(id++,
           slime["health"],
           weight,
-          lattice.as_position_xz(index, val::sprite_offset),
           index,
           mesh,
           0.06f,
