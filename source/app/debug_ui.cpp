@@ -130,6 +130,10 @@ void wis::Debug_ui::build(Settings& settings, App_data& app_data, Game_data& gam
     ImGui::Checkbox("Tile info", &app_data.debug.show_tile_info);
     ImGui::Dummy({0.0f, 8.0f});
 
+    ImGui::Text("Render");
+    ImGui::Checkbox("Shadows", &game_data.render.shadows);
+    ImGui::Dummy({0.0f, 8.0f});
+
     if (ImGui::Button("Quit (ESC)")) {
       app_data.state = App_state::Quit;
     }

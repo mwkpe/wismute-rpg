@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <glm/glm.hpp>
+#include "core/animation.h"
 
 
 namespace wis {
@@ -17,6 +18,7 @@ struct Player
   float breathe_amplitude = 0.0f;
   float breathe_speed = 0.0f;
   float breathe_phase = 0.0f;
+  Animation animation;
 };
 
 

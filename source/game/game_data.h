@@ -43,6 +43,13 @@ struct Camera_data
   float height = 20.0f;
 };
 
+
+struct Render_data
+{
+  bool shadows = true;
+};
+
+
 struct Color_data
 {
   std::vector<Color_ramp> ramps;
@@ -68,6 +75,7 @@ struct Game_data
 {
   Cursor_data cursor;
   Camera_data camera;
+  Render_data render;
   Color_data color;
   Control_data control;
   Stage_data stage;

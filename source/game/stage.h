@@ -65,6 +65,7 @@ private:
   void setup_view();
 
   void render_ground();
+  void render_shadows();
   void render_overlay();
   void render_sprites();
   void render_debug();

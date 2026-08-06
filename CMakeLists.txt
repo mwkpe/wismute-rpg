@@ -28,6 +28,8 @@ add_executable(wismute
     source/app/error.h
     source/app/settings.cpp
     source/app/settings.h
+    source/core/animation.cpp
+    source/core/animation.h
     source/core/atlas.cpp
     source/core/atlas.h
     source/core/color_math.h
@@ -41,6 +43,7 @@ add_executable(wismute
     source/core/pixel_renderer.h
     source/core/renderer.cpp
     source/core/renderer.h
+    source/core/timer.h
     source/game/constants.h
     source/game/events.h
     source/game/cast_spell.cpp
