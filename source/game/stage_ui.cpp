@@ -110,6 +110,12 @@ bool wis::Stage_ui::handle_event(const engine::Mouse_button_down_event& event)
       }
     }
     break;
+    case engine::Mouse_button::Right: {
+      if (auto point = panel_point(event.x, event.y, action_panel_.collision_quad()); point) {
+        return true;
+      }
+    }
+    break;
     default:;
   }
 
