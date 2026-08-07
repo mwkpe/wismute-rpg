@@ -44,10 +44,10 @@ wis::Stage_ui::Stage_ui(entt::registry& registry,
 void wis::Stage_ui::init()
 {
   renderer_.init();
-  pixel_renderer_.init(val::pixel_size(), val::sprite_size_ui());
+  pixel_renderer_.init(cval::pixel_size, cval::sprite_size_ui);
   pixel_renderer_.set_palette(game_data_.color.palette);
 
-  lattice_.init({16, 10}, val::tile_size_ui());
+  lattice_.init({16, 10}, cval::tile_size_ui);
   auto field_size = lattice_.field_size();
 
   grid_.init(field_size, lattice_.size(), game_data_.color.palette[3]);
@@ -57,7 +57,7 @@ void wis::Stage_ui::init()
   setup_view();
   set_screen_limits();  // Needs view initialized
 
-  constexpr float tile_size = val::tile_size_ui();
+  constexpr float tile_size = cval::tile_size_ui;
 
   portrait_panel_.set_size(tile_size * 2.0f, tile_size * 2.0f);
   portrait_panel_.transform().set_position(right_ - tile_size, 0.0f, top_ + tile_size);
@@ -91,12 +91,12 @@ void wis::Stage_ui::render()
 
 void wis::Stage_ui::set_spells(std::span<const Spell_slot> spell_slots)
 {
-  float s = val::tile_size_ui();
+  float tile_size = cval::tile_size_ui;
 
-  action_panel_.set_size(static_cast<float>(spell_slots.size()) * s, s);
-  action_panel_.transform().set_position(0.0f, 0.0f, bottom_ - s * 0.5f)
+  action_panel_.set_size(static_cast<float>(spell_slots.size()) * tile_size, tile_size);
+  action_panel_.transform().set_position(0.0f, 0.0f, bottom_ - tile_size * 0.5f)
       .set_rotation_deg(-15.0f, 0.0f, 0.0f)
-      .set_rotation_pivot(engine::Axis::X, 0.0f, 0.0f, s * 0.5f);
+      .set_rotation_pivot(engine::Axis::X, 0.0f, 0.0f, tile_size * 0.5f);
   action_panel_.apply();
   action_panel_.init(spell_slots);
 }

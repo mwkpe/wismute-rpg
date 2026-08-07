@@ -9,6 +9,8 @@
 
 #include "apeiron/engine/color_converter.h"
 
+#include "core/constants.h"
+
 
 namespace {
 
@@ -43,7 +45,7 @@ std::uint8_t as_uint8(std::string_view text)
   }
 
   std::vector<glm::vec4> palette;
-  palette.resize(21, glm::vec4{0.0f, 0.0f, 0.0f, 1.0f});
+  palette.resize(cval::palette_size, glm::vec4{0.0f, 0.0f, 0.0f, 1.0f});
 
   std::string line;
   std::size_t index = 0;

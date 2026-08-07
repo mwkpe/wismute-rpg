@@ -4,8 +4,11 @@
 #include <print>
 
 #include "apeiron/engine/color_converter.h"
+
+#include "app/error.h"
 #include "core/color_math.h"
 #include "core/color_ramp.h"
+#include "core/constants.h"
 #include "core/palette.h"
 #include "core/renderer.h"
 #include "game/events.h"
@@ -73,6 +76,11 @@ void wis::Game::init_palette()
 {
   game_data_.color.ramps = wis::read_color_ramps("color_ramps.json");
   game_data_.color.palette = wis::read_palette("palette.gpl");
+
+  if (game_data_.color.palette.size() != cval::palette_size) {
+    throw Error::format("Palette size mismatch: expected {}, got {}",
+        cval::palette_size, game_data_.color.palette.size());
+  }
 
   //auto& color_ramps = game_data_.color.ramps;
 

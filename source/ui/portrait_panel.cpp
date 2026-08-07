@@ -6,7 +6,7 @@
 
 wis::ui::Portrait_panel::Portrait_panel()
 {
-  constexpr float tile_size = val::tile_size_ui();
+  constexpr float tile_size = cval::tile_size_ui;
 
   decorations_.emplace_back(8, 0.0f, 0.0f);
   decorations_.emplace_back(9, tile_size, 0.0f);

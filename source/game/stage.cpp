@@ -65,15 +65,15 @@ void wis::Stage::init()
 {
   init_renderer();
 
-  sprite_entity_.transform().set_origin(0.0f, 0.0f, -val::tile_size() * 0.5f)
+  sprite_entity_.transform().set_origin(0.0f, 0.0f, -cval::tile_size * 0.5f)
       .set_rotation_deg(45.0f, 0.0f, 0.0f)
-      .set_rotation_pivot(engine::Axis::X, 0.0f, 0.0f, val::tile_size() * 0.5f);
+      .set_rotation_pivot(engine::Axis::X, 0.0f, 0.0f, cval::tile_size * 0.5f);
 }
 
 
 void wis::Stage::init_scene()
 {
-  lattice_.init(scene_.size(), val::tile_size());
+  lattice_.init(scene_.size(), cval::tile_size);
 
   auto field_size = lattice_.field_size();
   grid_.init(field_size, lattice_.size(), game_data_.color.palette[3]);
@@ -85,7 +85,7 @@ void wis::Stage::init_scene()
   const auto start_index = scene_.start_index();
   const auto start_position = lattice_.as_position_xz(start_index, glm::vec3{0.0f, 0.0f, 0.4f});
 
-  player_ = Player{start_position, start_index, 102, 0.03f, 4.0f, val::tau()};
+  player_ = Player{start_position, start_index, 102, 0.03f, 4.0f, cval::tau()};
   player_.animation.init(102, 104, 75);
 
   success_ = false;
@@ -336,7 +336,7 @@ void wis::Stage::on_action_selected(const event::Action_selected& event)
 void wis::Stage::init_renderer()
 {
   renderer_.init();
-  pixel_renderer_.init(val::pixel_size(), val::sprite_size());
+  pixel_renderer_.init(cval::pixel_size, cval::sprite_size);
   pixel_renderer_.set_palette(game_data_.color.palette);
 }
 
@@ -425,7 +425,7 @@ void wis::Stage::render_shadows()
 
 
   ground_entity_.transform().set_scale(1.0f, 1.0f, 0.8f);
-  auto offset = val::sprite_offset - glm::vec3{0.0f, 0.0f, val::tile_size() * 0.4f};
+  auto offset = cval::sprite_offset - glm::vec3{0.0f, 0.0f, cval::tile_size * 0.4f};
 
   for (const auto& sprite : scene_.sprites()) {
     auto mesh_index = sprite.mesh_index == 61 ? 62 : sprite.mesh_index;
@@ -521,7 +521,7 @@ void wis::Stage::render_sprites()
     pixel_renderer_.set_breathe_speed(player_.breathe_speed);
     pixel_renderer_.set_breathe_phase(player_.breathe_phase);
 
-    sprite_entity_.transform().set_position(lattice_.as_position_xz(player_.scene_index, val::sprite_offset));
+    sprite_entity_.transform().set_position(lattice_.as_position_xz(player_.scene_index, cval::sprite_offset));
     pixel_renderer_.render(sprite_entity_, atlas_.stage(), player_.animation.current_frame());
   }
 
@@ -531,7 +531,7 @@ void wis::Stage::render_sprites()
     pixel_renderer_.set_breathe_speed(slime.breathe_speed);
     pixel_renderer_.set_breathe_phase(slime.breathe_phase);
 
-    sprite_entity_.transform().set_position(lattice_.as_position_xz(slime.scene_index, val::sprite_offset));
+    sprite_entity_.transform().set_position(lattice_.as_position_xz(slime.scene_index, cval::sprite_offset));
     pixel_renderer_.render(sprite_entity_, atlas_.stage(), slime.mesh_index);
   }
 

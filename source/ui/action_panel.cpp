@@ -60,7 +60,7 @@ void wis::ui::Action_panel::init(std::span<const Spell_slot> spell_slots)
         }
     }, slot.spell);
 
-    x += val::tile_size_ui();
+    x += cval::tile_size_ui;
   }
 }
 

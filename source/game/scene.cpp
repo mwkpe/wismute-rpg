@@ -127,7 +127,7 @@ void wis::Scene::load_scene(std::string_view filepath)
   size_ = map_size + margin_ * 2u;
   start_index_ = reindex(attributes["start_index"], map_size.x, margin_.x);
 
-  const Lattice lattice{size_, val::tile_size()};
+  const Lattice lattice{size_, cval::tile_size};
 
   // Spells
   {
@@ -191,9 +191,9 @@ void wis::Scene::load_scene(std::string_view filepath)
   // Sprites
   for (const auto& tile : tiles_) {
     if (tile.element == Element::Wind) {
-      sprites_.emplace_back(lattice.as_position_xz(tile.index, val::sprite_offset), tile.index,
+      sprites_.emplace_back(lattice.as_position_xz(tile.index, cval::sprite_offset), tile.index,
           glm::uvec2{tile.col, tile.row}, 60);
-      sprites_.emplace_back(lattice.as_position_xz(tile.index, val::sprite_offset), tile.index,
+      sprites_.emplace_back(lattice.as_position_xz(tile.index, cval::sprite_offset), tile.index,
           glm::uvec2{tile.col, tile.row}, 61);
     }
   }
@@ -217,7 +217,7 @@ void wis::Scene::load_scene(std::string_view filepath)
           mesh,
           0.06f,
           5.0f,
-          val::tau() * offset);
+          cval::tau() * offset);
 
       offset += 0.1f;
     }

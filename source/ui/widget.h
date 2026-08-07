@@ -17,8 +17,8 @@ struct Widget
   Widget(std::uint16_t mesh_index,
       float x,
       float y,
-      float w = val::tile_size_ui(),
-      float h = val::tile_size_ui())
+      float w = cval::tile_size_ui,
+      float h = cval::tile_size_ui)
       :
       mesh_index{mesh_index},
       position{x, y},
