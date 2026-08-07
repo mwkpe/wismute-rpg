@@ -17,18 +17,21 @@ namespace wis {
 class Range_finder
 {
 public:
-  bool find(Spell spell, const Scene& scene, std::uint32_t index);
-  void clear() { full_range_.clear(); valid_range_.clear(); };
+  void find(Spell spell, const Scene& scene, std::uint32_t index);
+  void clear();
 
-  bool within_full_range(std::uint32_t index) const;
-  bool within_valid_range(std::uint32_t index) const;
+  bool within_target_tiles(std::uint32_t index) const;
 
-  std::span<const std::uint32_t> full_range() const { return full_range_; }
-  std::span<const std::uint32_t> valid_range() const { return valid_range_; }
+  std::span<const std::uint32_t> target_tiles() const { return target_tiles_; }
+  std::span<const std::uint32_t> invalid_tiles() const { return invalid_tiles_; }
+  std::span<const std::uint32_t> empty_tiles() const { return empty_tiles_; }
+  std::span<const std::uint32_t> blocked_tiles() const { return blocked_tiles_; }
 
 private:
-  std::vector<std::uint32_t> full_range_;
-  std::vector<std::uint32_t> valid_range_;
+  std::vector<std::uint32_t> target_tiles_;
+  std::vector<std::uint32_t> invalid_tiles_;
+  std::vector<std::uint32_t> empty_tiles_;
+  std::vector<std::uint32_t> blocked_tiles_;
 };
 
 

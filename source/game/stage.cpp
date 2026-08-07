@@ -283,7 +283,7 @@ void wis::Stage::handle_event(const engine::Mouse_motion_event& event)
         stage.hovered_index = cursor.scene_index;
 
         if (selected_action_id_ > 0) {
-          if (range_finder_.within_valid_range(cursor.scene_index)) {
+          if (range_finder_.within_target_tiles(cursor.scene_index)) {
             game_data_.cursor.type = Cursor_type::Cross;
           }
         }
@@ -480,27 +480,25 @@ void wis::Stage::render_overlay()
     pixel_renderer_.render(ground_entity_, atlas_.stage(), 381);
   }
 
-  {
-    auto valid_range = range_finder_.valid_range();
+  // Range finder
+  for (const auto index : range_finder_.target_tiles()) {
+    ground_entity_.transform().set_position(lattice_.as_position_xz(index));
+    pixel_renderer_.render(ground_entity_, atlas_.stage(), 380);
+  }
 
-    Renderer::set_gl_blend(true);
-    pixel_renderer_.enable_blending();
+  for (const auto index : range_finder_.empty_tiles()) {
+    ground_entity_.transform().set_position(lattice_.as_position_xz(index));
+    pixel_renderer_.render(ground_entity_, atlas_.stage(), 383, 18);
+  }
 
-    for (const auto index : range_finder_.full_range()) {
-      ground_entity_.transform().set_position(lattice_.as_position_xz(index));
+  for (const auto index : range_finder_.invalid_tiles()) {
+    ground_entity_.transform().set_position(lattice_.as_position_xz(index));
+    pixel_renderer_.render(ground_entity_, atlas_.stage(), 385, 18);
+  }
 
-      if (std::ranges::find(valid_range, index) != valid_range.end()) {
-        pixel_renderer_.set_blending_alpha(1.0f);
-        pixel_renderer_.render(ground_entity_, atlas_.stage(), 380);
-      }
-      else {
-        pixel_renderer_.set_blending_alpha(0.7f);
-        pixel_renderer_.render(ground_entity_, atlas_.stage(), 383, 18);
-      }
-    }
-
-    Renderer::set_gl_blend(false);
-    pixel_renderer_.enable_blending(false);
+  for (const auto index : range_finder_.blocked_tiles()) {
+    ground_entity_.transform().set_position(lattice_.as_position_xz(index));
+    pixel_renderer_.render(ground_entity_, atlas_.stage(), 382, 18);
   }
 }
 
