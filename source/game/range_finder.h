@@ -25,13 +25,13 @@ public:
   std::span<const std::uint32_t> target_tiles() const { return target_tiles_; }
   std::span<const std::uint32_t> invalid_tiles() const { return invalid_tiles_; }
   std::span<const std::uint32_t> empty_tiles() const { return empty_tiles_; }
-  std::span<const std::uint32_t> blocked_tiles() const { return blocked_tiles_; }
+  std::span<const std::uint32_t> marker_tiles() const { return marker_tiles_; }
 
 private:
   std::vector<std::uint32_t> target_tiles_;
   std::vector<std::uint32_t> invalid_tiles_;
   std::vector<std::uint32_t> empty_tiles_;
-  std::vector<std::uint32_t> blocked_tiles_;
+  std::vector<std::uint32_t> marker_tiles_;
 };
 
 

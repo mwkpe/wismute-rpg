@@ -27,6 +27,9 @@ namespace engine = apeiron::engine;
 constexpr auto is_alive = std::views::filter([](const auto& e) { return e.health > 0; });
 constexpr auto has_mesh = std::views::filter([](const auto& e) { return e.mesh_index != 20; });
 
+constexpr auto is_water = std::views::filter([](const auto& e) { return e.mesh_index == 25; });
+constexpr auto not_water = std::views::filter([](const auto& e) { return e.mesh_index != 25; });
+
 
 bool is_amplified(std::span<const wis::Tile> tiles, std::uint32_t index, wis::Element element)
 {
@@ -75,12 +78,9 @@ void wis::Stage::init_scene()
 {
   lattice_.init(scene_.size(), cval::tile_size);
 
-  auto field_size = lattice_.field_size();
-  grid_.init(field_size, lattice_.size(), game_data_.color.palette[3]);
-  grid_.transform().set_position(field_size.x * 0.5f, 0.0f, field_size.y * 0.5f)
-      .set_rotation_deg(-90.0f, 0.0f, 0.0f);
-
   init_camera_controllers();
+  init_scene_grid();
+  init_debug_grid();
 
   const auto start_index = scene_.start_index();
   const auto start_position = lattice_.as_position_xz(start_index, glm::vec3{0.0f, 0.0f, 0.4f});
@@ -156,6 +156,7 @@ void wis::Stage::render()
   }
 
   render_overlay();
+  render_water();
   render_debug_overlay();
 
   Renderer::set_gl_depth_test(true);
@@ -355,6 +356,31 @@ void wis::Stage::init_camera_controllers()
 }
 
 
+void wis::Stage::init_scene_grid()
+{
+  Lattice stage_lattice;
+  stage_lattice.init(scene_.size() - scene_.margin() * 2u - glm::uvec2{2, 2}, cval::tile_size);
+
+  auto size = stage_lattice.field_size();
+
+  auto x = (size.x + static_cast<float>(scene_.margin().x + 1u) * 2.0f * cval::tile_size) * 0.5f;
+  auto z = (size.y + static_cast<float>(scene_.margin().y + 1u) * 2.0f * cval::tile_size) * 0.5f;
+
+  grid_.init(size, stage_lattice.size(), game_data_.color.palette[3], false);
+  grid_.transform().set_position(x, 0.0f, z).set_rotation_deg(-90.0f, 0.0f, 0.0f);
+}
+
+
+void wis::Stage::init_debug_grid()
+{
+  auto size = lattice_.field_size();
+
+  debug_grid_.init(size, lattice_.size(), game_data_.color.palette[3]);
+  debug_grid_.transform().set_position(size.x * 0.5f, 0.0f, size.y * 0.5f)
+      .set_rotation_deg(-90.0f, 0.0f, 0.0f);
+}
+
+
 void wis::Stage::reset_orbit_controller()
 {
   const float pitch = free_controller_.pitch();
@@ -406,7 +432,22 @@ void wis::Stage::setup_view()
 
 void wis::Stage::render_ground()
 {
-  for (const auto& tile : scene_.tiles() | has_mesh) {
+  if (game_data_.render.grid) {
+    renderer_.use();
+    renderer_.render(grid_);
+    pixel_renderer_.use();
+  }
+
+  for (const auto& tile : scene_.tiles() | has_mesh | not_water) {
+    ground_entity_.transform().set_position(lattice_.as_position_xz(tile.index));
+    pixel_renderer_.render(ground_entity_, atlas_.stage(), tile.mesh_index);
+  }
+}
+
+
+void wis::Stage::render_water()
+{
+  for (const auto& tile : scene_.tiles() | has_mesh | is_water) {
     ground_entity_.transform().set_position(lattice_.as_position_xz(tile.index));
     pixel_renderer_.set_tile_position({tile.col, tile.row});
     pixel_renderer_.render(ground_entity_, atlas_.stage(), tile.mesh_index);
@@ -483,22 +524,22 @@ void wis::Stage::render_overlay()
   // Range finder
   for (const auto index : range_finder_.target_tiles()) {
     ground_entity_.transform().set_position(lattice_.as_position_xz(index));
-    pixel_renderer_.render(ground_entity_, atlas_.stage(), 380);
+    pixel_renderer_.render(ground_entity_, atlas_.stage(), 383, 8);
   }
 
   for (const auto index : range_finder_.empty_tiles()) {
     ground_entity_.transform().set_position(lattice_.as_position_xz(index));
-    pixel_renderer_.render(ground_entity_, atlas_.stage(), 383, 18);
+    pixel_renderer_.render(ground_entity_, atlas_.stage(), 383);
   }
 
   for (const auto index : range_finder_.invalid_tiles()) {
     ground_entity_.transform().set_position(lattice_.as_position_xz(index));
-    pixel_renderer_.render(ground_entity_, atlas_.stage(), 385, 18);
+    pixel_renderer_.render(ground_entity_, atlas_.stage(), 385);
   }
 
-  for (const auto index : range_finder_.blocked_tiles()) {
+  for (const auto index : range_finder_.marker_tiles()) {
     ground_entity_.transform().set_position(lattice_.as_position_xz(index));
-    pixel_renderer_.render(ground_entity_, atlas_.stage(), 382, 18);
+    pixel_renderer_.render(ground_entity_, atlas_.stage(), 386);
   }
 }
 
@@ -558,7 +599,7 @@ void wis::Stage::render_debug_overlay()
 
   if (app_data_.debug.show_stage_grid) {
     renderer_.use();
-    renderer_.render(grid_);
+    renderer_.render(debug_grid_);
     pixel_renderer_.use();
   }
 }

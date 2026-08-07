@@ -46,6 +46,7 @@ struct Camera_data
 
 struct Render_data
 {
+  bool grid = true;
   bool shadows = true;
 };
 

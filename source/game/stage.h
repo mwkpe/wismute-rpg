@@ -58,6 +58,9 @@ public:
 private:
   void init_renderer();
   void init_camera_controllers();
+  void init_scene_grid();
+  void init_debug_grid();
+
   void reset_orbit_controller();
 
   void update_ego_camera(const apeiron::engine::Input* input);
@@ -65,6 +68,7 @@ private:
   void setup_view();
 
   void render_ground();
+  void render_water();
   void render_shadows();
   void render_overlay();
   void render_sprites();
@@ -95,6 +99,7 @@ private:
   apeiron::engine::Camera camera_;
   apeiron::engine::Entity ground_entity_;
   apeiron::engine::Entity sprite_entity_;
+  apeiron::prefab::Grid grid_;
 
   // Controller
   apeiron::engine::Free_controller free_controller_;
@@ -105,7 +110,7 @@ private:
   Range_finder range_finder_;
 
   // Debug
-  apeiron::prefab::Grid grid_;
+  apeiron::prefab::Grid debug_grid_;
   Player player_;
   std::uint32_t selected_action_id_ = 0;
   bool success_ = false;

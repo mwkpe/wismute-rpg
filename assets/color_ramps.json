@@ -1,0 +1,46 @@
+{
+  "color_ramps": [
+    {
+      "anchor": [
+        0.337,
+        0.185,
+        0.71
+      ],
+      "chroma_high_scale": 0.996,
+      "chroma_low_scale": 0.575,
+      "hue_rotation": 0.0,
+      "lightness_high": 0.581,
+      "lightness_low": 0.325,
+      "name": "A",
+      "steps": 4
+    },
+    {
+      "anchor": [
+        0.675,
+        0.122,
+        0.619
+      ],
+      "chroma_high_scale": 0.817,
+      "chroma_low_scale": 0.683,
+      "hue_rotation": 0.0,
+      "lightness_high": 0.787,
+      "lightness_low": 0.468,
+      "name": "B",
+      "steps": 4
+    },
+    {
+      "anchor": [
+        0.135,
+        0.33,
+        0.71
+      ],
+      "chroma_high_scale": 1.144,
+      "chroma_low_scale": 0.654,
+      "hue_rotation": 0.0,
+      "lightness_high": 0.841,
+      "lightness_low": 0.359,
+      "name": "C",
+      "steps": 4
+    }
+  ]
+}

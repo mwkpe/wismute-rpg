@@ -124,13 +124,14 @@ void wis::Debug_ui::build(Settings& settings, App_data& app_data, Game_data& gam
     ImGui::Text("Debug");
     ImGui::Checkbox("Wireframe", &app_data.debug.wireframe);
     ImGui::Checkbox("Axes", &app_data.debug.show_axes);
-    ImGui::Checkbox("Grid", &app_data.debug.show_stage_grid);
+    ImGui::Checkbox("Debug grid", &app_data.debug.show_stage_grid);
     ImGui::SameLine();
     ImGui::Checkbox("Grid UI", &app_data.debug.show_ui_grid);
     ImGui::Checkbox("Tile info", &app_data.debug.show_tile_info);
     ImGui::Dummy({0.0f, 8.0f});
 
     ImGui::Text("Render");
+    ImGui::Checkbox("Grid", &game_data.render.grid);
     ImGui::Checkbox("Shadows", &game_data.render.shadows);
     ImGui::Dummy({0.0f, 8.0f});
 

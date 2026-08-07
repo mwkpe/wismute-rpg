@@ -15,7 +15,7 @@ struct Range_tiles
   std::vector<std::uint32_t>& target;
   std::vector<std::uint32_t>& invalid;
   std::vector<std::uint32_t>& empty;
-  std::vector<std::uint32_t>& blocked;
+  std::vector<std::uint32_t>& marker;
 };
 
 
@@ -293,7 +293,7 @@ void find_blink_range(const wis::Blink& blink, const auto& scene, std::uint32_t 
 
   for (auto i : std::span{indices}.subspan(4)) {
     if (const auto* tile = get_tile(scene.tiles(), i); !tile->is_nil) {
-      range_tiles.invalid.push_back(i);
+      range_tiles.marker.push_back(i);
     }
   }
 
@@ -304,7 +304,7 @@ void find_blink_range(const wis::Blink& blink, const auto& scene, std::uint32_t 
       range_tiles.target.push_back(i);
     }
     else if (!tile->is_nil) {
-      range_tiles.blocked.push_back(i);
+      range_tiles.invalid.push_back(i);
     }
   }
 }
@@ -341,7 +341,7 @@ void wis::Range_finder::find(Spell spell, const Scene& scene, std::uint32_t inde
     return;
   }
 
-  Range_tiles range_tiles{target_tiles_, invalid_tiles_, empty_tiles_, blocked_tiles_};
+  Range_tiles range_tiles{target_tiles_, invalid_tiles_, empty_tiles_, marker_tiles_};
 
   std::visit(util::match{
       [&](Fireball) { find_fireball_range(scene, index, range_tiles); },
@@ -362,7 +362,7 @@ void wis::Range_finder::clear()
   target_tiles_.clear();
   empty_tiles_.clear();
   invalid_tiles_.clear();
-  blocked_tiles_.clear();
+  marker_tiles_.clear();
 };
 
 
