@@ -143,13 +143,15 @@ void wis::Debug_ui::build(Settings& settings, App_data& app_data, Game_data& gam
 
     ImGui::Text("App");
     ImGui::Text("Video driver: %s", app_data.window.video_driver.c_str());
-    ImGui::Text("Window logical size: %i x %i", app_data.window.logical_width,
+    ImGui::Text("Window logical size: %u x %u", app_data.window.logical_width,
         app_data.window.logical_height);
-    ImGui::Text("Window pixel size: %i x %i", app_data.window.pixel_width,
+    ImGui::Text("Window pixel size: %u x %u", app_data.window.pixel_width,
         app_data.window.pixel_height);
     ImGui::Text("Runtime: %llu s", app_data.timing.runtime_ns / 1'000'000'000ull);
     ImGui::Text("Framerate: %.0f fps", io.Framerate);
     ImGui::Text("Frametime: %.1f ms", 1000.0f / (io.Framerate > 0 ? io.Framerate : 1));
+    ImGui::Text("Draw calls (stage): %u", game_data.stats.stage_draw_calls);
+    ImGui::Text("Draw calls (UI): %u", game_data.stats.ui_draw_calls);
     ImGui::Dummy({0.0f, 8.0f});
 
     ImGui::Text("Stage cursor");

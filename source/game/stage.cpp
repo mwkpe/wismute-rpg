@@ -161,6 +161,8 @@ void wis::Stage::render()
   Renderer::set_gl_depth_test(true);
   render_sprites();
   render_debug();
+
+  game_data_.stats.stage_draw_calls = pixel_renderer_.draw_calls();
 }
 
 
@@ -417,9 +419,10 @@ void wis::Stage::render_shadows()
   pixel_renderer_.enable_tile_tilt();
   pixel_renderer_.set_tile_tilt(-4.0f);
 
+  Renderer::set_gl_blend(true);
   pixel_renderer_.enable_blending();
   pixel_renderer_.set_blending_alpha(0.7f);
-  Renderer::set_gl_blend(true);
+
 
   ground_entity_.transform().set_scale(1.0f, 1.0f, 0.8f);
   auto offset = val::sprite_offset - glm::vec3{0.0f, 0.0f, val::tile_size() * 0.4f};
@@ -455,10 +458,10 @@ void wis::Stage::render_shadows()
 
   ground_entity_.transform().set_scale(1.0f, 1.0f, 1.0f);
 
+  Renderer::set_gl_blend(false);
   pixel_renderer_.enable_breathe(false);
   pixel_renderer_.enable_tile_tilt(false);
   pixel_renderer_.enable_blending(false);
-  Renderer::set_gl_blend(true);
 }
 
 
@@ -480,8 +483,8 @@ void wis::Stage::render_overlay()
   {
     auto valid_range = range_finder_.valid_range();
 
-    pixel_renderer_.enable_blending();
     Renderer::set_gl_blend(true);
+    pixel_renderer_.enable_blending();
 
     for (const auto index : range_finder_.full_range()) {
       ground_entity_.transform().set_position(lattice_.as_position_xz(index));
@@ -491,13 +494,13 @@ void wis::Stage::render_overlay()
         pixel_renderer_.render(ground_entity_, atlas_.stage(), 380);
       }
       else {
-        pixel_renderer_.set_blending_alpha(0.8f);
-        pixel_renderer_.render(ground_entity_, atlas_.stage(), 383, 14);
+        pixel_renderer_.set_blending_alpha(0.7f);
+        pixel_renderer_.render(ground_entity_, atlas_.stage(), 383, 18);
       }
     }
 
-    pixel_renderer_.enable_blending(false);
     Renderer::set_gl_blend(false);
+    pixel_renderer_.enable_blending(false);
   }
 }
 

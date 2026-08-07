@@ -2,10 +2,10 @@
 #define WIS_GAME_GAME_DATA_H
 
 
-#include <array>
 #include <cstdint>
 #include <glm/glm.hpp>
 #include <map>
+#include <vector>
 #include "core/color_ramp.h"
 #include "game/types.h"
 
@@ -53,7 +53,7 @@ struct Render_data
 struct Color_data
 {
   std::vector<Color_ramp> ramps;
-  std::array<glm::vec4, 21> palette;
+  std::vector<glm::vec4> palette;
   bool live_update_palette = false;
 };
 
@@ -71,6 +71,13 @@ struct Stage_data
 };
 
 
+struct Stats_data
+{
+  std::uint32_t stage_draw_calls = 0u;
+  std::uint32_t ui_draw_calls = 0u;
+};
+
+
 struct Game_data
 {
   Cursor_data cursor;
@@ -79,6 +86,7 @@ struct Game_data
   Color_data color;
   Control_data control;
   Stage_data stage;
+  Stats_data stats;
 };
 
 

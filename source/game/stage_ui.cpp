@@ -84,6 +84,8 @@ void wis::Stage_ui::render()
   render_panels();
   render_debug();
   render_cursor();
+
+  game_data_.stats.ui_draw_calls = pixel_renderer_.draw_calls();
 }
 
 

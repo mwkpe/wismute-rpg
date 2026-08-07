@@ -71,9 +71,8 @@ void wis::Game::render()
 
 void wis::Game::init_palette()
 {
-  game_data_.color.palette.fill(glm::vec4{0.0f, 0.0f, 0.0f, 1.0f});
   game_data_.color.ramps = wis::read_color_ramps("color_ramps.json");
-  update_palette();
+  game_data_.color.palette = wis::read_palette("palette.gpl");
 
   //auto& color_ramps = game_data_.color.ramps;
 
@@ -83,6 +82,8 @@ void wis::Game::init_palette()
   //color_ramps.emplace_back("C", 4);
   //color_ramps.emplace_back("D", 4);
   //color_ramps.emplace_back("E", 4);
+
+  //update_palette();
 }
 
 

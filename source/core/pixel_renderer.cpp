@@ -58,7 +58,7 @@ void wis::Pixel_renderer::set_view_projection()
 
 void wis::Pixel_renderer::set_palette(std::span<const glm::vec4> palette)
 {
-  if (palette.size() > 21u) {
+  if (palette.size() != 21u) {
     return;
   }
 
