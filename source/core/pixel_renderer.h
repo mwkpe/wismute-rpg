@@ -41,11 +41,11 @@ public:
   void set_color_index(std::uint32_t index);
 
   // Post process variables
-  void enable_blending(bool blending = true);
-  void enable_desaturation(bool desaturation = true);
-  void enable_tile_tilt(bool tilt = true);
-  void enable_pixel_displacement(bool displacement = true);
-  void enable_breathe(bool breathe = true);
+  void enable_blending(bool enable = true);
+  void enable_desaturation(bool enable = true);
+  void enable_tile_tilt(bool enable = true);
+  void enable_pixel_displacement(bool enable = true);
+  void enable_breathe(bool enable = true);
   void set_blending_alpha(float alpha);
   void set_desaturation_factor(float factor);
   void set_tile_tilt(float tilt);
