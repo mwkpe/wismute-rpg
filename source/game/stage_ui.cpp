@@ -141,7 +141,11 @@ bool wis::Stage_ui::handle_event(const engine::Mouse_button_down_event& event)
 
 bool wis::Stage_ui::handle_event([[maybe_unused]] const engine::Mouse_button_up_event& event)
 {
-  return false;
+  if (auto point = panel_point(event.x, event.y, button_panel_.collision_quad()); point) {
+    button_panel_.declick(*point);
+  }
+
+  return game_data_.cursor.ui.on_panel;
 }
 
 
@@ -167,6 +171,7 @@ bool wis::Stage_ui::handle_event(const engine::Mouse_motion_event& event)
   }
   else {
     button_panel_.clear_hover();
+    button_panel_.clear_pressed();
   }
 
   if (auto point = panel_point(event.x, event.y, action_panel_.collision_quad()); point) {
@@ -244,10 +249,21 @@ void wis::Stage_ui::render_panels()
   // Buttons
   for (const auto& button : button_panel_.buttons() | is_enabled) {
     entity_.transform() = button_panel_.as_world_transform(button.position);
+
+    if (button.is_pressed) {
+      auto pos = entity_.transform().position();
+      pos.y -= 0.2f;
+      entity_.transform().set_position(pos);
+    }
+
     pixel_renderer_.render(entity_, atlas_.ui(), button.mesh_index);
 
-    if (button.hovered) {
+    if (button.is_hovered) {
       pixel_renderer_.render(entity_, atlas_.ui(), 42);
+    }
+
+    if (button.is_pressed) {
+      pixel_renderer_.render(entity_, atlas_.ui(), button.mesh_index + 20);
     }
   }
 
@@ -261,7 +277,7 @@ void wis::Stage_ui::render_panels()
     entity_.transform() = action_panel_.as_world_transform(widget.position);
     pixel_renderer_.render(entity_, atlas_.ui(), widget.mesh_index);
 
-    if (widget.hovered) {
+    if (widget.is_hovered) {
       pixel_renderer_.render(entity_, atlas_.ui(), 40);
     }
 

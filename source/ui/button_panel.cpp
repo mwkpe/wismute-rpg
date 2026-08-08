@@ -25,7 +25,7 @@ wis::ui::Button_widget* get_button(std::span<wis::ui::Button_widget> buttons, wi
 
 wis::ui::Button_widget* get_hovered(std::span<wis::ui::Button_widget> buttons)
 {
-  auto it = std::ranges::find(buttons, true, &wis::ui::Button_widget::hovered);
+  auto it = std::ranges::find(buttons, true, &wis::ui::Button_widget::is_hovered);
   return it != buttons.end() ? std::to_address(it) : nullptr;
 }
 
@@ -70,13 +70,21 @@ void wis::ui::Button_panel::hover(const glm::vec2& point)
 
   for (auto& button : buttons_ | is_enabled) {
     if (engine::collision::within({point.x, point.y}, button.rect)) {
-      button.hovered = true;
+      button.is_hovered = true;
     }
   }
 }
 
 
 void wis::ui::Button_panel::click([[maybe_unused]] const glm::vec2& point)
+{
+  if (auto* button = get_hovered(buttons_); button) {
+    button->is_pressed = true;
+  }
+}
+
+
+void wis::ui::Button_panel::declick([[maybe_unused]] const glm::vec2& point)
 {
   if (auto* button = get_hovered(buttons_); button) {
     switch (button->type) {
@@ -88,6 +96,8 @@ void wis::ui::Button_panel::click([[maybe_unused]] const glm::vec2& point)
       break;
       default:;
     }
+
+    button->is_pressed = false;
   }
 }
 
@@ -95,6 +105,14 @@ void wis::ui::Button_panel::click([[maybe_unused]] const glm::vec2& point)
 void wis::ui::Button_panel::clear_hover()
 {
   for (auto& button : buttons_) {
-    button.hovered = false;
+    button.is_hovered = false;
+  }
+}
+
+
+void wis::ui::Button_panel::clear_pressed()
+{
+  for (auto& button : buttons_) {
+    button.is_pressed = false;
   }
 }

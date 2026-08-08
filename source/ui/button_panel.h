@@ -31,6 +31,7 @@ struct Button_widget final : Widget
       type{type} {}
 
   Button_type type = Button_type::Spacer;
+  bool is_pressed = false;
   bool is_enabled = true;
 };
 
@@ -45,8 +46,10 @@ public:
 
   void hover(const glm::vec2& point);
   void click(const glm::vec2& point);
+  void declick(const glm::vec2& point);
 
   void clear_hover();
+  void clear_pressed();
 
   [[nodiscard]] std::span<Button_widget> buttons() { return buttons_; }
 
