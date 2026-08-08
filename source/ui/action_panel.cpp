@@ -26,7 +26,7 @@ wis::ui::Action_widget* get_widget(std::span<wis::ui::Action_widget> widgets, st
 
 wis::ui::Action_widget* get_hovered(std::span<wis::ui::Action_widget> widgets)
 {
-  auto it = std::ranges::find(widgets, true, &wis::ui::Action_widget::hovered);
+  auto it = std::ranges::find(widgets, true, &wis::ui::Action_widget::is_hovered);
   return it != widgets.end() ? std::to_address(it) : nullptr;
 }
 
@@ -79,11 +79,11 @@ void wis::ui::Action_panel::update(float delta_s)
   float d = 3.0f * delta_s;
 
   for (auto& widget : actions_ | is_available) {
-    if (widget.hovered) {
+    if (widget.is_hovered) {
       // Raise hovered widget
       widget.position.y = std::max(-0.4f, widget.position.y - d);
     }
-    else if (!widget.selected) {
+    else if (!widget.is_selected) {
       // Lower widgets that lose hover
       widget.position.y = std::min(0.0f, widget.position.y + d);
     }
@@ -97,7 +97,7 @@ void wis::ui::Action_panel::hover(const glm::vec2& point)
 
   for (auto& widget : actions_ | is_available) {
     if (engine::collision::within({point.x, point.y}, widget.rect)) {
-      widget.hovered = true;
+      widget.is_hovered = true;
     }
   }
 }
@@ -107,7 +107,7 @@ void wis::ui::Action_panel::click([[maybe_unused]] const glm::vec2& point)
 {
   if (auto* widget = get_hovered(actions_); widget) {
     clear_selection();
-    widget->selected = true;
+    widget->is_selected = true;
     dispatcher_.trigger(event::Action_selected{widget->id});
   }
 }
@@ -122,7 +122,7 @@ void wis::ui::Action_panel::clear_actions()
 void wis::ui::Action_panel::clear_hover()
 {
   for (auto& widget : actions_) {
-    widget.hovered = false;
+    widget.is_hovered = false;
   }
 }
 
@@ -130,7 +130,7 @@ void wis::ui::Action_panel::clear_hover()
 void wis::ui::Action_panel::clear_selection()
 {
   for (auto& widget : actions_) {
-    widget.selected = false;
+    widget.is_selected = false;
   }
 }
 

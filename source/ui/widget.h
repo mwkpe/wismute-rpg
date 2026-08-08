@@ -29,8 +29,8 @@ struct Widget
   glm::vec2 position = glm::vec2{0.0f};
   glm::vec2 size = glm::vec2{0.0f};
   apeiron::engine::collision::Rect<float> rect = {};
-  bool hovered = false;
-  bool selected = false;
+  bool is_hovered = false;
+  bool is_selected = false;
 };
 
 
