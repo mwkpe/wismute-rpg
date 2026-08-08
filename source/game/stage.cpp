@@ -524,22 +524,22 @@ void wis::Stage::render_overlay()
   // Range finder
   for (const auto index : range_finder_.target_tiles()) {
     ground_entity_.transform().set_position(lattice_.as_position_xz(index));
-    pixel_renderer_.render(ground_entity_, atlas_.stage(), 383, 8);
+    pixel_renderer_.render(ground_entity_, atlas_.stage(), 383, 7);
   }
 
   for (const auto index : range_finder_.empty_tiles()) {
     ground_entity_.transform().set_position(lattice_.as_position_xz(index));
-    pixel_renderer_.render(ground_entity_, atlas_.stage(), 383);
+    pixel_renderer_.render(ground_entity_, atlas_.stage(), 386);
   }
 
   for (const auto index : range_finder_.invalid_tiles()) {
     ground_entity_.transform().set_position(lattice_.as_position_xz(index));
-    pixel_renderer_.render(ground_entity_, atlas_.stage(), 385);
+    pixel_renderer_.render(ground_entity_, atlas_.stage(), 388);
   }
 
   for (const auto index : range_finder_.marker_tiles()) {
     ground_entity_.transform().set_position(lattice_.as_position_xz(index));
-    pixel_renderer_.render(ground_entity_, atlas_.stage(), 386);
+    pixel_renderer_.render(ground_entity_, atlas_.stage(), 389);
   }
 }
 
@@ -560,7 +560,8 @@ void wis::Stage::render_sprites()
     pixel_renderer_.set_breathe_speed(player_.breathe_speed);
     pixel_renderer_.set_breathe_phase(player_.breathe_phase);
 
-    sprite_entity_.transform().set_position(lattice_.as_position_xz(player_.scene_index, cval::sprite_offset));
+    sprite_entity_.transform()
+        .set_position(lattice_.as_position_xz(player_.scene_index, cval::sprite_offset));
     pixel_renderer_.render(sprite_entity_, atlas_.stage(), player_.animation.current_frame());
   }
 
@@ -570,11 +571,35 @@ void wis::Stage::render_sprites()
     pixel_renderer_.set_breathe_speed(slime.breathe_speed);
     pixel_renderer_.set_breathe_phase(slime.breathe_phase);
 
-    sprite_entity_.transform().set_position(lattice_.as_position_xz(slime.scene_index, cval::sprite_offset));
+    sprite_entity_.transform()
+        .set_position(lattice_.as_position_xz(slime.scene_index, cval::sprite_offset));
     pixel_renderer_.render(sprite_entity_, atlas_.stage(), slime.mesh_index);
   }
 
   pixel_renderer_.enable_breathe(false);
+
+  // Health bars
+  for (const auto& slime : scene_.slimes() | is_alive) {
+    std::uint32_t health_index = 220;
+
+    switch (slime.health) {
+      case 10: { health_index += 0; } break;
+      case 20: { health_index += 1; } break;
+      case 30: { health_index += 2; } break;
+      case 40: { health_index += 3; } break;
+    }
+
+    switch (slime.mesh_index) {
+      case 140: { health_index += 0; } break;
+      case 141: { health_index += 20; } break;
+      case 142: { health_index += 4; } break;
+      case 143: { health_index += 24; } break;
+    }
+
+    sprite_entity_.transform()
+        .set_position(lattice_.as_position_xz(slime.scene_index, cval::sprite_offset));
+    pixel_renderer_.render(sprite_entity_, atlas_.stage(), health_index);
+  }
 }
 
 
