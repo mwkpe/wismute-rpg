@@ -43,13 +43,11 @@ struct Camera_data
   float height = 20.0f;
 };
 
-
 struct Render_data
 {
   bool grid = true;
   bool shadows = true;
 };
-
 
 struct Color_data
 {
@@ -70,7 +68,6 @@ struct Stage_data
   std::uint32_t selected_index = 0u;
   std::map<Element, bool> amplification;
 };
-
 
 struct Stats_data
 {
