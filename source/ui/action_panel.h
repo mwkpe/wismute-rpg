@@ -23,7 +23,7 @@ struct Action_widget final : Widget
   Action_widget(std::uint32_t id,
       bool is_available,
       Element element,
-      std::uint16_t mesh_index,
+      std::uint32_t mesh_index,
       float x,
       float y,
       float w = cval::tile_size_ui,
