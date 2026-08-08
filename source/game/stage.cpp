@@ -329,8 +329,6 @@ void wis::Stage::on_action_selected(const event::Action_selected& event)
   if (auto spell_slot = scene_.spell_slot(selected_action_id_); spell_slot) {
     range_finder_.find(spell_slot->spell, scene_, player_.scene_index);
   }
-
-  std::print("Action {} selected\n", event.id);
 }
 
 

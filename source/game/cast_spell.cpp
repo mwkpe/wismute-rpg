@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <cmath>
 #include <memory>
-#include <print>
 #include <ranges>
 #include "util/utility.h"
 
@@ -43,7 +42,6 @@ void cast_fireball(auto fireball, std::span<const wis::Tile> tiles, std::span<wi
   if (auto* slime = get_slime(slimes, target_index); slime) {
     auto damage = std::min(slime->health, spell_damage);
     slime->health -= damage;
-    std::print("Slime {} received {} fire damage\n", slime->id, damage);
   }
 }
 
@@ -60,14 +58,12 @@ void cast_inferno(auto inferno, std::span<const wis::Tile> tiles, std::span<wis:
   if (auto* slime = get_slime(slimes, target_index); slime) {
     auto damage = std::min(slime->health, spell_damage);
     slime->health -= damage;
-    std::print("Slime {} received {} fire damage\n", slime->id, damage);
   }
 
   for (const auto i : tiles[target_index].cardinals()) {
     if (auto* slime = get_slime(slimes, i); slime) {
       auto damage = std::min(slime->health, spell_damage);
       slime->health -= damage;
-      std::print("Slime {} received {} fire damage\n", slime->id, damage);
     }
   }
 }
@@ -80,13 +76,11 @@ void cast_jet(auto jet, std::span<const wis::Tile> tiles, std::span<wis::Slime> 
 
   if (is_amplified(tiles, player_index, jet.element)) {
     spell_damage *= 2u;
-    std::print("Spell amplified\n");
   }
 
   if (auto* slime = get_slime(slimes, target_index); slime) {
     auto damage = std::min(slime->health, spell_damage);
     slime->health -= damage;
-    std::print("Slime {} received {} water damage\n", slime->id, damage);
   }
 }
 
@@ -119,10 +113,10 @@ void wis::cast_spell(Spell spell, Player& player, std::span<const Tile> tiles,
       [&](Jet jet) {
         cast_jet(jet, tiles, slimes, player.scene_index, target_index);
       },
-      [&](Splash) { std::print("Splash not implemented\n"); },
-      [&](Lightning) { std::print("Lightning not implemented\n"); },
-      [&](Gust) { std::print("Gust not implemented\n"); },
-      [&](Missile) { std::print("Missile not implemented\n"); },
+      [&](Splash) {},
+      [&](Lightning) {},
+      [&](Gust) {},
+      [&](Missile) {},
       [&](Blink) {
         cast_blink(player, target_index);
       },

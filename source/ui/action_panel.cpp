@@ -1,7 +1,6 @@
 #include "action_panel.h"
 
 
-#include <print>
 #include <ranges>
 #include "apeiron/engine/collision.h"
 #include "game/constants.h"
@@ -141,8 +140,6 @@ void wis::ui::Action_panel::on_action_triggered(const event::Action_triggered& e
   if (auto* widget = get_widget(actions_, event.id); widget) {
     widget->is_available = false;
     widget->position.y = 0.0f;
-
-    std::print("Action {} triggered\n", event.id);
   }
 
   clear_selection();
@@ -153,8 +150,6 @@ void wis::ui::Action_panel::on_action_deselected(const event::Action_deselected&
 {
   if (auto* widget = get_widget(actions_, event.id); widget) {
     widget->position.y = 0.0f;
-
-    std::print("Action {} deselected\n", event.id);
   }
 
   clear_selection();
