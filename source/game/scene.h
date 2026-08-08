@@ -23,7 +23,10 @@ class Scene final
 {
 public:
   void load_scene(std::string_view filepath);
-  void reset();
+  void clear();
+
+  void set_spell_slots(std::span<const Spell_slot> spell_slots);
+  void set_slimes(std::span<const Slime> slimes);
 
   [[nodiscard]] const glm::uvec2& size() const { return size_; }
   [[nodiscard]] const glm::uvec2& margin() const { return margin_; }

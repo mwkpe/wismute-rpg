@@ -22,6 +22,10 @@ wis::Game::Game(const App_data& app_data,
     stage_{registry_, dispatcher_, app_data, game_data, atlas_, scene_},
     stage_ui_{registry_, dispatcher_, app_data, game_data, atlas_}
 {
+  dispatcher_.sink<event::Push_action>().connect<&Game::on_push_action>(*this);
+  dispatcher_.sink<event::Undo_pressed>().connect<&Game::on_undo_pressed>(*this);
+  dispatcher_.sink<event::Reset_pressed>().connect<&Game::on_reset_pressed>(*this);
+
   dispatcher_.sink<event::Achievement_unlocked>().connect<&Game::on_achievement_unlocked>(*this);
 }
 
@@ -41,6 +45,9 @@ void wis::Game::init()
   scene_.load_scene("assets/test_scene.json");
   stage_.init_scene();
   stage_ui_.set_spells(scene_.spell_slots());
+
+  game_history_.add(stage_.current_state());
+  stage_ui_.enable_undo(false);
 }
 
 
@@ -151,6 +158,31 @@ void wis::Game::handle_event(const apeiron::engine::Mouse_motion_event& event)
 void wis::Game::handle_event(const apeiron::engine::Mouse_wheel_event& event)
 {
   stage_.handle_event(event);
+}
+
+
+void wis::Game::on_push_action()
+{
+  game_history_.add(stage_.current_state());
+  stage_ui_.enable_undo(game_history_.size() > 1);
+}
+
+
+void wis::Game::on_undo_pressed()
+{
+  const auto& state = game_history_.undo();
+  stage_.set_state(state);
+  stage_ui_.set_spells(state.spell_slots);
+  stage_ui_.enable_undo(game_history_.size() > 1);
+}
+
+
+void wis::Game::on_reset_pressed()
+{
+  const auto& state = game_history_.reset();
+  stage_.set_state(state);
+  stage_ui_.set_spells(state.spell_slots);
+  stage_ui_.enable_undo(game_history_.size() > 1);
 }
 
 

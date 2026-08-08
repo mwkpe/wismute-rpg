@@ -17,6 +17,9 @@ namespace {
 namespace engine = apeiron::engine;
 
 
+constexpr auto not_enabled = std::views::filter([](const auto& e) { return !e.is_enabled; });
+constexpr auto is_enabled = std::views::filter([](const auto& e) { return e.is_enabled; });
+
 constexpr auto not_available = std::views::filter([](const auto& e) { return !e.is_available; });
 constexpr auto is_available = std::views::filter([](const auto& e) { return e.is_available; });
 
@@ -36,6 +39,7 @@ wis::Stage_ui::Stage_ui(entt::registry& registry,
     game_data_{game_data},
     atlas_{atlas},
     camera_{{0.0f, 32.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},
+    button_panel_{dispatcher},
     action_panel_{dispatcher}
 {
 }
@@ -58,6 +62,11 @@ void wis::Stage_ui::init()
   set_screen_limits();  // Needs view initialized
 
   constexpr float tile_size = cval::tile_size_ui;
+
+  button_panel_.set_size(2.0f * tile_size, tile_size);
+  button_panel_.transform().set_position(0.0f, 0.0f, top_ + tile_size * 0.5f);
+  button_panel_.apply();
+  button_panel_.init();
 
   portrait_panel_.set_size(tile_size * 2.0f, tile_size * 2.0f);
   portrait_panel_.transform().set_position(right_ - tile_size, 0.0f, top_ + tile_size);
@@ -89,6 +98,12 @@ void wis::Stage_ui::render()
 }
 
 
+void wis::Stage_ui::enable_undo(bool enable)
+{
+  button_panel_.enable_undo(enable);
+}
+
+
 void wis::Stage_ui::set_spells(std::span<const Spell_slot> spell_slots)
 {
   float tile_size = cval::tile_size_ui;
@@ -106,22 +121,21 @@ bool wis::Stage_ui::handle_event(const engine::Mouse_button_down_event& event)
 {
   switch (event.button) {
     case engine::Mouse_button::Left: {
-      if (auto point = panel_point(event.x, event.y, action_panel_.collision_quad()); point) {
+      if (auto point = panel_point(event.x, event.y, button_panel_.collision_quad()); point) {
+        button_panel_.click(*point);
+      }
+      else if (auto point = panel_point(event.x, event.y, action_panel_.collision_quad()); point) {
         action_panel_.click(*point);
-        return true;
       }
     }
     break;
     case engine::Mouse_button::Right: {
-      if (auto point = panel_point(event.x, event.y, action_panel_.collision_quad()); point) {
-        return true;
-      }
     }
     break;
     default:;
   }
 
-  return false;
+  return game_data_.cursor.ui.on_panel;
 }
 
 
@@ -145,6 +159,16 @@ bool wis::Stage_ui::handle_event(const engine::Mouse_motion_event& event)
   cursor.panel_position = glm::vec2{-1.0f, -1.0f};
   cursor.on_panel = false;
 
+  if (auto point = panel_point(event.x, event.y, button_panel_.collision_quad()); point) {
+    cursor.panel_position = *point;
+    cursor.on_panel = true;
+
+    button_panel_.hover(*point);
+  }
+  else {
+    button_panel_.clear_hover();
+  }
+
   if (auto point = panel_point(event.x, event.y, action_panel_.collision_quad()); point) {
     cursor.panel_position = *point;
     cursor.on_panel = true;
@@ -160,7 +184,7 @@ bool wis::Stage_ui::handle_event(const engine::Mouse_motion_event& event)
     cursor.on_panel = true;
   }
 
-  return false;
+  return cursor.on_panel;
 }
 
 
@@ -210,11 +234,27 @@ void wis::Stage_ui::render_panels()
 {
   Renderer::set_gl_depth_test(false);
 
-  renderer_.use();
-  //renderer_.render(action_panel_.quad(), Palette::colors[12]);
-  //renderer_.render(portrait_panel_.quad(), Palette::colors[12]);
+  //renderer_.use();
+  //renderer_.render(action_panel_.quad(), game_data_.color.palette[12]);
+  //renderer_.render(button_panel_.quad(), game_data_.color.palette[12]);
+  //renderer_.render(portrait_panel_.quad(), game_data_.color.palette[12]);
 
   pixel_renderer_.use();
+
+  // Buttons
+  for (const auto& button : button_panel_.buttons() | is_enabled) {
+    entity_.transform() = button_panel_.as_world_transform(button.position);
+    pixel_renderer_.render(entity_, atlas_.ui(), button.mesh_index);
+
+    if (button.hovered) {
+      pixel_renderer_.render(entity_, atlas_.ui(), 42);
+    }
+  }
+
+  for (const auto& button : button_panel_.buttons() | not_enabled) {
+    entity_.transform() = button_panel_.as_world_transform(button.position);
+    pixel_renderer_.render(entity_, atlas_.ui(), button.mesh_index + 10);
+  }
 
   // Actions
   for (const auto& widget : action_panel_.actions() | is_available) {
@@ -230,15 +270,10 @@ void wis::Stage_ui::render_panels()
     }
   }
 
-  //pixel_renderer_.set_desaturation_factor(1.0f);
-  //pixel_renderer_.enable_desaturation();
-
   for (const auto& widget : action_panel_.actions() | not_available) {
     entity_.transform() = action_panel_.as_world_transform(widget.position);
     pixel_renderer_.render(entity_, atlas_.ui(), widget.mesh_index + 20);
   }
-
-  //pixel_renderer_.enable_desaturation(false);
 
   // Portrait
   for (const auto& widget : portrait_panel_.decorations()) {

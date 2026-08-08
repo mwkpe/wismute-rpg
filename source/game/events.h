@@ -32,6 +32,21 @@ struct Action_triggered
 };
 
 
+struct Push_action
+{
+};
+
+
+struct Undo_pressed
+{
+};
+
+
+struct Reset_pressed
+{
+};
+
+
 }  // namespace wis::event
 
 

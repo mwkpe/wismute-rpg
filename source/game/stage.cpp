@@ -85,7 +85,7 @@ void wis::Stage::init_scene()
   const auto start_index = scene_.start_index();
   const auto start_position = lattice_.as_position_xz(start_index, glm::vec3{0.0f, 0.0f, 0.4f});
 
-  player_ = Player{start_position, start_index, 102, 0.03f, 4.0f, cval::tau()};
+  player_ = Player{start_position, start_index, 102, 0.03f, 4.0f, cval::tau(), {}};
   player_.animation.init(102, 104, 75);
 
   success_ = false;
@@ -136,7 +136,7 @@ void wis::Stage::update_input(const engine::Input* input)
 
 void wis::Stage::render()
 {
-  setup_view();
+  update_view();
 
   if (app_data_.debug.wireframe) {
     Renderer::set_gl_wireframe(true);
@@ -155,8 +155,8 @@ void wis::Stage::render()
     render_shadows();
   }
 
-  render_overlay();
   render_water();
+  render_overlay();
   render_debug_overlay();
 
   Renderer::set_gl_depth_test(true);
@@ -164,6 +164,35 @@ void wis::Stage::render()
   render_debug();
 
   game_data_.stats.stage_draw_calls = pixel_renderer_.draw_calls();
+}
+
+
+void wis::Stage::set_state(const Game_state& state)
+{
+  player_.scene_index = state.player_index;
+  scene_.set_spell_slots(state.spell_slots);
+  scene_.set_slimes(state.slimes);
+
+  update_amplification();
+
+  if (selected_action_id_ > 0) {
+    dispatcher_.trigger(event::Action_deselected{selected_action_id_});
+    range_finder_.clear();
+    selected_action_id_ = 0;
+    game_data_.cursor.type = Cursor_type::White;
+  }
+}
+
+
+auto wis::Stage::current_state() const -> Game_state
+{
+  Game_state state;
+
+  state.player_index = player_.scene_index;
+  state.spell_slots.assign_range(scene_.spell_slots());
+  state.slimes.assign_range(scene_.slimes());
+
+  return state;
 }
 
 
@@ -211,16 +240,10 @@ void wis::Stage::handle_event(const engine::Mouse_button_down_event& event)
               cursor.scene_index);
           spell_slot->is_available = false;
           dispatcher_.trigger(event::Action_triggered{selected_action_id_});
+          dispatcher_.trigger(event::Push_action{});
 
           if (std::holds_alternative<Blink>(spell_slot->spell)) {
-            auto& amplification = game_data_.stage.amplification;
-            auto index = player_.scene_index;
-            auto tiles = scene_.tiles();
-
-            amplification[Element::Fire] = is_amplified(tiles, index, Element::Fire);
-            amplification[Element::Water] = is_amplified(tiles, index, Element::Water);
-            amplification[Element::Wind] = is_amplified(tiles, index, Element::Wind);
-            amplification[Element::Aether] = is_amplified(tiles, index, Element::Aether);
+            update_amplification();
           }
         }
         else {
@@ -379,14 +402,20 @@ void wis::Stage::init_debug_grid()
 }
 
 
-void wis::Stage::reset_orbit_controller()
+void wis::Stage::update_view()
 {
-  const float pitch = free_controller_.pitch();
-  const float yaw = free_controller_.yaw();
-  const float height = free_controller_.position().y;
-  const auto dir = engine::direction_from_angles(pitch, yaw);
+  glm::mat4 projection = glm::perspective(glm::radians(game_data_.camera.fov),
+      app_data_.window.aspect_ratio, 1.0f, 100.0f);
 
-  orbit_controller_.init(pitch, yaw, height, free_controller_.position() + dir * height);
+  pixel_renderer_.use();
+  pixel_renderer_.preset_projection(projection);
+  pixel_renderer_.preset_view(camera_.view());
+  pixel_renderer_.set_view_projection();
+
+  renderer_.use();
+  renderer_.preset_projection(projection);
+  renderer_.preset_view(camera_.view());
+  renderer_.set_view_projection();
 }
 
 
@@ -405,26 +434,16 @@ void wis::Stage::update_ego_camera(const engine::Input* input)
 }
 
 
-void wis::Stage::drag_camera(float dx, float dy)
+void wis::Stage::update_amplification()
 {
-  free_controller_.move(dx, 0.0f, dy);
-}
+  auto& amplification = game_data_.stage.amplification;
+  auto index = player_.scene_index;
+  auto tiles = scene_.tiles();
 
-
-void wis::Stage::setup_view()
-{
-  glm::mat4 projection = glm::perspective(glm::radians(game_data_.camera.fov),
-      app_data_.window.aspect_ratio, 1.0f, 100.0f);
-
-  pixel_renderer_.use();
-  pixel_renderer_.preset_projection(projection);
-  pixel_renderer_.preset_view(camera_.view());
-  pixel_renderer_.set_view_projection();
-
-  renderer_.use();
-  renderer_.preset_projection(projection);
-  renderer_.preset_view(camera_.view());
-  renderer_.set_view_projection();
+  amplification[Element::Fire] = is_amplified(tiles, index, Element::Fire);
+  amplification[Element::Water] = is_amplified(tiles, index, Element::Water);
+  amplification[Element::Wind] = is_amplified(tiles, index, Element::Wind);
+  amplification[Element::Aether] = is_amplified(tiles, index, Element::Aether);
 }
 
 
@@ -527,12 +546,12 @@ void wis::Stage::render_overlay()
 
   for (const auto index : range_finder_.empty_tiles()) {
     ground_entity_.transform().set_position(lattice_.as_position_xz(index));
-    pixel_renderer_.render(ground_entity_, atlas_.stage(), 386);
+    pixel_renderer_.render(ground_entity_, atlas_.stage(), 383);
   }
 
   for (const auto index : range_finder_.invalid_tiles()) {
     ground_entity_.transform().set_position(lattice_.as_position_xz(index));
-    pixel_renderer_.render(ground_entity_, atlas_.stage(), 388);
+    pixel_renderer_.render(ground_entity_, atlas_.stage(), 385);
   }
 
   for (const auto index : range_finder_.marker_tiles()) {
@@ -625,6 +644,23 @@ void wis::Stage::render_debug_overlay()
     renderer_.render(debug_grid_);
     pixel_renderer_.use();
   }
+}
+
+
+void wis::Stage::reset_orbit_controller()
+{
+  const float pitch = free_controller_.pitch();
+  const float yaw = free_controller_.yaw();
+  const float height = free_controller_.position().y;
+  const auto dir = engine::direction_from_angles(pitch, yaw);
+
+  orbit_controller_.init(pitch, yaw, height, free_controller_.position() + dir * height);
+}
+
+
+void wis::Stage::drag_camera(float dx, float dy)
+{
+  free_controller_.move(dx, 0.0f, dy);
 }
 
 

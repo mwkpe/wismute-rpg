@@ -11,6 +11,7 @@
 #include "core/atlas.h"
 #include "game/events.h"
 #include "game/game_data.h"
+#include "game/game_state.h"
 #include "game/player.h"
 #include "game/scene.h"
 #include "game/stage.h"
@@ -40,6 +41,10 @@ public:
   }
 
   // Game event sinks
+  void on_push_action();
+  void on_undo_pressed();
+  void on_reset_pressed();
+
   void on_achievement_unlocked(const event::Achievement_unlocked& event);
 
 private:
@@ -61,6 +66,7 @@ private:
   Stage stage_;
   Stage_ui stage_ui_;
   Scene scene_;
+  Game_history game_history_;
 };
 
 

@@ -25,6 +25,7 @@
 #include "game/spells.h"
 
 #include "ui/action_panel.h"
+#include "ui/button_panel.h"
 #include "ui/portrait_panel.h"
 
 
@@ -42,6 +43,7 @@ public:
   void update(float delta_s);
   void render();
 
+  void enable_undo(bool enable = true);
   void set_spells(std::span<const Spell_slot> spell_slots);
 
   // Engine event handlers
@@ -50,7 +52,7 @@ public:
   bool handle_event(const apeiron::engine::Mouse_motion_event& event);
 
 private:
-  // Update
+  // Setup
   void setup_view();
   void set_screen_limits();
 
@@ -86,6 +88,7 @@ private:
   Lattice lattice_;
 
   // Panels
+  ui::Button_panel button_panel_;
   ui::Action_panel action_panel_;
   ui::Portrait_panel portrait_panel_;
 

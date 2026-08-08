@@ -116,6 +116,8 @@ auto wis::Scene::spell_slot(std::uint8_t id) -> Spell_slot*
 
 void wis::Scene::load_scene(std::string_view filepath)
 {
+  clear();
+
   auto scene_data = util::read_json(filepath);
 
   const auto& attributes = scene_data["attributes"];
@@ -131,7 +133,6 @@ void wis::Scene::load_scene(std::string_view filepath)
 
   // Spells
   {
-    spell_slots_.clear();
     spell_slots_.reserve(20);
 
     std::uint8_t id = 0;
@@ -154,7 +155,6 @@ void wis::Scene::load_scene(std::string_view filepath)
 
   // Tiles
   {
-    tiles_.clear();
     tiles_.resize(size_.x * size_.y, Tile{});
 
     std::uint32_t index = 0;
@@ -200,8 +200,6 @@ void wis::Scene::load_scene(std::string_view filepath)
 
   // Slimes
   {
-    slimes_.clear();
-
     std::uint32_t id = 0;
     float offset = 0.15f;
 
@@ -227,7 +225,7 @@ void wis::Scene::load_scene(std::string_view filepath)
 }
 
 
-void wis::Scene::reset()
+void wis::Scene::clear()
 {
   name_ = {};
   size_ = {1, 1};
@@ -235,4 +233,16 @@ void wis::Scene::reset()
   tiles_.clear();
   sprites_.clear();
   slimes_.clear();
+}
+
+
+void wis::Scene::set_spell_slots(std::span<const Spell_slot> spell_slots)
+{
+  spell_slots_.assign_range(spell_slots);
+}
+
+
+void wis::Scene::set_slimes(std::span<const Slime> slimes)
+{
+  slimes_.assign_range(slimes);
 }

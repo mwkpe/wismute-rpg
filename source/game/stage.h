@@ -22,6 +22,7 @@
 
 #include "game/events.h"
 #include "game/game_data.h"
+#include "game/game_state.h"
 #include "game/player.h"
 #include "game/range_finder.h"
 #include "game/scene.h"
@@ -44,6 +45,9 @@ public:
   void update_input(const apeiron::engine::Input* input = nullptr);
   void render();
 
+  void set_state(const Game_state& state);
+  Game_state current_state() const;
+
   // Engine event handlers
   void handle_event(const apeiron::engine::Key_down_event& event);
   void handle_event(const apeiron::engine::Key_up_event& event);
@@ -61,11 +65,9 @@ private:
   void init_scene_grid();
   void init_debug_grid();
 
-  void reset_orbit_controller();
-
+  void update_view();
   void update_ego_camera(const apeiron::engine::Input* input);
-  void drag_camera(float dx, float dy);
-  void setup_view();
+  void update_amplification();
 
   void render_ground();
   void render_water();
@@ -75,7 +77,8 @@ private:
   void render_debug();
   void render_debug_overlay();
 
-  // Helper
+  void reset_orbit_controller();
+  void drag_camera(float dx, float dy);
   std::optional<glm::vec3> ground_point(float screen_x, float screen_y);
 
   // ECS
