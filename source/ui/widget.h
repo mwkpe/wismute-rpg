@@ -14,7 +14,7 @@ namespace wis::ui {
 struct Widget
 {
   Widget() = default;
-  Widget(std::uint16_t mesh_index,
+  Widget(std::uint32_t mesh_index,
       float x,
       float y,
       float w = cval::tile_size_ui,
