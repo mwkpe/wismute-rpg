@@ -2,7 +2,9 @@
 #define WIS_GAME_STAGE_H
 
 
+#include <cstdint>
 #include <optional>
+#include <vector>
 
 #include <entt/entt.hpp>
 #include <glm/glm.hpp>
@@ -21,6 +23,7 @@
 #include "core/renderer.h"
 
 #include "game/events.h"
+#include "game/facade.h"
 #include "game/game_data.h"
 #include "game/game_state.h"
 #include "game/player.h"
@@ -68,6 +71,8 @@ private:
   void update_view();
   void update_ego_camera(const apeiron::engine::Input* input);
   void update_amplification();
+  void update_slimes();
+  void update_facades();
 
   void render_ground();
   void render_water();
@@ -89,6 +94,7 @@ private:
   const App_data& app_data_;
   Game_data& game_data_;
   Game_state game_state_;
+  std::vector<Facade> facades_;
 
   // Resources
   const Atlas& atlas_;

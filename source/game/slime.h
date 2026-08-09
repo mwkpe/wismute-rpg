@@ -3,7 +3,6 @@
 
 
 #include <cstdint>
-#include <glm/glm.hpp>
 
 
 namespace wis {
@@ -19,6 +18,8 @@ struct Slime
   float breathe_amplitude = 0.0f;
   float breathe_speed = 0.0f;
   float breathe_phase = 0.0f;
+  bool is_hidden = false;
+  bool is_active = true;
 };
 
 

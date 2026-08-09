@@ -10,27 +10,27 @@
     {
       "index": 14,
       "health": 20,
-      "weight": 2
+      "weight": 1
     },
     {
       "index": 28,
       "health": 20,
-      "weight": 2
+      "weight": 1
     },
     {
       "index": 36,
       "health": 20,
-      "weight": 2
+      "weight": 1
     },
     {
       "index": 47,
       "health": 20,
-      "weight": 2
+      "weight": 1
     },
     {
       "index": 58,
       "health": 40,
-      "weight": 1
+      "weight": 2
     }
   ],
   "spells": [

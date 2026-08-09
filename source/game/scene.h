@@ -9,11 +9,11 @@
 #include <vector>
 #include <glm/glm.hpp>
 
+#include "core/random_generator.h"
 #include "game/slime.h"
 #include "game/spells.h"
 #include "game/sprite.h"
 #include "game/tile.h"
-
 
 
 namespace wis {
@@ -22,6 +22,7 @@ namespace wis {
 class Scene final
 {
 public:
+  Scene();
   void load_scene(std::string_view filepath);
   void clear();
 
@@ -60,6 +61,7 @@ private:
   std::vector<Tile> tiles_;
   std::vector<Sprite> sprites_;
   std::vector<Slime> slimes_;
+  Random_float_generator rng_;
 };
 
 

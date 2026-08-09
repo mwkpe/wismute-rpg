@@ -16,7 +16,8 @@ namespace engine = apeiron::engine;
 constexpr auto is_enabled = std::views::filter([](const auto& e) { return e.is_enabled; });
 
 
-wis::ui::Button_widget* get_button(std::span<wis::ui::Button_widget> buttons, wis::ui::Button_type type)
+wis::ui::Button_widget* get_button(std::span<wis::ui::Button_widget> buttons,
+    wis::ui::Button_type type)
 {
   auto it = std::ranges::find(buttons, type, &wis::ui::Button_widget::type);
   return it != buttons.end() ? std::to_address(it) : nullptr;
@@ -45,10 +46,28 @@ void wis::ui::Button_panel::init()
   constexpr float y = 0.0f;
 
   float x = 0.0f;
+  buttons_.emplace_back(Button_type::Menu, 62, x, y, cval::tile_size_ui, 15 * cval::pixel_size);
+
+  x += cval::tile_size_ui;
+  buttons_.emplace_back(Button_type::Spacer, 0, x, y, cval::tile_size_ui, 15 * cval::pixel_size);
+
+  x += cval::tile_size_ui;
+  buttons_.emplace_back(Button_type::Spacer, 0, x, y, cval::tile_size_ui, 15 * cval::pixel_size);
+
+  x += cval::tile_size_ui;
   buttons_.emplace_back(Button_type::Undo, 60, x, y, cval::tile_size_ui, 15 * cval::pixel_size);
 
   x += cval::tile_size_ui;
   buttons_.emplace_back(Button_type::Reset, 61, x, y, cval::tile_size_ui, 15 * cval::pixel_size);
+
+  x += cval::tile_size_ui;
+  buttons_.emplace_back(Button_type::Spacer, 0, x, y, cval::tile_size_ui, 15 * cval::pixel_size);
+
+  x += cval::tile_size_ui;
+  buttons_.emplace_back(Button_type::Spacer, 0, x, y, cval::tile_size_ui, 15 * cval::pixel_size);
+
+  x += cval::tile_size_ui;
+  buttons_.emplace_back(Button_type::Quit, 63, x, y, cval::tile_size_ui, 15 * cval::pixel_size);
 }
 
 

@@ -15,7 +15,7 @@
 namespace wis::ui {
 
 
-enum class Button_type : std::uint32_t { Spacer, Undo, Reset };
+enum class Button_type : std::uint32_t { Spacer, Menu, Undo, Reset, Quit };
 
 
 struct Button_widget final : Widget
@@ -28,11 +28,14 @@ struct Button_widget final : Widget
       float h = cval::tile_size_ui)
       :
       Widget{mesh_index, x, y, w, h},
-      type{type} {}
+      type{type},
+      is_enabled{type != Button_type::Spacer},
+      is_visible{is_enabled} {}
 
-  Button_type type = Button_type::Spacer;
+  Button_type type;
+  bool is_enabled;
+  bool is_visible;
   bool is_pressed = false;
-  bool is_enabled = true;
 };
 
 

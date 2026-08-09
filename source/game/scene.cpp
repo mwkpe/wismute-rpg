@@ -70,47 +70,8 @@ void assign_neighbors(std::span<wis::Tile> tiles, const glm::uvec2& size)
 }  // namespace
 
 
-auto wis::Scene::tile(std::uint32_t index) -> Tile*
+wis::Scene::Scene() : rng_{0.0f, 1.0f, 0x34bb2598}
 {
-  if (index >= tiles_.size()) {
-    return &tiles_[0];  // nil tile
-  }
-
-  return &tiles_[index];
-}
-
-
-auto wis::Scene::tile(std::uint32_t index) const -> const Tile*
-{
-  if (index >= tiles_.size()) {
-    return &tiles_[0];  // nil tile
-  }
-
-  return &tiles_[index];
-}
-
-
-auto wis::Scene::spell_slot(std::uint8_t id) const -> const Spell_slot*
-{
-  auto it = std::ranges::find(spell_slots_, id, &wis::Spell_slot::id);
-
-  if (it != spell_slots_.end()) {
-    return std::to_address(it);
-  }
-
-  return nullptr;
-}
-
-
-auto wis::Scene::spell_slot(std::uint8_t id) -> Spell_slot*
-{
-  auto it = std::ranges::find(spell_slots_, id, &wis::Spell_slot::id);
-
-  if (it != spell_slots_.end()) {
-    return std::to_address(it);
-  }
-
-  return nullptr;
 }
 
 
@@ -201,23 +162,25 @@ void wis::Scene::load_scene(std::string_view filepath)
   // Slimes
   {
     std::uint32_t id = 0;
-    float offset = 0.15f;
 
     for (const auto& slime : scene_data["slimes"]) {
       std::uint32_t index = reindex(slime["index"], map_size.x, margin_.x);
       std::uint32_t weight = slime["weight"];
-      std::uint32_t mesh = weight == 2 ? 141 : 143;
+      std::uint32_t mesh = weight == 1 ? 141 : 143;
+      float beathe_speed = 5.0f + (rng_.value() - 0.5f) * 2.0f;
+
+      if (weight == 2) {
+        beathe_speed *= 0.5f;
+      }
 
       slimes_.emplace_back(id++,
           slime["health"],
           weight,
           index,
           mesh,
-          0.06f,
-          5.0f,
-          cval::tau() * offset);
-
-      offset += 0.1f;
+          0.06f + (rng_.value() - 0.5f) * 0.02f,
+          beathe_speed,
+          cval::tau() * rng_.value());
     }
   }
 
@@ -233,6 +196,50 @@ void wis::Scene::clear()
   tiles_.clear();
   sprites_.clear();
   slimes_.clear();
+}
+
+
+auto wis::Scene::tile(std::uint32_t index) -> Tile*
+{
+  if (index >= tiles_.size()) {
+    return &tiles_[0];  // nil tile
+  }
+
+  return &tiles_[index];
+}
+
+
+auto wis::Scene::tile(std::uint32_t index) const -> const Tile*
+{
+  if (index >= tiles_.size()) {
+    return &tiles_[0];  // nil tile
+  }
+
+  return &tiles_[index];
+}
+
+
+auto wis::Scene::spell_slot(std::uint8_t id) const -> const Spell_slot*
+{
+  auto it = std::ranges::find(spell_slots_, id, &wis::Spell_slot::id);
+
+  if (it != spell_slots_.end()) {
+    return std::to_address(it);
+  }
+
+  return nullptr;
+}
+
+
+auto wis::Scene::spell_slot(std::uint8_t id) -> Spell_slot*
+{
+  auto it = std::ranges::find(spell_slots_, id, &wis::Spell_slot::id);
+
+  if (it != spell_slots_.end()) {
+    return std::to_address(it);
+  }
+
+  return nullptr;
 }
 
 

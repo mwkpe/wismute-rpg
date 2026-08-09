@@ -13,36 +13,38 @@ struct Achievement_unlocked
   std::uint32_t id = 0;
 };
 
-
 struct Action_selected
 {
   std::uint32_t id = 0;
 };
-
 
 struct Action_deselected
 {
   std::uint32_t id = 0;
 };
 
-
 struct Action_triggered
 {
   std::uint32_t id = 0;
 };
 
-
 struct Push_action
 {
 };
-
 
 struct Undo_pressed
 {
 };
 
-
 struct Reset_pressed
+{
+};
+
+struct Menu_pressed
+{
+};
+
+struct Quit_pressed
 {
 };
 

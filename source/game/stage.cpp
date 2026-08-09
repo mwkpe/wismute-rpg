@@ -24,6 +24,7 @@ namespace {
 namespace engine = apeiron::engine;
 
 
+constexpr auto is_active = std::views::filter([](const auto& e) { return e.is_active; });
 constexpr auto is_alive = std::views::filter([](const auto& e) { return e.health > 0; });
 constexpr auto has_mesh = std::views::filter([](const auto& e) { return e.mesh_index != 20; });
 
@@ -61,6 +62,7 @@ wis::Stage::Stage(entt::registry& registry,
     scene_{scene}
 {
   dispatcher_.sink<event::Action_selected>().connect<&Stage::on_action_selected>(this);
+  facades_.reserve(16);
 }
 
 
@@ -180,6 +182,7 @@ void wis::Stage::set_state(const Game_state& state)
     range_finder_.clear();
     selected_action_id_ = 0;
     game_data_.cursor.type = Cursor_type::White;
+    player_.animation.reset();
   }
 }
 
@@ -244,6 +247,9 @@ void wis::Stage::handle_event(const engine::Mouse_button_down_event& event)
 
           if (std::holds_alternative<Blink>(spell_slot->spell)) {
             update_amplification();
+          }
+          else {
+            update_slimes();
           }
         }
         else {
@@ -444,6 +450,20 @@ void wis::Stage::update_amplification()
   amplification[Element::Water] = is_amplified(tiles, index, Element::Water);
   amplification[Element::Wind] = is_amplified(tiles, index, Element::Wind);
   amplification[Element::Aether] = is_amplified(tiles, index, Element::Aether);
+}
+
+
+void wis::Stage::update_slimes()
+{
+  //for (auto& slime : scene_.slimes() | is_active) {
+  //}
+}
+
+
+void wis::Stage::update_facades()
+{
+  //for (auto& facade : facades_) {
+  //}
 }
 
 

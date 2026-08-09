@@ -20,6 +20,8 @@ namespace engine = apeiron::engine;
 constexpr auto not_enabled = std::views::filter([](const auto& e) { return !e.is_enabled; });
 constexpr auto is_enabled = std::views::filter([](const auto& e) { return e.is_enabled; });
 
+constexpr auto is_visible = std::views::filter([](const auto& e) { return e.is_visible; });
+
 constexpr auto not_available = std::views::filter([](const auto& e) { return !e.is_available; });
 constexpr auto is_available = std::views::filter([](const auto& e) { return e.is_available; });
 
@@ -38,7 +40,7 @@ wis::Stage_ui::Stage_ui(entt::registry& registry,
     app_data_{app_data},
     game_data_{game_data},
     atlas_{atlas},
-    camera_{{0.0f, 32.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},
+    camera_{{0.0f, 36.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},
     button_panel_{dispatcher},
     action_panel_{dispatcher}
 {
@@ -63,7 +65,7 @@ void wis::Stage_ui::init()
 
   constexpr float tile_size = cval::tile_size_ui;
 
-  button_panel_.set_size(2.0f * tile_size, tile_size);
+  button_panel_.set_size(8.0f * tile_size, tile_size);
   button_panel_.transform().set_position(0.0f, 0.0f, top_ + tile_size * 0.5f);
   button_panel_.apply();
   button_panel_.init();
@@ -247,7 +249,7 @@ void wis::Stage_ui::render_panels()
   pixel_renderer_.use();
 
   // Buttons
-  for (const auto& button : button_panel_.buttons() | is_enabled) {
+  for (const auto& button : button_panel_.buttons() | is_enabled | is_visible) {
     entity_.transform() = button_panel_.as_world_transform(button.position);
 
     if (button.is_pressed) {
@@ -267,7 +269,7 @@ void wis::Stage_ui::render_panels()
     }
   }
 
-  for (const auto& button : button_panel_.buttons() | not_enabled) {
+  for (const auto& button : button_panel_.buttons() | not_enabled | is_visible) {
     entity_.transform() = button_panel_.as_world_transform(button.position);
     pixel_renderer_.render(entity_, atlas_.ui(), button.mesh_index + 10);
   }
@@ -292,10 +294,10 @@ void wis::Stage_ui::render_panels()
   }
 
   // Portrait
-  for (const auto& widget : portrait_panel_.decorations()) {
-    entity_.transform() = portrait_panel_.as_world_transform(widget.position);
-    pixel_renderer_.render(entity_, atlas_.ui(), widget.mesh_index);
-  }
+  //for (const auto& widget : portrait_panel_.decorations()) {
+  //  entity_.transform() = portrait_panel_.as_world_transform(widget.position);
+  //  pixel_renderer_.render(entity_, atlas_.ui(), widget.mesh_index);
+  //}
 
   Renderer::set_gl_depth_test(true);
 }

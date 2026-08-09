@@ -1,5 +1,5 @@
-#ifndef GDL_RANDOM_GENERATOR_H
-#define GDL_RANDOM_GENERATOR_H
+#ifndef WIS_CORE_RANDOM_GENERATOR_H
+#define WIS_CORE_RANDOM_GENERATOR_H
 
 
 #include <array>
@@ -7,7 +7,7 @@
 #include <random>
 
 
-namespace gdl {
+namespace wis {
 
 
 class Random_int32_generator
@@ -81,7 +81,7 @@ private:
 };
 
 
-}  // namespace gdl
+}  // namespace wis
 
 
-#endif  // GDL_RANDOM_GENERATOR_H
+#endif  // WIS_CORE_RANDOM_GENERATOR_H

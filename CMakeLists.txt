@@ -41,11 +41,14 @@ add_executable(wismute
     source/core/palette.h
     source/core/pixel_renderer.cpp
     source/core/pixel_renderer.h
+    source/core/random_generator.cpp
+    source/core/random_generator.h
     source/core/renderer.cpp
     source/core/renderer.h
     source/core/timer.h
     source/game/constants.h
     source/game/events.h
+    source/game/facade.h
     source/game/cast_spell.cpp
     source/game/cast_spell.h
     source/game/game.cpp
