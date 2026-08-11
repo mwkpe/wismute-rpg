@@ -109,6 +109,7 @@ void wis::Game::update_palette()
 
   std::size_t palette_index = 1;  // Jump over invalid color
 
+  // Scene colors
   for (const auto& ramp : color_ramps) {
     for (std::uint32_t i=0; i<ramp.steps; ++i) {
       if (auto color = calculate_color_step(ramp, i); color && palette_index < palette.size()) {

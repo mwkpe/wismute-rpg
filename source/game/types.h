@@ -25,7 +25,6 @@ enum class Element : std::uint32_t
   None,
   Fire,
   Water,
-  Wind,
   Aether
 };
 

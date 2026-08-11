@@ -104,11 +104,9 @@ void wis::Scene::load_scene(std::string_view filepath)
         case Inferno::key: { spell_slots_.emplace_back(Inferno{}, ++id); } break;
         case Jet::key: { spell_slots_.emplace_back(Jet{}, ++id); } break;
         case Splash::key: { spell_slots_.emplace_back(Splash{}, ++id); } break;
-        case Lightning::key: { spell_slots_.emplace_back(Lightning{}, ++id); } break;
-        case Gust::key: { spell_slots_.emplace_back(Gust{}, ++id); } break;
-        case Missile::key: { spell_slots_.emplace_back(Missile{}, ++id); } break;
         case Blink::key: { spell_slots_.emplace_back(Blink{spell_data["steps"]}, ++id); } break;
-        case Teleport::key: { spell_slots_.emplace_back(Teleport{}, ++id); } break;
+        case Ray::key: { spell_slots_.emplace_back(Ray{}, ++id); } break;
+        case Force::key: { spell_slots_.emplace_back(Force{}, ++id); } break;
         default:;
       }
     }
@@ -143,15 +141,14 @@ void wis::Scene::load_scene(std::string_view filepath)
       switch (tile_data["element"].get<std::uint32_t>()) {
         case 1: tile.element = Element::Fire; break;
         case 2: tile.element = Element::Water; break;
-        case 3: tile.element = Element::Wind; break;
-        case 4: tile.element = Element::Aether; break;
+        case 3: tile.element = Element::Aether; break;
       }
     }
   }
 
   // Sprites
   for (const auto& tile : tiles_) {
-    if (tile.element == Element::Wind) {
+    if (tile.element == Element::Aether) {
       sprites_.emplace_back(lattice.as_position_xz(tile.index, cval::sprite_offset), tile.index,
           glm::uvec2{tile.col, tile.row}, 60);
       sprites_.emplace_back(lattice.as_position_xz(tile.index, cval::sprite_offset), tile.index,

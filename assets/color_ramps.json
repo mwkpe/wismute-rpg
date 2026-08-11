@@ -2,45 +2,73 @@
   "color_ramps": [
     {
       "anchor": [
-        0.337,
-        0.185,
-        0.71
+        0.182,
+        0.11,
+        0.245
       ],
-      "chroma_high_scale": 0.996,
-      "chroma_low_scale": 0.575,
+      "chroma_high_scale": 0.7,
+      "chroma_low_scale": 0.7,
       "hue_rotation": 0.0,
-      "lightness_high": 0.581,
-      "lightness_low": 0.325,
-      "name": "A",
+      "lightness_high": 0.45,
+      "lightness_low": 0.25,
+      "name": "Base",
       "steps": 4
     },
     {
       "anchor": [
-        0.675,
-        0.122,
-        0.619
+        0.34,
+        0.109,
+        0.109
       ],
-      "chroma_high_scale": 0.817,
-      "chroma_low_scale": 0.683,
+      "chroma_high_scale": 1.0,
+      "chroma_low_scale": 0.75,
       "hue_rotation": 0.0,
-      "lightness_high": 0.787,
-      "lightness_low": 0.544,
-      "name": "B",
-      "steps": 4
+      "lightness_high": 0.85,
+      "lightness_low": 0.5,
+      "name": "Sprite",
+      "steps": 3
     },
     {
       "anchor": [
-        0.135,
-        0.33,
-        0.71
+        0.843,
+        0.29,
+        0.215
       ],
-      "chroma_high_scale": 1.144,
-      "chroma_low_scale": 0.654,
+      "chroma_high_scale": 1.0,
+      "chroma_low_scale": 0.75,
       "hue_rotation": 0.0,
-      "lightness_high": 0.841,
-      "lightness_low": 0.359,
-      "name": "C",
-      "steps": 4
+      "lightness_high": 0.85,
+      "lightness_low": 0.55,
+      "name": "Fire",
+      "steps": 3
+    },
+    {
+      "anchor": [
+        0.215,
+        0.481,
+        0.843
+      ],
+      "chroma_high_scale": 1.0,
+      "chroma_low_scale": 0.75,
+      "hue_rotation": 0.0,
+      "lightness_high": 0.85,
+      "lightness_low": 0.55,
+      "name": "Water",
+      "steps": 3
+    },
+    {
+      "anchor": [
+        0.843,
+        0.215,
+        0.479
+      ],
+      "chroma_high_scale": 1.0,
+      "chroma_low_scale": 0.75,
+      "hue_rotation": 0.0,
+      "lightness_high": 0.85,
+      "lightness_low": 0.55,
+      "name": "Aether",
+      "steps": 3
     }
   ]
 }

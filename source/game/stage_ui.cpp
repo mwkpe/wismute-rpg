@@ -280,11 +280,29 @@ void wis::Stage_ui::render_panels()
     pixel_renderer_.render(entity_, atlas_.ui(), widget.mesh_index);
 
     if (widget.is_hovered) {
-      pixel_renderer_.render(entity_, atlas_.ui(), 40);
+      std::uint32_t color_index = 0;
+
+      switch (widget.element) {
+        case Element::None: break;
+        case Element::Fire: color_index = 10; break;
+        case Element::Water: color_index = 13; break;
+        case Element::Aether: color_index = 16; break;
+      }
+
+      pixel_renderer_.render(entity_, atlas_.ui(), 40, color_index);
     }
 
     if (game_data_.stage.amplification[widget.element]) {
-      pixel_renderer_.render(entity_, atlas_.ui(), 41);
+      std::uint32_t color_index = 0;
+
+      switch (widget.element) {
+        case Element::None: break;
+        case Element::Fire: color_index = 10; break;
+        case Element::Water: color_index = 13; break;
+        case Element::Aether: color_index = 16; break;
+      }
+
+      pixel_renderer_.render(entity_, atlas_.ui(), 41, color_index);
     }
   }
 
@@ -348,7 +366,7 @@ std::optional<glm::vec3> wis::Stage_ui::screen_point(float screen_x, float scree
   auto [nx, ny] = util::as_ndc(screen_x, screen_y, app_data_.window.logical_width,
       app_data_.window.logical_height);
 
-  Ray ray = screen_raycast(nx, ny, renderer_.inverse_view_projection());
+  auto ray = screen_raycast(nx, ny, renderer_.inverse_view_projection());
   Plane plane{{0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}};
 
   return intersection_point(ray, plane);
@@ -363,7 +381,7 @@ std::optional<glm::vec2> wis::Stage_ui::panel_point(float screen_x, float screen
   auto [nx, ny] = util::as_ndc(screen_x, screen_y, app_data_.window.logical_width,
       app_data_.window.logical_height);
 
-  Ray ray = screen_raycast(nx, ny, renderer_.inverse_view_projection());
+  auto ray = screen_raycast(nx, ny, renderer_.inverse_view_projection());
 
   return intersection_point(ray, panel);
 }

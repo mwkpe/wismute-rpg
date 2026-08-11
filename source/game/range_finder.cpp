@@ -221,16 +221,6 @@ void find_jet_range(const auto& scene, std::uint32_t index, auto& range_tiles)
 }
 
 
-void find_splash_range(const auto& scene, std::uint32_t index, auto& range_tiles)
-{
-}
-
-
-void find_missile_range(const auto& scene, std::uint32_t index, auto& range_tiles)
-{
-}
-
-
 void find_blink_range(const wis::Blink& blink, const auto& scene, std::uint32_t index,
     auto& range_tiles)
 {
@@ -310,26 +300,6 @@ void find_blink_range(const wis::Blink& blink, const auto& scene, std::uint32_t 
 }
 
 
-void find_teleport_range(const auto& scene, std::uint32_t index, auto& range_tiles)
-{
-  // No pattern, global reach
-
-  for (const auto& tile : scene.tiles() | not_nil) {
-    bool has_slime = get_slime(scene.slimes(), tile.index) != nullptr;
-
-    if (tile.index != index && !tile.is_wall && !has_slime) {
-      range_tiles.target.push_back(tile.index);
-    }
-    else if (tile.index == index || tile.is_wall || has_slime) {
-      range_tiles.invalid.push_back(tile.index);
-    }
-    else {
-      range_tiles.empty.push_back(tile.index);
-    }
-  }
-}
-
-
 }  // namespace
 
 
@@ -347,12 +317,10 @@ void wis::Range_finder::find(Spell spell, const Scene& scene, std::uint32_t inde
       [&](Fireball) { find_fireball_range(scene, index, range_tiles); },
       [&](Inferno) { find_inferno_range(scene, index, range_tiles); },
       [&](Jet) { find_jet_range(scene, index, range_tiles); },
-      [&](Splash) { find_splash_range(scene, index, range_tiles); },
-      [&](Lightning) {},
-      [&](Gust) {},
-      [&](Missile) { find_missile_range(scene, index, range_tiles); },
+      [&](Splash) {},
       [&](Blink blink) { find_blink_range(blink, scene, index, range_tiles); },
-      [&](Teleport) { find_teleport_range(scene, index, range_tiles); }
+      [&](Ray) {},
+      [&](Force) {}
   }, spell);
 }
 

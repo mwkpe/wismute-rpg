@@ -2,6 +2,7 @@
 
 
 #include <format>
+#include "core/constants.h"
 
 
 void wis::Pixel_renderer::init(float pixel_size, std::uint32_t tile_size)
@@ -58,7 +59,7 @@ void wis::Pixel_renderer::set_view_projection()
 
 void wis::Pixel_renderer::set_palette(std::span<const glm::vec4> palette)
 {
-  if (palette.size() != 21u) {
+  if (palette.size() != cval::palette_size) {
     return;
   }
 

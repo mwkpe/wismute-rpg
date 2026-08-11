@@ -371,12 +371,12 @@ void wis::Stage::init_renderer()
 
 void wis::Stage::init_camera_controllers()
 {
-  constexpr float pitch = -55.0f;
+  constexpr float pitch = -50.0f;
   constexpr float yaw = -90.0f;
   const float height = game_data_.camera.height;
   const auto dir = engine::direction_from_angles(pitch, yaw);
   const float x = lattice_.field_size().x * 0.5f;
-  const float z = lattice_.field_size().y + 6.0f - static_cast<float>(scene_.margin().y * 2u);
+  const float z = lattice_.field_size().y + 8.0f - static_cast<float>(scene_.margin().y * 2u);
 
   free_controller_.init(pitch, yaw, {x, height, z});
   orbit_controller_.init(pitch, yaw, height, free_controller_.position() + dir * height);
@@ -448,15 +448,17 @@ void wis::Stage::update_amplification()
 
   amplification[Element::Fire] = is_amplified(tiles, index, Element::Fire);
   amplification[Element::Water] = is_amplified(tiles, index, Element::Water);
-  amplification[Element::Wind] = is_amplified(tiles, index, Element::Wind);
   amplification[Element::Aether] = is_amplified(tiles, index, Element::Aether);
 }
 
 
 void wis::Stage::update_slimes()
 {
-  //for (auto& slime : scene_.slimes() | is_active) {
-  //}
+  for (auto& slime : scene_.slimes() | is_active) {
+    if (slime.health == 0) {
+      slime.is_active = false;
+    }
+  }
 }
 
 
@@ -603,7 +605,7 @@ void wis::Stage::render_sprites()
   }
 
   // Slimes
-  for (const auto& slime : scene_.slimes() | is_alive) {
+  for (const auto& slime : scene_.slimes() | is_active) {
     pixel_renderer_.set_breathe_amplitude(slime.breathe_amplitude);
     pixel_renderer_.set_breathe_speed(slime.breathe_speed);
     pixel_renderer_.set_breathe_phase(slime.breathe_phase);
@@ -691,7 +693,7 @@ std::optional<glm::vec3> wis::Stage::ground_point(float screen_x, float screen_y
   auto [nx, ny] = util::as_ndc(screen_x, screen_y, app_data_.window.logical_width,
       app_data_.window.logical_height);
 
-  Ray ray = screen_raycast(nx, ny, renderer_.inverse_view_projection());
+  auto ray = screen_raycast(nx, ny, renderer_.inverse_view_projection());
   Plane plane{{0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}};
 
   return intersection_point(ray, plane);
