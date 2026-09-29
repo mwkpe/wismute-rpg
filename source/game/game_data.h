@@ -40,12 +40,14 @@ struct Camera_data
 {
   bool drag = false;
   float fov = 45.0f;
+  float pitch = -55.0f;
+  float yaw = -90.0f;
   float height = 20.0f;
 };
 
 struct Render_data
 {
-  bool grid = true;
+  bool grid = false;
   bool shadows = true;
 };
 
