@@ -9,6 +9,7 @@
 #include "game/scene.h"
 #include "game/spells.h"
 #include "game/tile.h"
+#include "game/types.h"
 
 
 namespace wis {
@@ -26,12 +27,14 @@ public:
   std::span<const std::uint32_t> invalid_tiles() const { return invalid_tiles_; }
   std::span<const std::uint32_t> empty_tiles() const { return empty_tiles_; }
   std::span<const std::uint32_t> marker_tiles() const { return marker_tiles_; }
+  Element element() const { return element_; }
 
 private:
   std::vector<std::uint32_t> target_tiles_;
   std::vector<std::uint32_t> invalid_tiles_;
   std::vector<std::uint32_t> empty_tiles_;
   std::vector<std::uint32_t> marker_tiles_;
+  Element element_ = Element::None;
 };
 
 

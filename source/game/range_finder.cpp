@@ -322,6 +322,16 @@ void wis::Range_finder::find(Spell spell, const Scene& scene, std::uint32_t inde
       [&](Ray) {},
       [&](Force) {}
   }, spell);
+
+  std::visit(util::match{
+      [&](Fireball fireball) { element_ = fireball.element; },
+      [&](Inferno inferno) { element_ = inferno.element; },
+      [&](Jet jet) { element_ = jet.element; },
+      [&](Splash splash) { element_ = splash.element; },
+      [&](Blink blink) { element_ = blink.element; },
+      [&](Ray ray) { element_ = ray.element; },
+      [&](Force force) { element_ = force.element; },
+  }, spell);
 }
 
 
@@ -331,6 +341,7 @@ void wis::Range_finder::clear()
   empty_tiles_.clear();
   invalid_tiles_.clear();
   marker_tiles_.clear();
+  element_ = Element::None;
 };
 
 
