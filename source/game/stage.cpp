@@ -87,8 +87,8 @@ void wis::Stage::init_scene()
   const auto start_index = scene_.start_index();
   const auto start_position = lattice_.as_position_xz(start_index, glm::vec3{0.0f, 0.0f, 0.4f});
 
-  player_ = Player{start_position, start_index, 102, 0.03f, 4.0f, cval::tau(), {}};
-  player_.animation.init(102, 104, 75);
+  player_ = Player{start_position, start_index, 82, 0.03f, 4.0f, cval::tau(), {}};
+  player_.animation.init(82, 84, 75);
 
   success_ = false;
 }
@@ -242,8 +242,6 @@ void wis::Stage::handle_event(const engine::Mouse_button_down_event& event)
           cast_spell(spell_slot->spell, player_, scene_.tiles(), scene_.slimes(),
               cursor.scene_index);
           spell_slot->is_available = false;
-          dispatcher_.trigger(event::Action_triggered{selected_action_id_});
-          dispatcher_.trigger(event::Push_action{});
 
           if (std::holds_alternative<Blink>(spell_slot->spell)) {
             update_amplification();
@@ -251,6 +249,11 @@ void wis::Stage::handle_event(const engine::Mouse_button_down_event& event)
           else {
             update_slimes();
           }
+
+          dispatcher_.trigger(event::Action_triggered{selected_action_id_});
+
+          // Must be triggered after updates to hold correct state
+          dispatcher_.trigger(event::Push_action{});
         }
         else {
           dispatcher_.trigger(event::Action_deselected{selected_action_id_});
@@ -371,12 +374,13 @@ void wis::Stage::init_renderer()
 
 void wis::Stage::init_camera_controllers()
 {
-  constexpr float pitch = -50.0f;
-  constexpr float yaw = -90.0f;
+  const float pitch = game_data_.camera.pitch;
+  const float yaw = game_data_.camera.yaw;
   const float height = game_data_.camera.height;
+
   const auto dir = engine::direction_from_angles(pitch, yaw);
   const float x = lattice_.field_size().x * 0.5f;
-  const float z = lattice_.field_size().y + 8.0f - static_cast<float>(scene_.margin().y * 2u);
+  const float z = lattice_.field_size().y + 4.0f - static_cast<float>(scene_.margin().y * 2u);
 
   free_controller_.init(pitch, yaw, {x, height, z});
   orbit_controller_.init(pitch, yaw, height, free_controller_.position() + dir * height);
