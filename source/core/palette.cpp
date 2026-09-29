@@ -15,7 +15,7 @@
 namespace {
 
 
-constexpr auto header_pattern = ctll::fixed_string{R"(^GIMP Palette$)"};
+constexpr auto header_pattern = ctll::fixed_string{R"(^GIMP\sPalette.+$)"};
 constexpr auto color_pattern = ctll::fixed_string{R"(^(\d+)\s+(\d+)\s+(\d+).+$)"};
 
 
