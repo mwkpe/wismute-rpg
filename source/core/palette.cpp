@@ -15,8 +15,8 @@
 namespace {
 
 
-constexpr auto header_pattern = ctll::fixed_string{R"(^GIMP\sPalette.+$)"};
-constexpr auto color_pattern = ctll::fixed_string{R"(^(\d+)\s+(\d+)\s+(\d+).+$)"};
+constexpr auto header_pattern = ctll::fixed_string{R"(^GIMP\sPalette.*$)"};
+constexpr auto color_pattern = ctll::fixed_string{R"(^(\d+)\s+(\d+)\s+(\d+).*$)"};
 
 
 std::uint8_t as_uint8(std::string_view text)
