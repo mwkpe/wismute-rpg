@@ -13,7 +13,7 @@ constexpr float tau() { return glm::pi<float>() * 2.0f; }
 constexpr float half_pi() { return glm::half_pi<float>(); }
 constexpr float quarter_pi() { return glm::quarter_pi<float>(); }
 
-constexpr std::uint32_t palette_size = 21;
+constexpr std::uint32_t palette_size = 33;
 
 
 }  // namespace wis::cval

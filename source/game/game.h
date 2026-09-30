@@ -49,7 +49,6 @@ public:
 
 private:
   void init_palette();
-  void update_palette();
 
   void handle_event(const apeiron::engine::Key_down_event& event);
   void handle_event(const apeiron::engine::Key_up_event& event);

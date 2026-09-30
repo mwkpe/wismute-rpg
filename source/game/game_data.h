@@ -6,7 +6,6 @@
 #include <glm/glm.hpp>
 #include <map>
 #include <vector>
-#include "core/color_ramp.h"
 #include "game/types.h"
 
 
@@ -42,7 +41,7 @@ struct Camera_data
   float fov = 45.0f;
   float pitch = -55.0f;
   float yaw = -90.0f;
-  float height = 20.0f;
+  float height = 16.0f;
 };
 
 struct Render_data
@@ -53,9 +52,10 @@ struct Render_data
 
 struct Color_data
 {
-  std::vector<Color_ramp> ramps;
   std::vector<glm::vec4> palette;
   bool live_update_palette = false;
+  std::uint32_t background_index = 13;
+  std::uint32_t shadow_index = 1;
 };
 
 struct Control_data

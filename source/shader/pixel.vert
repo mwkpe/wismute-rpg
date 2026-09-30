@@ -16,7 +16,7 @@ uniform mat4 model;
 // Game constants
 uniform float pixel_size;
 uniform uint tile_size;
-const uint color_count = 21u;
+const uint color_count = 33u;
 uniform vec4 colors[color_count];
 
 // Generic variables

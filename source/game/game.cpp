@@ -6,8 +6,6 @@
 #include "apeiron/engine/color_converter.h"
 
 #include "app/error.h"
-#include "core/color_math.h"
-#include "core/color_ramp.h"
 #include "core/constants.h"
 #include "core/palette.h"
 #include "core/renderer.h"
@@ -63,16 +61,12 @@ void wis::Game::update(const apeiron::engine::Event_queue& engine_events,
   stage_ui_.update(app_data_.timing.delta_s);
 
   dispatcher_.update();
-
-  if (game_data_.color.live_update_palette) {
-    update_palette();
-  }
 }
 
 
 void wis::Game::render()
 {
-  Renderer::gl_clear(game_data_.color.palette[2]);
+  Renderer::gl_clear(game_data_.color.palette[game_data_.color.background_index]);
 
   stage_.render();
   stage_ui_.render();
@@ -81,41 +75,11 @@ void wis::Game::render()
 
 void wis::Game::init_palette()
 {
-  game_data_.color.ramps = wis::read_color_ramps("color_ramps.json");
-  game_data_.color.palette = wis::read_palette("palette.gpl");
+  game_data_.color.palette = wis::read_palette("assets/softmilk-32.gpl");
 
   if (game_data_.color.palette.size() != cval::palette_size) {
     throw Error::format("Palette size mismatch: expected {}, got {}",
         cval::palette_size, game_data_.color.palette.size());
-  }
-
-  //auto& color_ramps = game_data_.color.ramps;
-
-  //color_ramps.clear();
-  //color_ramps.emplace_back("A", 4);
-  //color_ramps.emplace_back("B", 4);
-  //color_ramps.emplace_back("C", 4);
-  //color_ramps.emplace_back("D", 4);
-  //color_ramps.emplace_back("E", 4);
-
-  //update_palette();
-}
-
-
-void wis::Game::update_palette()
-{
-  auto& palette = game_data_.color.palette;
-  auto& color_ramps = game_data_.color.ramps;
-
-  std::size_t palette_index = 1;  // Jump over invalid color
-
-  // Scene colors
-  for (const auto& ramp : color_ramps) {
-    for (std::uint32_t i=0; i<ramp.steps; ++i) {
-      if (auto color = calculate_color_step(ramp, i); color && palette_index < palette.size()) {
-        palette[palette_index++] = *color;
-      }
-    }
   }
 }
 

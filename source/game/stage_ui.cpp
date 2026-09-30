@@ -280,26 +280,26 @@ void wis::Stage_ui::render_panels()
     pixel_renderer_.render(entity_, atlas_.ui(), widget.mesh_index);
 
     if (widget.is_hovered) {
-      std::uint32_t color_index = 0;
+      std::uint32_t color_index = 10;
 
       switch (widget.element) {
         case Element::None: break;
-        case Element::Fire: color_index = 10; break;
-        case Element::Water: color_index = 13; break;
-        case Element::Aether: color_index = 16; break;
+        case Element::Fire: color_index = 19; break;
+        case Element::Water: color_index = 27; break;
+        case Element::Aether: color_index = 2; break;
       }
 
       pixel_renderer_.render(entity_, atlas_.ui(), 40, color_index);
     }
 
     if (game_data_.stage.amplification[widget.element]) {
-      std::uint32_t color_index = 0;
+      std::uint32_t color_index = 10;
 
       switch (widget.element) {
         case Element::None: break;
-        case Element::Fire: color_index = 10; break;
-        case Element::Water: color_index = 13; break;
-        case Element::Aether: color_index = 16; break;
+        case Element::Fire: color_index = 6; break;
+        case Element::Water: color_index = 26; break;
+        case Element::Aether: color_index = 3; break;
       }
 
       pixel_renderer_.render(entity_, atlas_.ui(), 41, color_index);

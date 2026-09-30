@@ -32,9 +32,6 @@ add_executable(wismute
     source/core/animation.h
     source/core/atlas.cpp
     source/core/atlas.h
-    source/core/color_math.h
-    source/core/color_ramp.cpp
-    source/core/color_ramp.h
     source/core/constants.h
     source/core/lattice.h
     source/core/palette.cpp

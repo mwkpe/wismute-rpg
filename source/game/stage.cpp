@@ -500,13 +500,14 @@ void wis::Stage::render_water()
 
 void wis::Stage::render_shadows()
 {
+  const auto shadow_index = game_data_.color.shadow_index;
+
   pixel_renderer_.enable_tile_tilt();
   pixel_renderer_.set_tile_tilt(-4.0f);
 
   Renderer::set_gl_blend(true);
   pixel_renderer_.enable_blending();
   pixel_renderer_.set_blending_alpha(0.7f);
-
 
   ground_entity_.transform().set_scale(1.0f, 1.0f, 0.8f);
   auto offset = cval::sprite_offset - glm::vec3{0.0f, 0.0f, cval::tile_size * 0.4f};
@@ -515,7 +516,7 @@ void wis::Stage::render_shadows()
     auto mesh_index = sprite.mesh_index == 61 ? 62 : sprite.mesh_index;
     mesh_index = sprite.mesh_index == 60 ? 63 : mesh_index;
     ground_entity_.transform().set_position(lattice_.as_position_xz(sprite.scene_index, offset));
-    pixel_renderer_.render(ground_entity_, atlas_.stage(), mesh_index, 1);
+    pixel_renderer_.render(ground_entity_, atlas_.stage(), mesh_index, shadow_index);
   }
 
   pixel_renderer_.enable_breathe();
@@ -527,7 +528,8 @@ void wis::Stage::render_shadows()
     pixel_renderer_.set_breathe_phase(player_.breathe_phase);
 
     ground_entity_.transform().set_position(lattice_.as_position_xz(player_.scene_index, offset));
-    pixel_renderer_.render(ground_entity_, atlas_.stage(), player_.animation.current_frame(), 1);
+    pixel_renderer_.render(ground_entity_, atlas_.stage(), player_.animation.current_frame(),
+        shadow_index);
   }
 
   // Slimes
@@ -537,7 +539,7 @@ void wis::Stage::render_shadows()
     pixel_renderer_.set_breathe_phase(slime.breathe_phase);
 
     ground_entity_.transform().set_position(lattice_.as_position_xz(slime.scene_index, offset));
-    pixel_renderer_.render(ground_entity_, atlas_.stage(), slime.mesh_index, 1);
+    pixel_renderer_.render(ground_entity_, atlas_.stage(), slime.mesh_index, shadow_index);
   }
 
   ground_entity_.transform().set_scale(1.0f, 1.0f, 1.0f);
@@ -567,22 +569,22 @@ void wis::Stage::render_overlay()
   // Range finder
   for (const auto index : range_finder_.target_tiles()) {
     ground_entity_.transform().set_position(lattice_.as_position_xz(index));
-    pixel_renderer_.render(ground_entity_, atlas_.stage(), 383, 7);
+    pixel_renderer_.render(ground_entity_, atlas_.stage(), 383, 10);
   }
 
   for (const auto index : range_finder_.empty_tiles()) {
     ground_entity_.transform().set_position(lattice_.as_position_xz(index));
-    pixel_renderer_.render(ground_entity_, atlas_.stage(), 383);
+    //pixel_renderer_.render(ground_entity_, atlas_.stage(), 383);
   }
 
   for (const auto index : range_finder_.invalid_tiles()) {
     ground_entity_.transform().set_position(lattice_.as_position_xz(index));
-    pixel_renderer_.render(ground_entity_, atlas_.stage(), 385);
+    //pixel_renderer_.render(ground_entity_, atlas_.stage(), 385);
   }
 
   for (const auto index : range_finder_.marker_tiles()) {
     ground_entity_.transform().set_position(lattice_.as_position_xz(index));
-    pixel_renderer_.render(ground_entity_, atlas_.stage(), 389);
+    //pixel_renderer_.render(ground_entity_, atlas_.stage(), 389);
   }
 }
 
