@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <glm/glm.hpp>
 #include "core/animation.h"
+#include "game/types.h"
 
 
 namespace wis {
@@ -15,9 +16,7 @@ struct Player
   glm::vec3 position;
   std::uint32_t scene_index = 0;
   std::uint32_t mesh_index = 0;
-  float breathe_amplitude = 0.0f;
-  float breathe_speed = 0.0f;
-  float breathe_phase = 0.0f;
+  Oscillation breathing = {};
   Animation animation;
 };
 

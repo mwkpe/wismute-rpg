@@ -11,6 +11,9 @@ out mat4 pixel_model;
 out vec2 pixel_stretch;
 
 
+const float tau = 6.28318531;
+
+
 uniform mat4 model;
 
 // Game constants
@@ -29,17 +32,17 @@ uniform uint color_index;
 // Post process variables
 uniform bool blending_enabled;
 uniform bool desaturation_enabled;
-uniform bool tile_tilt_enabled;
-uniform bool pixel_displacement_enabled;
-uniform bool breathe_enabled;
+uniform bool tilt_enabled;
+uniform bool displacement_enabled;
+uniform bool breathing_enabled;
 
 uniform float blending_alpha;
 uniform float desaturation_factor;
-uniform float tile_tilt;
-uniform float pixel_displacement;
-uniform float breathe_amplitude;
-uniform float breathe_speed;
-uniform float breathe_phase;
+uniform float tilt_amplitude;
+uniform float displacement_strength;
+uniform float breathing_amplitude;
+uniform float breathing_frequency;
+uniform float breathing_phase;
 
 
 uint pcg_hash(uint v)
@@ -71,8 +74,6 @@ float wave_offset(float col, float row, float count, float amplitude, float spee
 float wave_offset(float col, float row, float count, float amplitude, float sharpness, float speed,
     float tilt)
 {
-  const float tau = 6.283185;
-
   float coord = (col + tilt * row) / float(tile_size);
   float phase = coord * tau * count - time * speed;
 
@@ -119,8 +120,8 @@ void post_process(inout vec3 pixel_position, float row)
 {
   pixel_model = model;
 
-  if (breathe_enabled) {
-    float s = 1.0 + breathe_amplitude * sin(time * breathe_speed + breathe_phase);
+  if (breathing_enabled) {
+    float s = 1.0 + breathing_amplitude * sin(time * tau * breathing_frequency + breathing_phase);
     float sx = 1.0 / sqrt(s);
 
     // Anchor sprite to ground
@@ -132,13 +133,13 @@ void post_process(inout vec3 pixel_position, float row)
     pixel_stretch = vec2(sx, s);
   }
 
-  if (tile_tilt_enabled) {
-    pixel_position.x += (tile_size * pixel_size - row) * 0.1 * tile_tilt;
+  if (tilt_enabled) {
+    pixel_position.x += (tile_size * pixel_size - row) * 0.1 * tilt_amplitude;
   }
 
-  if (pixel_displacement_enabled) {
+  if (displacement_enabled) {
     vec3 direction = normalize(pixel_position);
-    pixel_position += direction * pixel_displacement;
+    pixel_position += direction * displacement_strength;
   }
 
   if (blending_enabled) {

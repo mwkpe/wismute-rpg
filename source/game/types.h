@@ -29,6 +29,14 @@ enum class Element : std::uint32_t
 };
 
 
+struct Oscillation
+{
+  float amplitude = 0.0f;
+  float frequency = 0.0f;
+  float phase = 0.0f;
+};
+
+
 }  // namespace wis
 
 

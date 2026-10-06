@@ -3,6 +3,7 @@
 
 
 #include <cstdint>
+#include "game/types.h"
 
 
 namespace wis {
@@ -15,9 +16,7 @@ struct Slime
   std::uint32_t weight = 0;
   std::uint32_t scene_index = 0;
   std::uint32_t mesh_index = 0;
-  float breathe_amplitude = 0.0f;
-  float breathe_speed = 0.0f;
-  float breathe_phase = 0.0f;
+  Oscillation breathing = {};
   bool is_hidden = false;
   bool is_active = true;
 };

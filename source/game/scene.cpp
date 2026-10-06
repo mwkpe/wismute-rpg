@@ -164,10 +164,14 @@ void wis::Scene::load_scene(std::string_view filepath)
       std::uint32_t index = reindex(slime["index"], map_size.x, margin_.x);
       std::uint32_t weight = slime["weight"];
       std::uint32_t mesh = weight == 1 ? 141 : 143;
-      float beathe_speed = 5.0f + (rng_.value() - 0.5f) * 2.0f;
+
+      Oscillation breathing;
+      breathing.amplitude = 0.06f + (rng_.value() - 0.5f) * 0.02f;
+      breathing.frequency = 1.0f + (rng_.value() - 0.5f) * 0.2f;
+      breathing.phase = cval::tau() * rng_.value();
 
       if (weight == 2) {
-        beathe_speed *= 0.5f;
+        breathing.frequency *= 0.5f;
       }
 
       slimes_.emplace_back(id++,
@@ -175,9 +179,7 @@ void wis::Scene::load_scene(std::string_view filepath)
           weight,
           index,
           mesh,
-          0.06f + (rng_.value() - 0.5f) * 0.02f,
-          beathe_speed,
-          cval::tau() * rng_.value());
+          breathing);
     }
   }
 
