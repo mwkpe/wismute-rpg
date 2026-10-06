@@ -87,7 +87,7 @@ void wis::Stage::init_scene()
   const auto start_index = scene_.start_index();
   const auto start_position = lattice_.as_position_xz(start_index, glm::vec3{0.0f, 0.0f, 0.4f});
 
-  player_ = Player{start_position, start_index, 82, 0.03f, 4.0f, cval::tau(), {}};
+  player_ = Player{start_position, start_index, 82, {0.03f, 0.8f, 0.0f}, {}};
   player_.animation.init(82, 84, 75);
 
   success_ = false;
@@ -140,6 +140,10 @@ void wis::Stage::render()
 {
   update_view();
 
+  //pixel_renderer_.use();
+  //pixel_renderer_.enable_desaturation();
+  //pixel_renderer_.set_desaturation_factor(0.75f);
+
   if (app_data_.debug.wireframe) {
     Renderer::set_gl_wireframe(true);
   }
@@ -147,7 +151,6 @@ void wis::Stage::render()
     Renderer::set_gl_wireframe(false);
   }
 
-  pixel_renderer_.use();
   pixel_renderer_.set_time(app_data_.timing.runtime_s);
 
   Renderer::set_gl_depth_test(false);
@@ -417,15 +420,15 @@ void wis::Stage::update_view()
   glm::mat4 projection = glm::perspective(glm::radians(game_data_.camera.fov),
       app_data_.window.aspect_ratio, 1.0f, 100.0f);
 
-  pixel_renderer_.use();
-  pixel_renderer_.preset_projection(projection);
-  pixel_renderer_.preset_view(camera_.view());
-  pixel_renderer_.set_view_projection();
-
   renderer_.use();
   renderer_.preset_projection(projection);
   renderer_.preset_view(camera_.view());
   renderer_.set_view_projection();
+
+  pixel_renderer_.use();
+  pixel_renderer_.preset_projection(projection);
+  pixel_renderer_.preset_view(camera_.view());
+  pixel_renderer_.set_view_projection();
 }
 
 
@@ -502,8 +505,8 @@ void wis::Stage::render_shadows()
 {
   const auto shadow_index = game_data_.color.shadow_index;
 
-  pixel_renderer_.enable_tile_tilt();
-  pixel_renderer_.set_tile_tilt(-4.0f);
+  pixel_renderer_.enable_tilt();
+  pixel_renderer_.set_tilt_amplitude(-4.0f);
 
   Renderer::set_gl_blend(true);
   pixel_renderer_.enable_blending();
@@ -519,13 +522,13 @@ void wis::Stage::render_shadows()
     pixel_renderer_.render(ground_entity_, atlas_.stage(), mesh_index, shadow_index);
   }
 
-  pixel_renderer_.enable_breathe();
+  pixel_renderer_.enable_breathing();
 
   // Player
   {
-    pixel_renderer_.set_breathe_amplitude(player_.breathe_amplitude);
-    pixel_renderer_.set_breathe_speed(player_.breathe_speed);
-    pixel_renderer_.set_breathe_phase(player_.breathe_phase);
+    pixel_renderer_.set_breathing_amplitude(player_.breathing.amplitude);
+    pixel_renderer_.set_breathing_frequency(player_.breathing.frequency);
+    pixel_renderer_.set_breathing_phase(player_.breathing.phase);
 
     ground_entity_.transform().set_position(lattice_.as_position_xz(player_.scene_index, offset));
     pixel_renderer_.render(ground_entity_, atlas_.stage(), player_.animation.current_frame(),
@@ -534,9 +537,9 @@ void wis::Stage::render_shadows()
 
   // Slimes
   for (const auto& slime : scene_.slimes() | is_alive) {
-    pixel_renderer_.set_breathe_amplitude(slime.breathe_amplitude);
-    pixel_renderer_.set_breathe_speed(slime.breathe_speed);
-    pixel_renderer_.set_breathe_phase(slime.breathe_phase);
+    pixel_renderer_.set_breathing_amplitude(slime.breathing.amplitude);
+    pixel_renderer_.set_breathing_frequency(slime.breathing.frequency);
+    pixel_renderer_.set_breathing_phase(slime.breathing.phase);
 
     ground_entity_.transform().set_position(lattice_.as_position_xz(slime.scene_index, offset));
     pixel_renderer_.render(ground_entity_, atlas_.stage(), slime.mesh_index, shadow_index);
@@ -545,8 +548,8 @@ void wis::Stage::render_shadows()
   ground_entity_.transform().set_scale(1.0f, 1.0f, 1.0f);
 
   Renderer::set_gl_blend(false);
-  pixel_renderer_.enable_breathe(false);
-  pixel_renderer_.enable_tile_tilt(false);
+  pixel_renderer_.enable_breathing(false);
+  pixel_renderer_.enable_tilt(false);
   pixel_renderer_.enable_blending(false);
 }
 
@@ -597,13 +600,13 @@ void wis::Stage::render_sprites()
     pixel_renderer_.render(sprite_entity_, atlas_.stage(), sprite.mesh_index);
   }
 
-  pixel_renderer_.enable_breathe();
+  pixel_renderer_.enable_breathing();
 
   // Player
   {
-    pixel_renderer_.set_breathe_amplitude(player_.breathe_amplitude);
-    pixel_renderer_.set_breathe_speed(player_.breathe_speed);
-    pixel_renderer_.set_breathe_phase(player_.breathe_phase);
+    pixel_renderer_.set_breathing_amplitude(player_.breathing.amplitude);
+    pixel_renderer_.set_breathing_frequency(player_.breathing.frequency);
+    pixel_renderer_.set_breathing_phase(player_.breathing.phase);
 
     sprite_entity_.transform()
         .set_position(lattice_.as_position_xz(player_.scene_index, cval::sprite_offset));
@@ -612,16 +615,16 @@ void wis::Stage::render_sprites()
 
   // Slimes
   for (const auto& slime : scene_.slimes() | is_active) {
-    pixel_renderer_.set_breathe_amplitude(slime.breathe_amplitude);
-    pixel_renderer_.set_breathe_speed(slime.breathe_speed);
-    pixel_renderer_.set_breathe_phase(slime.breathe_phase);
+    pixel_renderer_.set_breathing_amplitude(slime.breathing.amplitude);
+    pixel_renderer_.set_breathing_frequency(slime.breathing.frequency);
+    pixel_renderer_.set_breathing_phase(slime.breathing.phase);
 
     sprite_entity_.transform()
         .set_position(lattice_.as_position_xz(slime.scene_index, cval::sprite_offset));
     pixel_renderer_.render(sprite_entity_, atlas_.stage(), slime.mesh_index);
   }
 
-  pixel_renderer_.enable_breathe(false);
+  pixel_renderer_.enable_breathing(false);
 
   // Health bars
   for (const auto& slime : scene_.slimes() | is_alive) {

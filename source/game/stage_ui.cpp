@@ -200,15 +200,15 @@ void wis::Stage_ui::setup_view()
   glm::mat4 projection = glm::perspective(glm::radians(game_data_.camera.fov),
       app_data_.window.aspect_ratio, 1.0f, 100.0f);
 
-  pixel_renderer_.use();
-  pixel_renderer_.preset_projection(projection);
-  pixel_renderer_.preset_view(camera_.view());
-  pixel_renderer_.set_view_projection();
-
   renderer_.use();
   renderer_.preset_projection(projection);
   renderer_.preset_view(camera_.view());
   renderer_.set_view_projection();
+
+  pixel_renderer_.use();
+  pixel_renderer_.preset_projection(projection);
+  pixel_renderer_.preset_view(camera_.view());
+  pixel_renderer_.set_view_projection();
 }
 
 
