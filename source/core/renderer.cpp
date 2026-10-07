@@ -11,10 +11,12 @@ void wis::Renderer::init()
 
   // Init uniforms
   use_world_space();
-  set_colorize(false);
-  set_invert_color(false);
-  set_desaturate(false);
-  set_desaturation_factor(1.0f);
+
+  enable_color_desaturation(false);
+  enable_color_inversion(false);
+  enable_color_multiplication(false);
+
+  set_color_desaturation_factor(1.0f);
 
   shader_.set_uniform("color_mode", 0xff);
   shader_.set_uniform("color", glm::vec4{1.0f, 0.0f, 1.0f, 1.0f});
@@ -167,25 +169,25 @@ void wis::Renderer::use_texture_shading()
 }
 
 
-void wis::Renderer::set_colorize(bool colorize)
+void wis::Renderer::enable_color_desaturation(bool desaturate)
 {
-  shader_.set_uniform("colorize", colorize);
+  shader_.set_uniform("desaturate_color", desaturate);
 }
 
 
-void wis::Renderer::set_invert_color(bool invert)
+void wis::Renderer::enable_color_inversion(bool invert)
 {
   shader_.set_uniform("invert_color", invert);
 }
 
 
-void wis::Renderer::set_desaturate(bool desaturate)
+void wis::Renderer::enable_color_multiplication(bool multiply)
 {
-  shader_.set_uniform("desaturate", desaturate);
+  shader_.set_uniform("multiply_color", multiply);
 }
 
 
-void wis::Renderer::set_desaturation_factor(float factor)
+void wis::Renderer::set_color_desaturation_factor(float factor)
 {
   shader_.set_uniform("desaturation_factor", factor);
 }

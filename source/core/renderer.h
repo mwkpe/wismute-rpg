@@ -46,10 +46,12 @@ public:
   void use_vertex_color_shading();
   void use_color_shading();
   void use_texture_shading();
-  void set_colorize(bool colorize);
-  void set_invert_color(bool invert);
-  void set_desaturate(bool desaturate);
-  void set_desaturation_factor(float factor);
+
+  void enable_color_desaturation(bool desaturate = true);
+  void enable_color_inversion(bool invert = true);
+  void enable_color_multiplication(bool multiply = true);
+
+  void set_color_desaturation_factor(float factor);
 
   // Rendering
   void render(const apeiron::engine::Entity& entity);

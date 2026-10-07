@@ -4,6 +4,7 @@
 layout (points) in;
 layout (triangle_strip, max_vertices=4) out;
 
+
 in vec4 pixel_color[];
 in mat4 pixel_model[];
 in vec2 pixel_stretch[];
@@ -14,6 +15,7 @@ uniform mat4 model;
 uniform mat4 view_projection;
 
 uniform float pixel_size;
+
 
 void main()
 {

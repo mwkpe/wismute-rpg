@@ -6,6 +6,11 @@ layout (location = 1) in vec3 a_normal;
 layout (location = 2) in vec2 a_texcoord;
 layout (location = 3) in vec4 a_color;
 
+
+out vec2 texcoord;
+out vec4 vertex_color;
+
+
 uniform int render_mode;
 
 // Screen
@@ -16,9 +21,6 @@ uniform mat4 projection;
 // World
 uniform mat4 model;
 uniform mat4 view_projection;
-
-out vec2 texcoord;
-out vec4 vertex_color;
 
 
 void main()
