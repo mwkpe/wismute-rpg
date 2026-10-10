@@ -14,21 +14,19 @@ void wis::Pixel_renderer::init(float pixel_size, std::uint32_t tile_size)
   set_pixel_size(pixel_size);
   set_tile_size(tile_size);
 
-  enable_blending(false);
-  enable_desaturation(false);
-  enable_tilt(false);
-  enable_displacement(false);
-  enable_breathing(false);
+  enable_color_blending(false);
+  enable_color_desaturation(false);
+  enable_tile_tilt(false);
+  enable_tile_breathing(false);
+  enable_pixel_displacement(false);
 
   set_color_index(0);
 
-  set_blending_alpha(0.0f);
-  set_desaturation_factor(0.0f);
-  set_tilt_amplitude(0.0f);
-  set_displacement_strength(0.0f);
-  set_breathing_amplitude(0.0f);
-  set_breathing_frequency(0.0f);
-  set_breathing_phase(0.0f);
+  set_color_blending_alpha(0.0f);
+  set_color_desaturation_strength(0.0f);
+  set_tile_tilt_amplitude(0.0f);
+  set_tile_breathing(0.0f, 0.0f, 0.0f);
+  set_pixel_displacement_strength(0.0f);
 }
 
 
@@ -101,75 +99,65 @@ void wis::Pixel_renderer::set_color_index(std::uint32_t index)
 }
 
 
-void wis::Pixel_renderer::enable_blending(bool enable)
+void wis::Pixel_renderer::enable_color_blending(bool enable)
 {
-  shader_.set_uniform("blending_enabled", enable);
+  shader_.set_uniform("color_blending_enabled", enable);
 }
 
 
-void wis::Pixel_renderer::enable_desaturation(bool enable)
+void wis::Pixel_renderer::enable_color_desaturation(bool enable)
 {
-  shader_.set_uniform("desaturation_enabled", enable);
+  shader_.set_uniform("color_desaturation_enabled", enable);
 }
 
 
-void wis::Pixel_renderer::enable_tilt(bool enable)
+void wis::Pixel_renderer::enable_tile_tilt(bool enable)
 {
-  shader_.set_uniform("tilt_enabled", enable);
+  shader_.set_uniform("tile_tilt_enabled", enable);
 }
 
 
-void wis::Pixel_renderer::enable_displacement(bool enable)
+void wis::Pixel_renderer::enable_tile_breathing(bool enable)
 {
-  shader_.set_uniform("displacement_enabled", enable);
+  shader_.set_uniform("tile_breathing_enabled", enable);
 }
 
 
-void wis::Pixel_renderer::enable_breathing(bool enable)
+void wis::Pixel_renderer::enable_pixel_displacement(bool enable)
 {
-  shader_.set_uniform("breathing_enabled", enable);
+  shader_.set_uniform("pixel_displacement_enabled", enable);
 }
 
 
-void wis::Pixel_renderer::set_blending_alpha(float alpha)
+void wis::Pixel_renderer::set_color_blending_alpha(float alpha)
 {
-  shader_.set_uniform("blending_alpha", alpha);
+  shader_.set_uniform("color_blending_alpha", alpha);
 }
 
 
-void wis::Pixel_renderer::set_desaturation_factor(float factor)
+void wis::Pixel_renderer::set_color_desaturation_strength(float strength)
 {
-  shader_.set_uniform("desaturation_factor", factor);
+  shader_.set_uniform("desaturation_strength", strength);
 }
 
 
-void wis::Pixel_renderer::set_tilt_amplitude(float amplitude)
+void wis::Pixel_renderer::set_tile_tilt_amplitude(float amplitude)
 {
-  shader_.set_uniform("tilt_amplitude", amplitude);
+  shader_.set_uniform("tile_tilt_amplitude", amplitude);
 }
 
 
-void wis::Pixel_renderer::set_displacement_strength(float strength)
+void wis::Pixel_renderer::set_tile_breathing(float amplitude, float frequency, float phase)
 {
-  shader_.set_uniform("displacement_strength", strength);
+  shader_.set_uniform("tile_breathing_amplitude", amplitude);
+  shader_.set_uniform("tile_breathing_frequency", frequency);
+  shader_.set_uniform("tile_breathing_phase", phase);
 }
 
 
-void wis::Pixel_renderer::set_breathing_amplitude(float amplitude)
+void wis::Pixel_renderer::set_pixel_displacement_strength(float strength)
 {
-  shader_.set_uniform("breathing_amplitude", amplitude);
-}
-
-
-void wis::Pixel_renderer::set_breathing_frequency(float frequency)
-{
-  shader_.set_uniform("breathing_frequency", frequency);
-}
-
-
-void wis::Pixel_renderer::set_breathing_phase(float phase)
-{
-  shader_.set_uniform("breathing_phase", phase);
+  shader_.set_uniform("pixel_displacement_strength", strength);
 }
 
 

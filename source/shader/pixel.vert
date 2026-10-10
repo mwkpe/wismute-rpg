@@ -30,19 +30,19 @@ uniform uvec2 tile_position;
 uniform uint color_index;
 
 // Post process variables
-uniform bool blending_enabled;
-uniform bool desaturation_enabled;
-uniform bool tilt_enabled;
-uniform bool displacement_enabled;
-uniform bool breathing_enabled;
+uniform bool color_blending_enabled;
+uniform bool color_desaturation_enabled;
+uniform bool tile_tilt_enabled;
+uniform bool tile_breathing_enabled;
+uniform bool pixel_displacement_enabled;
 
-uniform float blending_alpha;
-uniform float desaturation_factor;
-uniform float tilt_amplitude;
-uniform float displacement_strength;
-uniform float breathing_amplitude;
-uniform float breathing_frequency;
-uniform float breathing_phase;
+uniform float color_blending_alpha;
+uniform float color_desaturation_strength;
+uniform float tile_tilt_amplitude;
+uniform float tile_breathing_amplitude;
+uniform float tile_breathing_frequency;
+uniform float tile_breathing_phase;
+uniform float pixel_displacement_strength;
 
 
 uint pcg_hash(uint v)
@@ -120,8 +120,9 @@ void post_process(inout vec3 pixel_position, float row)
 {
   pixel_model = model;
 
-  if (breathing_enabled) {
-    float s = 1.0 + breathing_amplitude * sin(time * tau * breathing_frequency + breathing_phase);
+  if (tile_breathing_enabled) {
+    float s = 1.0 + tile_breathing_amplitude *
+        sin(time * tau * tile_breathing_frequency + tile_breathing_phase);
     float sx = 1.0 / sqrt(s);
 
     // Anchor sprite to ground
@@ -133,22 +134,22 @@ void post_process(inout vec3 pixel_position, float row)
     pixel_stretch = vec2(sx, s);
   }
 
-  if (tilt_enabled) {
-    pixel_position.x += (tile_size * pixel_size - row) * 0.1 * tilt_amplitude;
+  if (tile_tilt_enabled) {
+    pixel_position.x += (tile_size * pixel_size - row) * 0.1 * tile_tilt_amplitude;
   }
 
-  if (displacement_enabled) {
+  if (pixel_displacement_enabled) {
     vec3 direction = normalize(pixel_position);
-    pixel_position += direction * displacement_strength;
+    pixel_position += direction * pixel_displacement_strength;
   }
 
-  if (blending_enabled) {
-    pixel_color.a = blending_alpha;
+  if (color_blending_enabled) {
+    pixel_color.a = color_blending_alpha;
   }
 
-  if (desaturation_enabled) {
+  if (color_desaturation_enabled) {
     vec3 grayscale = vec3(dot(pixel_color.rgb, vec3(0.2126, 0.7152, 0.0722)));
-    pixel_color = vec4(mix(pixel_color.rgb, grayscale, desaturation_factor), pixel_color.a);
+    pixel_color = vec4(mix(pixel_color.rgb, grayscale, color_desaturation_strength), pixel_color.a);
   }
 }
 

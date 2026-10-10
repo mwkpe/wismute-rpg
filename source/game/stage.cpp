@@ -505,12 +505,12 @@ void wis::Stage::render_shadows()
 {
   const auto shadow_index = game_data_.color.shadow_index;
 
-  pixel_renderer_.enable_tilt();
-  pixel_renderer_.set_tilt_amplitude(-4.0f);
-
   Renderer::set_gl_blend(true);
-  pixel_renderer_.enable_blending();
-  pixel_renderer_.set_blending_alpha(0.7f);
+  pixel_renderer_.enable_color_blending();
+  pixel_renderer_.set_color_blending_alpha(0.5f);
+
+  pixel_renderer_.enable_tile_tilt();
+  pixel_renderer_.set_tile_tilt_amplitude(-4.0f);
 
   ground_entity_.transform().set_scale(1.0f, 1.0f, 0.8f);
   auto offset = cval::sprite_offset - glm::vec3{0.0f, 0.0f, cval::tile_size * 0.4f};
@@ -522,13 +522,12 @@ void wis::Stage::render_shadows()
     pixel_renderer_.render(ground_entity_, atlas_.stage(), mesh_index, shadow_index);
   }
 
-  pixel_renderer_.enable_breathing();
+  pixel_renderer_.enable_tile_breathing();
 
   // Player
   {
-    pixel_renderer_.set_breathing_amplitude(player_.breathing.amplitude);
-    pixel_renderer_.set_breathing_frequency(player_.breathing.frequency);
-    pixel_renderer_.set_breathing_phase(player_.breathing.phase);
+    pixel_renderer_.set_tile_breathing(player_.breathing.amplitude, player_.breathing.frequency,
+        player_.breathing.phase);
 
     ground_entity_.transform().set_position(lattice_.as_position_xz(player_.scene_index, offset));
     pixel_renderer_.render(ground_entity_, atlas_.stage(), player_.animation.current_frame(),
@@ -537,9 +536,8 @@ void wis::Stage::render_shadows()
 
   // Slimes
   for (const auto& slime : scene_.slimes() | is_alive) {
-    pixel_renderer_.set_breathing_amplitude(slime.breathing.amplitude);
-    pixel_renderer_.set_breathing_frequency(slime.breathing.frequency);
-    pixel_renderer_.set_breathing_phase(slime.breathing.phase);
+    pixel_renderer_.set_tile_breathing(slime.breathing.amplitude, slime.breathing.frequency,
+        slime.breathing.phase);
 
     ground_entity_.transform().set_position(lattice_.as_position_xz(slime.scene_index, offset));
     pixel_renderer_.render(ground_entity_, atlas_.stage(), slime.mesh_index, shadow_index);
@@ -548,9 +546,9 @@ void wis::Stage::render_shadows()
   ground_entity_.transform().set_scale(1.0f, 1.0f, 1.0f);
 
   Renderer::set_gl_blend(false);
-  pixel_renderer_.enable_breathing(false);
-  pixel_renderer_.enable_tilt(false);
-  pixel_renderer_.enable_blending(false);
+  pixel_renderer_.enable_color_blending(false);
+  pixel_renderer_.enable_tile_tilt(false);
+  pixel_renderer_.enable_tile_breathing(false);
 }
 
 
@@ -600,13 +598,12 @@ void wis::Stage::render_sprites()
     pixel_renderer_.render(sprite_entity_, atlas_.stage(), sprite.mesh_index);
   }
 
-  pixel_renderer_.enable_breathing();
+  pixel_renderer_.enable_tile_breathing();
 
   // Player
   {
-    pixel_renderer_.set_breathing_amplitude(player_.breathing.amplitude);
-    pixel_renderer_.set_breathing_frequency(player_.breathing.frequency);
-    pixel_renderer_.set_breathing_phase(player_.breathing.phase);
+    pixel_renderer_.set_tile_breathing(player_.breathing.amplitude, player_.breathing.frequency,
+        player_.breathing.phase);
 
     sprite_entity_.transform()
         .set_position(lattice_.as_position_xz(player_.scene_index, cval::sprite_offset));
@@ -615,16 +612,15 @@ void wis::Stage::render_sprites()
 
   // Slimes
   for (const auto& slime : scene_.slimes() | is_active) {
-    pixel_renderer_.set_breathing_amplitude(slime.breathing.amplitude);
-    pixel_renderer_.set_breathing_frequency(slime.breathing.frequency);
-    pixel_renderer_.set_breathing_phase(slime.breathing.phase);
+    pixel_renderer_.set_tile_breathing(slime.breathing.amplitude, slime.breathing.frequency,
+        slime.breathing.phase);
 
     sprite_entity_.transform()
         .set_position(lattice_.as_position_xz(slime.scene_index, cval::sprite_offset));
     pixel_renderer_.render(sprite_entity_, atlas_.stage(), slime.mesh_index);
   }
 
-  pixel_renderer_.enable_breathing(false);
+  pixel_renderer_.enable_tile_breathing(false);
 
   // Health bars
   for (const auto& slime : scene_.slimes() | is_alive) {

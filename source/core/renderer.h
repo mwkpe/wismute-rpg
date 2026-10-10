@@ -47,11 +47,11 @@ public:
   void use_color_shading();
   void use_texture_shading();
 
-  void enable_color_desaturation(bool desaturate = true);
-  void enable_color_inversion(bool invert = true);
-  void enable_color_multiplication(bool multiply = true);
+  void enable_color_multiplication(bool enable = true);
+  void enable_color_desaturation(bool enable = true);
+  void enable_color_inversion(bool enable = true);
 
-  void set_color_desaturation_factor(float factor);
+  void set_color_desaturation_strength(float strength);
 
   // Rendering
   void render(const apeiron::engine::Entity& entity);

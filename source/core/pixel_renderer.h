@@ -41,19 +41,17 @@ public:
   void set_color_index(std::uint32_t index);
 
   // Post process variables
-  void enable_blending(bool enable = true);
-  void enable_desaturation(bool enable = true);
-  void enable_tilt(bool enable = true);
-  void enable_displacement(bool enable = true);
-  void enable_breathing(bool enable = true);
+  void enable_color_blending(bool enable = true);
+  void enable_color_desaturation(bool enable = true);
+  void enable_tile_tilt(bool enable = true);
+  void enable_tile_breathing(bool enable = true);
+  void enable_pixel_displacement(bool enable = true);
 
-  void set_blending_alpha(float alpha);
-  void set_desaturation_factor(float factor);
-  void set_tilt_amplitude(float amplitude);
-  void set_displacement_strength(float strength);
-  void set_breathing_amplitude(float amplitude);
-  void set_breathing_frequency(float frequency);
-  void set_breathing_phase(float phase);
+  void set_color_blending_alpha(float alpha);
+  void set_color_desaturation_strength(float strength);
+  void set_tile_tilt_amplitude(float amplitude);
+  void set_tile_breathing(float amplitude, float frequency, float phase);
+  void set_pixel_displacement_strength(float strength);
 
   // Rendering
   void render(const apeiron::engine::Entity& entity, const apeiron::opengl::Meshset& meshset,

@@ -10,16 +10,16 @@ void wis::Renderer::init()
   shader_.use();
 
   // Init uniforms
+  use_color_shading();
+  shader_.set_uniform("color", glm::vec4{1.0f, 0.0f, 1.0f, 1.0f});
+
   use_world_space();
 
+  enable_color_multiplication(false);
   enable_color_desaturation(false);
   enable_color_inversion(false);
-  enable_color_multiplication(false);
 
-  set_color_desaturation_factor(1.0f);
-
-  shader_.set_uniform("color_mode", 0xff);
-  shader_.set_uniform("color", glm::vec4{1.0f, 0.0f, 1.0f, 1.0f});
+  set_color_desaturation_strength(1.0f);
 }
 
 
@@ -169,27 +169,27 @@ void wis::Renderer::use_texture_shading()
 }
 
 
-void wis::Renderer::enable_color_desaturation(bool desaturate)
+void wis::Renderer::enable_color_multiplication(bool enable)
 {
-  shader_.set_uniform("desaturate_color", desaturate);
+  shader_.set_uniform("color_multiplication_enabled", enable);
 }
 
 
-void wis::Renderer::enable_color_inversion(bool invert)
+void wis::Renderer::enable_color_desaturation(bool enable)
 {
-  shader_.set_uniform("invert_color", invert);
+  shader_.set_uniform("color_desaturation_enabled", enable);
 }
 
 
-void wis::Renderer::enable_color_multiplication(bool multiply)
+void wis::Renderer::enable_color_inversion(bool enable)
 {
-  shader_.set_uniform("multiply_color", multiply);
+  shader_.set_uniform("color_inversion_enabled", enable);
 }
 
 
-void wis::Renderer::set_color_desaturation_factor(float factor)
+void wis::Renderer::set_color_desaturation_strength(float strength)
 {
-  shader_.set_uniform("desaturation_factor", factor);
+  shader_.set_uniform("desaturation_strength", strength);
 }
 
 
