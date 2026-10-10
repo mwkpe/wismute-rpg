@@ -145,15 +145,15 @@ void wis::Stage::render()
   //pixel_renderer_.set_desaturation_factor(0.75f);
 
   if (app_data_.debug.wireframe) {
-    Renderer::set_gl_wireframe(true);
+    Renderer::enable_gl_wireframe();
   }
   else {
-    Renderer::set_gl_wireframe(false);
+    Renderer::enable_gl_wireframe(false);
   }
 
   pixel_renderer_.set_time(app_data_.timing.runtime_s);
 
-  Renderer::set_gl_depth_test(false);
+  Renderer::enable_gl_depth_test(false);
   render_ground();
 
   if (game_data_.render.shadows) {
@@ -164,7 +164,7 @@ void wis::Stage::render()
   render_overlay();
   render_debug_overlay();
 
-  Renderer::set_gl_depth_test(true);
+  Renderer::enable_gl_depth_test(true);
   render_sprites();
   render_debug();
 
@@ -505,7 +505,7 @@ void wis::Stage::render_shadows()
 {
   const auto shadow_index = game_data_.color.shadow_index;
 
-  Renderer::set_gl_blend(true);
+  Renderer::enable_gl_blend();
   pixel_renderer_.enable_color_blending();
   pixel_renderer_.set_color_blending_alpha(0.5f);
 
@@ -545,7 +545,7 @@ void wis::Stage::render_shadows()
 
   ground_entity_.transform().set_scale(1.0f, 1.0f, 1.0f);
 
-  Renderer::set_gl_blend(false);
+  Renderer::enable_gl_blend(false);
   pixel_renderer_.enable_color_blending(false);
   pixel_renderer_.enable_tile_tilt(false);
   pixel_renderer_.enable_tile_breathing(false);

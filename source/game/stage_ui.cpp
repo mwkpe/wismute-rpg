@@ -239,7 +239,7 @@ void wis::Stage_ui::set_screen_limits()
 
 void wis::Stage_ui::render_panels()
 {
-  Renderer::set_gl_depth_test(false);
+  Renderer::enable_gl_depth_test(false);
 
   //renderer_.use();
   //renderer_.render(action_panel_.quad(), game_data_.color.palette[12]);
@@ -317,7 +317,7 @@ void wis::Stage_ui::render_panels()
   //  pixel_renderer_.render(entity_, atlas_.ui(), widget.mesh_index);
   //}
 
-  Renderer::set_gl_depth_test(true);
+  Renderer::enable_gl_depth_test();
 }
 
 
@@ -337,7 +337,7 @@ void wis::Stage_ui::render_debug()
 void wis::Stage_ui::render_cursor()
 {
   pixel_renderer_.use();
-  Renderer::set_gl_depth_test(false);
+  Renderer::enable_gl_depth_test(false);
 
   cursor_.transform().set_position(game_data_.cursor.ui.screen_position);
 
@@ -355,7 +355,7 @@ void wis::Stage_ui::render_cursor()
 
   pixel_renderer_.render(cursor_, atlas_.ui(), cursor_index);
 
-  Renderer::set_gl_depth_test(true);
+  Renderer::enable_gl_depth_test();
 }
 
 

@@ -40,6 +40,39 @@ void wis::Renderer::gl_init()
 }
 
 
+void wis::Renderer::enable_gl_wireframe(bool enable)
+{
+  if (enable) {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  }
+  else {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  }
+}
+
+
+void wis::Renderer::enable_gl_depth_test(bool enable)
+{
+  if (enable) {
+    glEnable(GL_DEPTH_TEST);
+  }
+  else {
+    glDisable(GL_DEPTH_TEST);
+  }
+}
+
+
+void wis::Renderer::enable_gl_blend(bool enable)
+{
+  if (enable) {
+    glEnable(GL_BLEND);
+  }
+  else {
+    glDisable(GL_BLEND);
+  }
+}
+
+
 void wis::Renderer::set_gl_viewport(std::int32_t x, std::int32_t y,
     std::int32_t w, std::int32_t h)
 {
@@ -50,39 +83,6 @@ void wis::Renderer::set_gl_viewport(std::int32_t x, std::int32_t y,
 void wis::Renderer::set_gl_frame_buffer(std::int32_t id)
 {
   glBindFramebuffer(GL_FRAMEBUFFER, id);
-}
-
-
-void wis::Renderer::set_gl_wireframe(bool wireframe)
-{
-  if (wireframe) {
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  }
-  else {
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  }
-}
-
-
-void wis::Renderer::set_gl_depth_test(bool depth_test)
-{
-  if (depth_test) {
-    glEnable(GL_DEPTH_TEST);
-  }
-  else {
-    glDisable(GL_DEPTH_TEST);
-  }
-}
-
-
-void wis::Renderer::set_gl_blend(bool blend)
-{
-  if (blend) {
-    glEnable(GL_BLEND);
-  }
-  else {
-    glDisable(GL_BLEND);
-  }
 }
 
 

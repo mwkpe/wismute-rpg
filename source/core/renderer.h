@@ -22,11 +22,12 @@ public:
   // OpenGL
   static void gl_init();
 
+  static void enable_gl_wireframe(bool enable = true);
+  static void enable_gl_depth_test(bool enable = true);
+  static void enable_gl_blend(bool enable = true);
+
   static void set_gl_viewport(std::int32_t x, std::int32_t y, std::int32_t w, std::int32_t h);
   static void set_gl_frame_buffer(std::int32_t id);
-  static void set_gl_wireframe(bool wireframe);
-  static void set_gl_depth_test(bool depth_test);
-  static void set_gl_blend(bool blend);
   static void set_gl_color_mask(bool r, bool g, bool b, bool a);
 
   static void gl_clear();
@@ -69,9 +70,9 @@ public:
 
 private:
   apeiron::opengl::Shader shader_;
-  glm::mat4 view_ = glm::mat4{0.0f};
-  glm::mat4 projection_ = glm::mat4{0.0f};
-  glm::mat4 view_projection_ = glm::mat4{0.0f};
+  glm::mat4 view_ = glm::mat4{1.0f};
+  glm::mat4 projection_ = glm::mat4{1.0f};
+  glm::mat4 view_projection_ = glm::mat4{1.0f};
   mutable std::uint32_t draw_calls_ = 0u;
 };
 

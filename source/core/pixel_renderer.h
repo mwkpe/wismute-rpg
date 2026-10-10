@@ -68,9 +68,9 @@ public:
 
 private:
   apeiron::opengl::Shader shader_;
-  glm::mat4 view_ = glm::mat4{0.0f};
-  glm::mat4 projection_ = glm::mat4{0.0f};
-  glm::mat4 view_projection_ = glm::mat4{0.0f};
+  glm::mat4 view_ = glm::mat4{1.0f};
+  glm::mat4 projection_ = glm::mat4{1.0f};
+  glm::mat4 view_projection_ = glm::mat4{1.0f};
   mutable std::uint32_t draw_calls_ = 0u;
 };
 
